@@ -49,6 +49,7 @@ def main():
 
 # Part 2 -=-=-
 
+    # compute angular edges of tractor beam to approximate edge locations further out
     top = (0,0)
     bottom = (0,0)
     for p in affected:
@@ -58,7 +59,6 @@ def main():
             bottom = p
     min_angle = min(getAngle(top), getAngle(bottom))
     max_angle = max(getAngle(top), getAngle(bottom))
-    print(f"min/max angles are: {min_angle} {max_angle}")
 
     # walk top edge of tractor beam and check dimensions
     # tractor beam has to be at least 100 wide at first possible target
