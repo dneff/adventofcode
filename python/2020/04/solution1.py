@@ -1,8 +1,9 @@
 def printSolution(x):
     print(f"The solution is: {x}")
 
-class Passport():
-    def __init__(self, valid = []):
+
+class Passport:
+    def __init__(self, valid=[]):
         self.valid = valid[:]
 
     def addField(self, field, value):
@@ -16,24 +17,25 @@ class Passport():
             if not hasattr(self, key):
                 return False
         return True
-    
+
     def __str__(self):
-        return str(self.__class__) + ": " + str(self.__dict__)    
+        return str(self.__class__) + ": " + str(self.__dict__)
+
 
 def main():
 
-    file = open('input.txt', 'r')
+    file = open("input.txt", "r")
 
     credentials = []
-    valid_fields = ['byr', 'iyr', 'eyr', 'hgt', 'hcl', 'ecl', 'pid']
+    valid_fields = ["byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"]
 
     # generate list of credentials
     cred = Passport(valid_fields)
     for line in file:
         if line.strip():
             for kv in line.strip().split(" "):
-                k,v = kv.split(':')
-                cred.addField(k,v)
+                k, v = kv.split(":")
+                cred.addField(k, v)
         else:
             # new line! save this cred and start a new one
             credentials.append(cred)
