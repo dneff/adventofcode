@@ -7,28 +7,27 @@ def printSolution(x):
 
 def main():
     preamble = 25
-    invalid = 0
+
     file = open("input.txt", "r")
-    data = [int(line.strip()) for line in file.readlines()]
 
     queue = deque([], preamble)
-
-    for num in data:
+    for line in file.readlines():
         if len(queue) < preamble:
-            queue.append(num)
+            queue.append(int(line.strip()))
             continue
+
+        x = int(line.strip())
 
         valid = False
         for y in queue:
-            if num - y in queue:
+            if x - y in queue:
                 valid = True
                 break
         if not valid:
-            invalid = num
+            printSolution(x)
             break
-        queue.append(num)
-
-    printSolution(invalid)
+        queue.append(x)
 
 
 if __name__ == "__main__":
+    main()
