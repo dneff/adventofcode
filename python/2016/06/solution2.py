@@ -6,9 +6,9 @@ def printSolution(x):
     print(f"The solution is: {x}")
 
 
-def getMaxKey(dict_x):
+def getMinKey(dict_x):
     ordered_keys = [x for x, y in sorted(dict_x.items(), key=itemgetter(1), reverse=True)]
-    return ordered_keys[0]
+    return ordered_keys[-1]
 
 
 def main():
@@ -25,7 +25,7 @@ def main():
 
     message = ""
     for d in position:
-        message += getMaxKey(d)
+        message += getMinKey(d)
 
     printSolution(message)
 
