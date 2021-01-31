@@ -52,7 +52,10 @@ def main():
         instruction = getattr(door, line[0])
         instruction(int(line[1]), int(line[2]))
 
-    printSolution(door.litCount())
+    for r in door.screen:
+        row = ''.join(r)
+        row = row.replace('.', ' ')
+        print(row)
 
 
 if __name__ == '__main__':
