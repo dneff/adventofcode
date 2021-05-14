@@ -2,53 +2,37 @@ def printSolution(x):
     print(f"The solution is: {x}")
 
 
+
 def decompress(s):
-    result = ""
+    result = 0
     index = 0
 
     while index < len(s):
-        if s[index] != "(":
-            next_marker = s[index:].find("(")
-            if next_marker >= 0:
-                result += s[index:index + next_marker]
-                index += next_marker - 1
-            else:
-                result += s[index:]
-                index += len(s)
+        if s[index] != '(':
+            result += 1
         else:
             index += 1
-            end_marker = index + s[index:].find(")")
+            end_marker = index + s[index:].find(')')
             marker = s[index:end_marker]
-            characters, repeat = [int(x) for x in marker.split("x")]
+            characters, repeat = [int(x) for x in marker.split('x')]
             index = end_marker + 1
-            result += s[index:index + characters] * repeat
+            substring = s[index:index+characters]
+            if '(' in substring:
+                result += decompress(substring) * repeat
+            else:
+                result += len(substring) * repeat
             index += characters - 1
         index += 1
+
     return result
-
-
-def decompress_v2(s):
-    s = decompress(s)
-    while "(" in s:
-        s = decompress(s)
-    return s
-
 
 def main():
     file = open("input.txt", "r")
 
-    data = file.readlines()[0]
-
-    for x in [
-        "X(8x2)(3x3)ABCY",
-        "(27x12)(20x12)(13x14)(7x10)(1x12)A",
-        "(25x3)(3x3)ABC(2x3)XY(5x2)PQRSTX(18x9)(3x2)TWO(5x7)SEVEN",
-    ]:
-        result = decompress_v2(x)
-        print(x, len(result))
+    for data in file.readlines():
+        printSolution(decompress(data.strip()))
 
 
-    #printSolution(len(decompress_v2(data)))
 
 if __name__ == "__main__":
     main()
