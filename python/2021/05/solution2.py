@@ -1,5 +1,6 @@
 from collections import defaultdict
 
+
 def printSolution(x):
     print(f"The solution is {x}")
 
