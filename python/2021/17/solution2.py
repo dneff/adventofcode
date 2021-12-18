@@ -43,8 +43,8 @@ class Probe:
 
         hit = self.target & set(positions)
         if len(hit) > 0:
-            return max_height, positions[-1]
-        return 0, positions[-1]
+            return True
+        return False
 
     def calibrate(self):
         # y arc is perfect parabola to 0, then y velocity + 1 to target
@@ -62,8 +62,16 @@ def main():
 
     p = Probe()
     p.parse_data(active)
+    print(p.calibrate())
+    x_vel_min, y_vel_max = p.calibrate()
 
-    print(p.checkShot(p.calibrate()))
+    hits = set()
+    for y in range(min(p.range_y) - 1, y_vel_max + 1):
+        for x in range(x_vel_min - 1, max(p.range_x) + 1):
+            if p.checkShot((x,y)):
+                hits.add((x,y))
 
+    printSolution(len(hits))
+    
 if __name__ == "__main__":
     main()
