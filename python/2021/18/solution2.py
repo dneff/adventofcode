@@ -116,14 +116,17 @@ def main():
         numbers.append(line.strip())
 
     calc = SnailCalc()
+    max_mag = 0
+    for a in range(len(numbers)):
+        for b in range(len(numbers)):
+            if a == b:
+                continue
+            calc.number = numbers[a]
+            calc.add(numbers[b])
+            calc.magnitude()
+            max_mag = max(max_mag, int(calc.number))
 
-    calc.number = numbers[0]
-
-    for num in numbers[1:]:
-        calc.add(num)
-
-    calc.magnitude()
-    printSolution(calc.number)
+    printSolution(max_mag)
 
 
 if __name__ == "__main__":
