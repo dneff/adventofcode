@@ -1,65 +1,53 @@
 
 from collections import defaultdict
-
+import functools
 
 def printSolution(x):
     print(f"The solution is {x}")
 
 
-def next_position(position, x):
-    position = (position + x) % 10
-    if position == 0:
-        position = 10
-    return position
+dirac_rolls = []
+for a in range(1, 4):
+    for b in range(1, 4):
+        for c in range(1, 4):
+            dirac_rolls.append(a+b+c)
 
 
+@functools.lru_cache(maxsize=None)
+def turn(pos0, score0, pos1, score1, player_turn):
+    if score0 >= 21:
+        return [1,0]
+
+    if score1 >= 21:
+        return [0,1]
+    
+    win0, win1 = 0, 0
+    
+    for roll in dirac_rolls:
+        next_turn = (player_turn + 1) % 2
+        new_move = [pos0, score0, pos1, score1, next_turn]
+        new_move[player_turn*2] = (new_move[player_turn*2] + roll) % 10
+        new_move[player_turn*2+1] = new_move[player_turn*2+1] + new_move[player_turn*2] + 1
+        w0, w1 = turn(*new_move)
+        
+        win0 += w0
+        win1 += w1
+    
+    return [win0, win1]
+    
+    
 def main():
     puzzle = [4, 9]
     test = [4, 8]
 
     positions = test
 
-    turn = 0
-    games = defaultdict(int)
+    # p0 position, p0 score, p1 position, p1 score, players_turn
+    starting = (positions[0], 0, positions[1], 0, 0)
 
-    # p0 position, p1 position, p0 score, p1 score, players_turn
-    starting = (positions[0], positions[1], 0, 0, turn)
+    wins = turn(*starting)
 
-    games[starting] += 1
-
-    roll_distribution = defaultdict(int)
-    for a in range(1, 4):
-        for b in range(1, 4):
-            for c in range(1, 4):
-                roll_distribution[a+b+c] += 1
-
-    wins = [0, 0]
-
-    while len(games.keys()) != 0:
-        k, count = games.popitem()
-        if max(k) > 10:
-            print(len(games.keys()), k, max(k), wins)
-        if max(k) >= 21:
-            if k[2] >= 21:
-                wins[0] += count
-            else:
-                wins[1] += count
-            continue
-
-        turn, p0, p1, score0, score1 = k
-
-        new_turn = (turn + 1) % 2
-        if turn == 0:
-            for moves, counts in roll_distribution.items():
-                new_pos = next_position(p0, moves)
-                new_state = (new_pos, p1, score0 + new_pos, score1, new_turn)
-                games[new_state] += count
-        else:
-            for moves, counts in roll_distribution.items():
-                new_pos = next_position(p1, moves)
-                new_state = (p0, new_pos, score0, score1 + new_pos, new_turn)
-                games[new_state] += count
-
+    print(wins)
     printSolution(max(wins))
 
 
