@@ -1,4 +1,7 @@
 
+from collections import defaultdict
+
+
 def printSolution(x):
     print(f"The solution is {x}")
 
@@ -53,10 +56,9 @@ class ALU:
         else:
             self.store(a, 0)
 
-    def loadProgram(self, filename):
-        file = open(filename, 'r')
-        for line in file:
-            self.program.append(line.strip())
+    def loadProgram(self, data):
+        self.program.clear()
+        self.program = data[:]
 
     def loadInput(self, input):
         self.input = input
@@ -72,38 +74,58 @@ class ALU:
             return int(x)
         except ValueError:
             return getattr(self, x)
-        
+
     def clear(self):
         self.w = self.x = self.y = self.z = 0
         self.input = 0
-
-
-def modelNumberGenerator():
-    model_number = [9] * 14
-    while True:
-        yield int(''.join(map(str,model_number)))
-        model_number[-1] -= 1
-        for idx in range(len(model_number)-1,-1,-1):
-            if model_number[idx] == 0:
-                model_number[idx] = 9
-                model_number[idx - 1] -= 1
-            
+        self.program.clear()
 
 
 def main():
-    x = 13579246899999
-    a = ALU()
-    a.loadProgram('input.txt')
 
-    model = modelNumberGenerator()
-    while True:
-        test_model = next(model)
-        a.loadInput(test_model)
-        a.run()
-        if a.z == 0:
-            printSolution(test_model)
-            break
-        a.clear()        
+    programs = []
+    file = open('input.txt')
+    # break into 14 distinct programs
+    prog = []
+    for idx, line in enumerate(file.readlines()):
+        if idx % 18 == 0 and idx != 0:
+            programs.append(prog[:])
+            prog.clear()
+        prog.append(line.strip())
+    programs.append(prog[:])
+
+    prog.clear()
+
+    modifiers = {}
+    for p_idx in range(len(programs)):
+        div = int(programs[p_idx][4].split()[-1])
+        check = int(programs[p_idx][5].split()[-1])
+        offset = int(programs[p_idx][-3].split()[-1])
+        modifiers[p_idx] = (div, check, offset)
+
+    offsets = []
+    primary = {}
+    for k in range(len(modifiers.keys())):
+        div, check, offset = modifiers[k][0], modifiers[k][1], modifiers[k][2]
+        if check > 0:
+            offsets.append((k, offset))
+        else:
+            inp, offs = offsets.pop()
+            print(f"input[{k}] == input[{inp}] + {check+offs}")
+            primary[inp] = (k, check+offs)
+
+    # can now compute maximum
+    model = [0] * 14
+    for k, v in primary.items():
+        second, offset = v
+        if offset < 0:
+            model[k], model[second] = 9, 9 + offset
+        else:
+            model[second], model[k] = 9, 9 - offset
+
+    max_model = int(''.join([str(x) for x in model]))
+    printSolution(max_model)
+
 
 if __name__ == "__main__":
     main()
