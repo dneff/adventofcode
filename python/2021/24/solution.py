@@ -2,6 +2,7 @@
 def printSolution(x):
     print(f"The solution is {x}")
 
+
 class ALU:
     def __init__(self):
         self.w = 0
