@@ -31,22 +31,22 @@ class ALU:
         self.store(a, x + b)
 
     def mul(self, a, b):
-        x = getattr(self, a)
+        x = self.getValue(a)
         b = self.getValue(b)
         self.store(a, x * b)
 
     def div(self, a, b):
-        x = getattr(self, a)
+        x = self.getValue(a)
         b = self.getValue(b)
         self.store(a, x//b)
 
     def mod(self, a, b):
-        x = getattr(self, a)
+        x = self.getValue(a)
         b = self.getValue(b)
         self.store(a, x % b)
 
     def eql(self, a, b):
-        x = getattr(self, a)
+        x = self.getValue(a)
         b = self.getValue(b)
         if x == b:
             self.store(a, 1)
@@ -68,27 +68,42 @@ class ALU:
             func(*command[1:])
 
     def getValue(self, x):
-        if x.isdigit():
+        try:
             return int(x)
-        else:
+        except ValueError:
             return getattr(self, x)
+        
+    def clear(self):
+        self.w = self.x = self.y = self.z = 0
+        self.input = 0
 
 
 def modelNumberGenerator():
-    model_number = 99999999999999
+    model_number = [9] * 14
     while True:
-        yield model_number
-        model_number -= 1
+        yield int(''.join(map(str,model_number)))
+        model_number[-1] -= 1
+        for idx in range(len(model_number)-1,-1,-1):
+            if model_number[idx] == 0:
+                model_number[idx] = 9
+                model_number[idx - 1] -= 1
+            
 
 
 def main():
+    x = 13579246899999
     a = ALU()
-    a.loadProgram('test.txt')
-    for x in range(17):
-        a.loadInput(x)
+    a.loadProgram('input.txt')
+
+    model = modelNumberGenerator()
+    while True:
+        test_model = next(model)
+        a.loadInput(test_model)
         a.run()
-        bin_val = int(''.join([str(a.w), str(a.x), str(a.y), str(a.z)]), 2)
-        print(x, ":\t", a.w, a.x, a.y, a.z, "->", bin_val)
+        if a.z == 0:
+            printSolution(test_model)
+            break
+        a.clear()        
 
 if __name__ == "__main__":
     main()
