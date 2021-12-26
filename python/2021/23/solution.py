@@ -1,156 +1,134 @@
-import copy
-import random
-from dataclasses import dataclass, field
-from typing import Any
-from queue import PriorityQueue
+import math
 from collections import defaultdict
-
-
-CRAB_GOALS = {}
-CRAB_GOALS['A'] = [(3, 2), (3, 3)]
-CRAB_GOALS['B'] = [(5, 2), (5, 3)]
-CRAB_GOALS['C'] = [(7, 2), (7, 3)]
-CRAB_GOALS['D'] = [(9, 2), (9, 3)]
-
-VALID_HALLWAY = [
-        (1, 1), (2, 1),
-        (4, 1),
-        (6, 1),
-        (8, 1),
-        (10, 1), (11, 1)
-    ]
+from functools import lru_cache
 
 
 def printSolution(x):
     print(f"The solution is {x}")
 
 
-def scoreMove(src, dest, crab):
-    cost = {
-        'A': 1,
-        'B': 10,
-        'C': 100,
-        'D': 1000
-    }
-
-    distance = abs(src[0] - dest[0]) + abs(src[1] - dest[1])
-    return distance * cost[crab]
-
-
-def distanceToComplete(crabs):
-    distance = 0
-    for crab, positions in crabs.items():
-        # if both home, then skip
-        if positions[0] in CRAB_GOALS[crab] and positions[1] in CRAB_GOALS[crab]:
-            continue
-        for c in positions:
-            if c == CRAB_GOALS[crab][-1]:
-                continue
-            if c[1] > 1:
-                distance += scoreMove(c, (1, 4), crab)
-                distance += scoreMove(c, CRAB_GOALS[crab][-1], crab)
-            else:
-                distance += scoreMove(c, CRAB_GOALS[crab][-1], crab)
-    return distance
-
-
 def createBurrow(filename):
-    burrow = set()
     crabs = defaultdict(list)
     file = open(filename, 'r')
     for y, line in enumerate(file.readlines()):
         for x, pos in enumerate(line.rstrip('\n')):
             if pos != '#' and pos != ' ':
                 if pos.isalpha():
-                    crabs[pos].append((x, y))
-                burrow.add((x, y))
-    return burrow, crabs
+                    if pos == 'A':
+                        crabs[x].append(0)
+                    elif pos == 'B':
+                        crabs[x].append(1)
+                    elif pos == 'C':
+                        crabs[x].append(2)
+                    elif pos == 'D':
+                        crabs[x].append(3)
+
+    result = []
+    for c in range(3, 10, 2):
+        result.append(tuple(crabs[c]))
+    hallway = [None] * 7
+    return tuple(result), tuple(hallway)
 
 
-def validPath(src, dest, crabspots):
-    # heading to hallway
-    src = list(src)
-    if src[1] > dest[1]:
-        while src[1] > dest[1]:
-            src[1] -= 1
-            if src in crabspots:
-                return False
-    path = [(x, 1) for x in range(min(src[0], dest[0]), max(src[0], dest[0]) + 1)]
-    for p in path:
-        if p in crabspots:
+def moveIn(state):
+    rooms, hallway = state
+
+    for idx, crab in enumerate(hallway):
+        if crab is None:
+            continue
+        home = rooms[crab]
+        occupants = [c for c in home if c != crab]
+        if len(occupants):
+            continue
+
+        move_cost = costToMove(state, crab, idx, True)
+        if move_cost == math.inf:
+            continue
+
+        new_rooms = rooms[:crab] + ((crab,) + home,) + rooms[crab + 1:]
+        new_hallway = hallway[:idx] + (None,) + hallway[idx + 1:]
+        yield move_cost, (new_rooms, new_hallway)
+
+
+def moveOut(state):
+    rooms, hallway = state
+    for idx_r, room in enumerate(rooms):
+        if len(room) == 0:
+            continue
+        at_home = [c for c in room if idx_r == c]
+        if len(at_home) > 0:
+            continue
+
+        for idx_h in range(len(hallway)):
+            move_cost = costToMove(state, idx_r, idx_h, False)
+            if move_cost == math.inf:
+                continue
+
+            new_rooms = rooms[:idx_r] + (room[1:],) + rooms[idx_r + 1:]
+            new_hallway = hallway[:idx_h] + (room[0],) + hallway[idx_h + 1:]
+            yield move_cost, (new_rooms, new_hallway)
+
+
+def costToMove(state, r, h, moving_in=False):
+    rooms, hallway = state
+    rh_distance = (
+        (2, 1, 1, 3, 5, 7, 8),
+        (4, 3, 1, 1, 3, 5, 6),
+        (6, 5, 3, 1, 1, 3, 4),
+        (8, 7, 5, 3, 1, 1, 2),
+    )
+    if r + 1 < h:
+        start = r + 2
+        end = h + (not moving_in)
+    else:
+        start = h + moving_in
+        end = r + 2
+
+    if any(x is not None for x in hallway[start:end]):
+        return math.inf
+    print(state)
+    print("rooms[r][0]", rooms[r][0])
+    crab = hallway[h] if moving_in else rooms[r][0]
+
+    return 10**crab * (rh_distance[r][h] + (moving_in * 2 - len(rooms[r])))
+
+
+def possible_moves(state):
+    yield from moveIn(state)
+    yield from moveOut(state)
+
+
+def done(state):
+    rooms, _ = state
+    for r, room in enumerate(rooms):
+        if len(room) != 2 or any(crab != r for crab in room):
             return False
-    if src[1] < dest[1]:
-        while src[1] < dest[1]:
-            src[1] += 1
-            if src in crabspots:
-                return False
     return True
 
 
-def findPossibleStates(state):
-    new_states = []
-    print(state)
-    score, crabs = state
-    crab_spots = [c for crab in crabs for c in crab]
-    for id, crab in crabs.items():
-        for idx, position in enumerate(crab):
-            # are we heading to goal?
-            if position in VALID_HALLWAY:
-                for g in CRAB_GOALS[id]:
-                    if validPath(position, g, crab_spots):
-                        s = copy.deepcopy(state)
-                        s[1][id][idx] = g
-                        score = s[0] + scoreMove(position, g, id)
-                        new_states.append((score, s[1]))
-            else:
-                for g in VALID_HALLWAY:
-                    if g not in crab_spots:
-                        if validPath(position, g, crab_spots):
-                            s = copy.deepcopy(state)
-                            s[1][id][idx] = g
-                            score = s[0] + scoreMove(position, g, id)
-                            new_states.append((score, s[1]))
-    return new_states
+#@lru_cache(maxsize=None)
+def solve(state):
+    if done(state):
+        return 0
 
+    best = math.inf
 
+    for cost, next_state in possible_moves(state):
+        print(cost)
+        cost += solve(next_state)
+        best = min(cost, best)
 
-@dataclass(order=True)
-class PrioritizedItem:
-    priority: int
-    item: Any=field(compare=False)
+    return best
 
 
 def main():
 
-    states_seen = []
-    states_to_evaluate = PriorityQueue()
-    score = 0
+    start_state = createBurrow('test.txt')
 
-    burrow, crabs = createBurrow('test.txt')
-    start_distance = distanceToComplete(crabs)
+    min_cost = solve(start_state)
 
-    start_state = (score, crabs)
-    states_to_evaluate.put((start_distance, start_state))
+    printSolution(min_cost)
 
-    searching = True
-    while searching:
-        _, crab_state = states_to_evaluate.get()
-        if crab_state[1] in states_seen:
-            continue
-        states_seen.append(crab_state[1])
-
-        new_states = findPossibleStates(crab_state)
-
-        for state in new_states:
-            if state[0] in states_seen:
-                continue
-            if distanceToComplete(state[1]) == 0:
-                printSolution(state[0])
-                searching = False
-            try:
-                states_to_evaluate.put((distanceToComplete(state[1]) + random.randrange(5), state))
-            except TypeError:
-                states_to_evaluate.put((distanceToComplete(state[1]) + random.randrange(2000), state))
 
 if __name__ == "__main__":
     main()
