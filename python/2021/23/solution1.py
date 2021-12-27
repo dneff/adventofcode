@@ -36,6 +36,7 @@ def moveIn(state):
     for idx, crab in enumerate(hallway):
         if crab is None:
             continue
+        
         home = rooms[crab]
         occupants = [c for c in home if c != crab]
         if len(occupants):
@@ -44,7 +45,7 @@ def moveIn(state):
         move_cost = costToMove(state, crab, idx, True)
         if move_cost == math.inf:
             continue
-
+            
         new_rooms = rooms[:crab] + ((crab,) + home,) + rooms[crab + 1:]
         new_hallway = hallway[:idx] + (None,) + hallway[idx + 1:]
         yield move_cost, (new_rooms, new_hallway)
@@ -55,8 +56,8 @@ def moveOut(state):
     for idx_r, room in enumerate(rooms):
         if len(room) == 0:
             continue
-        at_home = [c for c in room if idx_r == c]
-        if len(at_home) > 0:
+        at_home = [c == idx_r for c in room]
+        if all(at_home):
             continue
 
         for idx_h in range(len(hallway)):
@@ -86,11 +87,10 @@ def costToMove(state, r, h, moving_in=False):
 
     if any(x is not None for x in hallway[start:end]):
         return math.inf
-    print(state)
-    print("rooms[r][0]", rooms[r][0])
+
     crab = hallway[h] if moving_in else rooms[r][0]
 
-    return 10**crab * (rh_distance[r][h] + (moving_in * 2 - len(rooms[r])))
+    return 10**crab * (rh_distance[r][h] + (moving_in + 2 - len(rooms[r])))
 
 
 def possible_moves(state):
@@ -106,7 +106,7 @@ def done(state):
     return True
 
 
-#@lru_cache(maxsize=None)
+@lru_cache(maxsize=None)
 def solve(state):
     if done(state):
         return 0
@@ -114,21 +114,19 @@ def solve(state):
     best = math.inf
 
     for cost, next_state in possible_moves(state):
-        print(cost)
         cost += solve(next_state)
-        best = min(cost, best)
+        if cost < best:
+            best = cost
 
     return best
 
 
 def main():
 
-    start_state = createBurrow('test.txt')
-
+    start_state = createBurrow('input.txt')
     min_cost = solve(start_state)
 
     printSolution(min_cost)
-
 
 if __name__ == "__main__":
     main()
