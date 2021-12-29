@@ -30,6 +30,12 @@ def calculateRotations(beacons):
     return variations
 
 
+def manhattanDistance(a, b):
+    xa, ya, za = a
+    xb, yb, zb = b
+    return abs(xb - xa) + abs(yb - ya) + abs(zb - za)
+
+
 class Scanner:
     def __init__(self):
         self.id = 0
@@ -72,7 +78,7 @@ def main():
             x, y, z = [int(x) for x in line.strip().split(',')]
             current_scanner.add((x, y, z))
     current_scanner.addVariations()
-    scanners.append(copy.copy(current_scanner))
+    scanners.append(copy.deepcopy(current_scanner))
 
     known_scanners = [scanners.pop(0)]
     known_beacons = []
@@ -99,10 +105,17 @@ def main():
                     for beacon in variation:
                         xb, yb, zb = beacon
                         known_beacons.append((-x + xb, -y + yb, -z + zb))
+                        known_scanners.append(copy.deepcopy(test_scanner))
+
         if not matching:
             scanners.append(test_scanner)
 
-    printSolution(len(set(known_beacons)))
+    locations = [scanner.location for scanner in known_scanners]
+    distances = set()
+    for idx, loc1 in enumerate(locations):
+        for loc2 in locations[idx:]:
+            distances.add(manhattanDistance(loc1, loc2))
+    printSolution(max(distances))
 
 
 if __name__ == "__main__":
