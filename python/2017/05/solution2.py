@@ -4,7 +4,7 @@ def printSolution(x):
 
 
 def main():
-    file = open('input.txt', 'r')
+    file = open("input.txt", "r")
     instructions = [int(value) for value in file.readlines()]
 
     step = 0
