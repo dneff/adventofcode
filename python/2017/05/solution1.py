@@ -1,10 +1,12 @@
+from typing import Any
 
-def printSolution(x):
+
+def printSolution(x: Any):
     print(f"The solution is: {x}")
 
 
 def main():
-    file = open('input.txt', 'r')
+    file = open("input.txt", "r")
     instructions = [int(value) for value in file.readlines()]
 
     step = 0
