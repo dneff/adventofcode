@@ -12,33 +12,40 @@ class Node():
         self.parent = None
         self.weight = 0
         self.children = []
-        self.childsum = 0
+
 
     def __getitem__(self, i):
         return self.children[i]
 
 
 def correctBalance(node):
-    child_weights = []
+    """ verify balance of each sub node. If imbalanced, correct and continue. """
+    child_sum = 0
+    child_weights = defaultdict(list)
     if len(node.children) == 0:
         return node.weight
+        
     for child in node.children:
-        child_weights.append(correctBalance(child))
-    if len(set(child_weights)) > 1:
-        print(f"IMBALANCE {node.name} {child_weights}")
+        balance = correctBalance(child)
+        child_weights[balance].append(child)
+        child_sum += balance
+
+    if len(set(child_weights.keys())) > 1:
         imbalanced = None
         balanced = None
         imbalanced_node = None
         for k, v in child_weights.items():
-            if len(v) > 1:
-                balanced = k
-            else:
+            if len(v) == 1:
                 imbalanced = k
                 imbalanced_node = v[0]
-        correction = imbalanced - balanced
+            else:
+                balanced = k
+        correction = balanced - imbalanced
         imbalanced_node.weight += correction
         print_solution(imbalanced_node.weight)
-    total_weight = sum(child_weights) + node.weight
+        return correctBalance(node)
+
+    total_weight = child_sum + node.weight
     return total_weight
 
 
