@@ -9,11 +9,6 @@ class Computer():
         self.mapped = {}
 
     def run(self):
-        if len(self.mapped) > 0:
-            updated = [''] * 16
-            for s,e in self.mapped.items():
-                updated[e] = self.progs[s]
-            self.progs = updated[:]
 
         for i in self.instructions:
             if i[0] == 's':
@@ -58,13 +53,12 @@ def main():
         if len(repeating) >= 3:
             break
 
+    #skip remaining
     cycle_size = repeating[-1] - repeating[-2]
     remaining_runs = total_runs - 1 - repeating[-1]
     remaining_runs = remaining_runs % cycle_size
-    print(remaining_runs)
     for cycle in range(remaining_runs):
         pc.run()
-        print_solution(''.join(pc.progs))
 
     print_solution(''.join(pc.progs))
 
