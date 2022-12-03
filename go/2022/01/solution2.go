@@ -1,6 +1,7 @@
 package main
 
 import (
+	advent "advent/helpers"
 	"bufio"
 	"fmt"
 	"os"
@@ -34,10 +35,8 @@ func main() {
 		}
 	}
 	sort.Ints(elves)
-	sum := 0
-	for _, val := range elves[len(elves)-3:] {
-		sum += val
-	}
-	fmt.Printf("The solution is: %v \n", sum)
+	top3 := elves[len(elves)-3:]
+
+	fmt.Printf("The solution is: %v \n", advent.Sum(&top3))
 
 }

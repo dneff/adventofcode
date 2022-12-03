@@ -1,6 +1,7 @@
 package main
 
 import (
+	advent "advent/helpers"
 	"bufio"
 	"fmt"
 	"os"
@@ -32,11 +33,7 @@ func main() {
 			elves[len(elves)-1] += energyVal
 		}
 	}
-	maxEnergy := 0
-	for _, val := range elves {
-		if val > maxEnergy {
-			maxEnergy = val
-		}
-	}
+	maxEnergy := advent.Max(&elves)
+
 	fmt.Printf("The solution is: %v \n", maxEnergy)
 }
