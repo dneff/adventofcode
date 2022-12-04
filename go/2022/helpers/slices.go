@@ -8,6 +8,16 @@ func Sum(ints *[]int) int {
 	return sum
 }
 
+func Min(ints *[]int) int {
+	min := (*ints)[0]
+	for _, x := range *ints {
+		if x < min {
+			min = x
+		}
+	}
+	return min
+}
+
 func Max(ints *[]int) int {
 	max := (*ints)[0]
 	for _, x := range *ints {
