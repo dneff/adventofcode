@@ -29,7 +29,7 @@ def main():
                     all([x < tree for x in up_trees]) or \
                     all([x < tree for x in down_trees]):
                     visible += 1
-    # 1216 too low
+
     printSolution(visible)
 
 if __name__ == "__main__":
