@@ -136,3 +136,8 @@ dmypy.json
 
 # Cython debug symbols
 cython_debug/
+
+# Mac OS General
+.DS_Store
+.AppleDouble
+.LSOverride
