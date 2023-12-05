@@ -16,7 +16,7 @@ def get_mapping(seed, mappings):
         if source_start <= seed <= source_start + length:
             offset = seed - source_start
             return dest_start + offset
-    return seed 
+    return seed
 
 def get_seed_location(seed, almanac):
     """returns the location of the seed"""
@@ -32,8 +32,8 @@ def get_seed_location(seed, almanac):
 
 def main():
     """main function"""
-    filename = "./input/05.txt"
-    with open(filename) as f:
+    filename = "./python/2023/input/05.txt"
+    with open(filename, "r", encoding="utf-8") as f:
         lines = f.readlines()
     lines = [line.strip() for line in lines]
 
@@ -50,7 +50,6 @@ def main():
         else:
             almanac[key].append([int(x) for x in line.strip().split()])
 
-    seen = set()
     lowest_location = get_seed_location(seed_ranges[0], almanac)
 
     print(f"seed range count: {len(seed_ranges)//2}")
@@ -58,10 +57,8 @@ def main():
         print(f"seed range: {seed_ranges[i]} to {seed_ranges[i] + seed_ranges[i+1]}")
         start, offset = seed_ranges[i], seed_ranges[i+1]
         for seed in range(start, start + offset):
-            if seed not in seen:
-                seen.add(seed)
-                location = get_seed_location(seed, almanac)
-                lowest_location = min(location, lowest_location)
+            location = get_seed_location(seed, almanac)
+            lowest_location = min(location, lowest_location)
 
     # solution is lowest location
     print_solution(lowest_location)
