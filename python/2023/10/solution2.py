@@ -52,20 +52,28 @@ def get_sides(position, landscape):
             if offset[1] == -1:
             # going up (0,-1)
                 left_locs.append((x-1,y))
+                left_locs.append((last_x-1,last_y))
                 right_locs.append((x+1,y))
+                right_locs.append((last_x+1,last_y))
             else:
             # going down (0,1)
                 left_locs.append((x+1,y))
+                left_locs.append((last_x+1,last_y))
                 right_locs.append((x-1,y))
+                right_locs.append((last_x-1,last_y))
         else:
             if offset[0] == 1:
             # going right (1,0)
                 left_locs.append((x,y-1))
+                left_locs.append((last_x,last_y-1))
                 right_locs.append((x,y+1))
+                right_locs.append((last_x,last_y+1))
             else:
             # going left (-1,0)
                 left_locs.append((x,y+1))
+                left_locs.append((last_x,last_y+1))
                 right_locs.append((x,y-1))
+                right_locs.append((last_x,last_y-1))
 
     left_locs = [x for x in left_locs if x not in landscape]
     right_locs = [x for x in right_locs if x not in landscape]
@@ -147,8 +155,10 @@ def main():
         for x in range(size[0]):
             if (x,y) in loop:
                 line += 'X'
-            elif (x,y) in inside:
-                line += 'I'
+            elif (x,y) in left:
+                line += 'L'
+            elif (x,y) in right:
+                line += 'R'
             elif (x,y) in edges:
                 line += '*'
             elif (x,y) in void:
