@@ -1,4 +1,4 @@
-"""solves 2023 day 11 part 1"""
+"""solves 2023 day 11 part 2"""
 
 from itertools import combinations
 
@@ -8,27 +8,29 @@ def print_solution(x):
     print(f"The solution is: {x}")
 
 
-def expand(galaxy):
-    """add empty row and column in empty locations"""
-    expanded = []
-    # expand rows
-    for row in galaxy:
-        expanded.append(row)
-        if len(set(row[:])) == 1:
-            expanded.append(row)
-    # expand columns
-    new_cols = []
-    for idx in range(len(galaxy[0])):
-        column = [row[idx] for row in galaxy]
-        if len(set(column[:])) == 1:
-            new_cols.append(idx)
-    new_cols = sorted(new_cols, reverse=True)
-    result = []
-    for row in expanded:
-        for col in new_cols:
-            row = row[:col] + "." + row[col:]
-        result.append(row)
-    return result
+def expand_stars(stars, expansion):
+    """expand distance based on empty columns and rows"""
+    all_x = [pos[0] for pos in stars.values()]
+    all_y = [pos[1] for pos in stars.values()]
+
+    # find empty space
+    empty_x, empty_y = [], []
+    for x in range(max(all_x)):
+        if x not in all_x:
+            empty_x.append(x)
+
+    for y in range(max(all_y)):
+        if y not in all_y:
+            empty_y.append(y)
+
+    # create new expanded galaxy
+    expanded = {}
+    for idx, loc in enumerate(stars.values()):
+        expanded_x = loc[0] + (expansion * len([x for x in empty_x if x < loc[0]]))
+        expanded_y = loc[1] + (expansion * len([y for y in empty_y if y < loc[1]]))
+        expanded[idx + 1] = (expanded_x, expanded_y)
+
+    return expanded
 
 
 def distance(star1, star2, stars):
@@ -39,21 +41,24 @@ def distance(star1, star2, stars):
 
 def main():
     """loads and solves puzzle"""
+    expansion = 999999
+
     filename = "./python/2023/input/11.txt"
     lines = []
     with open(filename, "r", encoding="utf-8") as f:
         lines = [line.strip() for line in f.readlines()]
 
-    galaxy = expand(lines)
-
     # get star locations
     stars = {}
     number = 1
-    for y, line in enumerate(galaxy):
+    for y, line in enumerate(lines):
         for x, loc in enumerate(line):
             if loc == "#":
                 stars[number] = (x, y)
                 number += 1
+
+    # expand by expansion amount
+    stars = expand_stars(stars, expansion)
 
     # get all star path distances
     paths = combinations(stars, 2)
