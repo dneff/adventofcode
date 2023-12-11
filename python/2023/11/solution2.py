@@ -14,14 +14,8 @@ def expand_stars(stars, expansion):
     all_y = [pos[1] for pos in stars.values()]
 
     # find empty space
-    empty_x, empty_y = [], []
-    for x in range(max(all_x)):
-        if x not in all_x:
-            empty_x.append(x)
-
-    for y in range(max(all_y)):
-        if y not in all_y:
-            empty_y.append(y)
+    empty_x = [x for x in range(max(all_x) + 1) if x not in all_x]
+    empty_y = [y for y in range(max(all_y) + 1) if y not in all_y]
 
     # create new expanded galaxy
     expanded = {}
@@ -41,7 +35,7 @@ def distance(star1, star2, stars):
 
 def main():
     """loads and solves puzzle"""
-    expansion = 999999
+    expansion = 1000000
 
     filename = "./python/2023/input/11.txt"
     lines = []
