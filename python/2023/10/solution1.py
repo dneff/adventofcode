@@ -15,10 +15,11 @@ def print_solution(x):
     print(f"The solution is: {x}")
 
 
-def get_adjacent(position, pipe, pipes):
+def get_adjacent(position, pipe):
     """find adjacent positions based on pipe"""
     p_x, p_y = position
     return [(p_x + x, p_y + y) for x, y in pipes[pipe]]
+
 
 def get_loop(position, landscape):
     """return all positions in loop"""
@@ -32,7 +33,6 @@ def get_loop(position, landscape):
     return locs
 
 
-
 def main():
     """loads and solves puzzle"""
     filename = "./python/2023/input/10.txt"
@@ -42,22 +42,23 @@ def main():
         lines = [line.strip() for line in f.readlines()]
 
     landscape = {}
-    start = (0,0)
+    start = (0, 0)
     for y, line in enumerate(lines):
         for x, pipe in enumerate(line):
-            if pipe == '.':
+            if pipe == ".":
                 continue
-            if pipe == 'S':
+            if pipe == "S":
                 start = (x, y)
                 continue
-            landscape[(x, y)] = get_adjacent((x, y), pipe, pipes)
+            landscape[(x, y)] = get_adjacent((x, y), pipe)
 
     # attach start
     landscape[start] = [pos for pos, adj in landscape.items() if start in adj]
 
     loop = get_loop(start, landscape)
     # furthest position is half the loop
-    print_solution(len(loop)//2)
+    print_solution(len(loop) // 2)
+
 
 if __name__ == "__main__":
     main()
