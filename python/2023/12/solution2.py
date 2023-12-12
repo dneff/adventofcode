@@ -1,4 +1,4 @@
-"""solves 2023 day 12 part 1"""
+"""solves 2023 day 12 part 2"""
 
 def print_solution(x):
     """prints solution"""
@@ -50,8 +50,9 @@ def spring_combos(springs, record):
 
 def main():
     """main"""
+    expansion = 5
     lines = []
-    filename = "./python/2023/input/12.txt"
+    filename = "./python/2023/input/12-test.txt"
     with open(filename, "r", encoding="utf-8") as file:
         lines = [line.strip() for line in file.readlines()]
 
@@ -60,7 +61,12 @@ def main():
     current_records = 0
     for record in lines:
         springs, counts = record.split()
+        print(springs, counts)
         counts = [int(x) for x in counts.split(',')]
+        springs = ''.join(springs * expansion)
+        counts = counts * expansion
+        print(springs, counts)
+
         #print(springs, counts)
         possible = spring_combos(springs, counts)
         valid_count = 0
