@@ -60,7 +60,7 @@ def display_grid(grid, seen):
     overlay = grid.copy()
     for loc in seen:
         x, y, heading = loc
-        if (x,y) not in grid:
+        if (x, y) not in grid:
             continue
         if grid[(x, y)] != ".":
             continue
@@ -107,8 +107,8 @@ def main():
         seen.append(beam)
         queue.extend(beam_next(beam, grid))
 
-    locs = {(x, y) for x, y, z in seen if (x,y) in grid}
-    #display_grid(grid, seen)
+    locs = {(x, y) for x, y, z in seen if (x, y) in grid}
+    # display_grid(grid, seen)
     print_solution(len(locs))
 
 

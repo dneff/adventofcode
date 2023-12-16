@@ -55,35 +55,6 @@ def beam_next(pos, grid):
     return next_locs
 
 
-def display_grid(grid, seen):
-    """display seen locs on grid"""
-    overlay = grid.copy()
-    for loc in seen:
-        x, y, heading = loc
-        if (x, y) not in grid:
-            continue
-        if grid[(x, y)] != ".":
-            continue
-        if heading == direction["north"]:
-            overlay[(x, y)] = "^"
-        elif heading == direction["south"]:
-            overlay[(x, y)] = "v"
-        elif heading == direction["east"]:
-            overlay[(x, y)] = ">"
-        elif heading == direction["west"]:
-            overlay[(x, y)] = "<"
-
-    max_x, max_y = max(k[0] for k in overlay), max(k[0] for k in overlay)
-    for y in range(max_y + 1):
-        row = ""
-        for x in range(max_x + 1):
-            if (x, y) not in overlay:
-                row += "."
-            else:
-                row += overlay[(x, y)]
-        print(row)
-
-
 def grid_seen(pos, grid):
     """find seen tiles based on starting position"""
     seen = []
@@ -131,6 +102,7 @@ def main():
         scores.append(grid_seen(edge, grid))
 
     print_solution(max(scores))
+
 
 if __name__ == "__main__":
     main()
