@@ -1,5 +1,6 @@
 """solves 2023 day 19 problem 2"""
 from collections import defaultdict
+from copy import deepcopy
 
 
 def print_solution(x):
@@ -51,6 +52,18 @@ def route_part(part, queue_instructions):
             return instruction
 
 
+def score_part(part):
+    """given a part, return score"""
+    x = part["x"][1] - part["x"][0] + 1
+    m = part["m"][1] - part["m"][0] + 1
+    a = part["a"][1] - part["a"][0] + 1
+    s = part["s"][1] - part["s"][0] + 1
+    for v in [x, m, a, s]:
+        if v <= 0:
+            return 0
+    return x * m * a * s
+
+
 def main():
     """loads input and solves problem"""
     lines = []
@@ -60,29 +73,60 @@ def main():
 
     queues, instructions = parse_input(lines)
 
-    accepted = []
-    rejected = []
-    processing = True
-    while processing:
-        processing = False
-        to_process = [k for k, v in queues.items() if len(v) > 0]
-        if len(to_process) > 0:
-            processing = True
-        for q in to_process:
-            while queues[q]:
-                part = queues[q].pop()
-                next_q = route_part(part, instructions[q])
-                if next_q == "A":
-                    accepted.append(part)
-                elif next_q == "R":
-                    rejected.append(part)
-                else:
-                    queues[next_q].append(part)
+    # find instruction paths to accept/reject outcomes
+    # for each queue, route each part to the next queue
+    # if queue is "accept" or "reject", add to accept/reject list
+    accept_path = []
+    reject_path = []
+
+    paths = defaultdict(lambda: defaultdict(str))
+    for i, rules in instructions.items():
+        for rule in rules:
+            if ":" in rule:
+                attr = rule[0]
+                condition = rule[1]
+                comp, route = rule[2:].split(":")
+                comp = int(comp)
+                paths[i][route] = (attr, condition, comp)
+            else:
+                paths[i][rule] = ()
+
+    all_paths = []
+    queue = [["in"]]
+    while queue:
+        path = queue.pop()
+        for next_path, rule in paths[path[-1]].items():
+            if next_path in path:
+                continue  # avoid loops
+            if next_path in ["A"]:
+                all_paths.append(path + [rule] + [next_path])
+            elif next_path in ["R"]:
+                continue
+            else:
+                queue.append(path + [rule] + [next_path])
+
+    possible_parts = 0
+
+    primitive = {"x": [1, 4000], "m": [1, 4000], "a": [1, 4000], "s": [1, 4000]}
+
+    all_parts = []
+    for path in all_paths:
+        part = deepcopy(primitive)
+        for rule in path:
+            if len(rule) == 3:
+                attr, condition, comp = rule
+                if condition == "<":
+                    part[attr][1] = min(part[attr][1], comp - 1)
+                elif condition == ">":
+                    part[attr][0] = max(part[attr][0], comp + 1)
+        all_parts.append(part)
 
     score = 0
-    for part in accepted:
-        score += sum(list(part.values()))
-    
+    for part in all_parts:
+        print(score_part(part))
+        score += score_part(part)
+
+    print_solution(167409079868000)
     print_solution(score)
 
 
