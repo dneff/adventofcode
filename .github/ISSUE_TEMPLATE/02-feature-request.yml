@@ -1,0 +1,132 @@
+# .github/ISSUE_TEMPLATE/02-feature-request.yml
+name: ✨ Feature Request
+description: Suggest a new feature or enhancement
+title: "[Feature]: "
+labels: ["enhancement", "feature-request"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting a new feature! Please describe your idea in detail.
+
+  - type: textarea
+    id: feature-summary
+    attributes:
+      label: Feature Summary
+      description: A brief description of the feature you'd like to see
+      placeholder: Provide a concise summary of the proposed feature
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem-statement
+    attributes:
+      label: Problem Statement
+      description: What problem does this feature solve?
+      placeholder: |
+        - What is the current situation?
+        - What challenges or limitations exist?
+        - Who is affected by this problem?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed-solution
+    attributes:
+      label: Proposed Solution
+      description: Describe your preferred solution
+      placeholder: |
+        - How should this feature work?
+        - What would the user experience look like?
+        - Any specific implementation ideas?
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: What other solutions have you considered?
+      placeholder: |
+        - Alternative approaches you've thought about
+        - Why the proposed solution is preferred
+        - Any workarounds currently being used
+
+  - type: textarea
+    id: use-cases
+    attributes:
+      label: Use Cases
+      description: Who would benefit from this feature and how?
+      placeholder: |
+        - Primary user personas who would use this
+        - Specific scenarios where this would be helpful
+        - Expected usage frequency and volume
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: How important is this feature?
+      options:
+        - Low - Nice to have, not urgent
+        - Medium - Would improve user experience
+        - High - Important for adoption/usage
+        - Critical - Blocking for key use cases
+    validations:
+      required: true
+
+  - type: dropdown
+    id: complexity
+    attributes:
+      label: Estimated Complexity
+      description: How complex do you think this feature would be to implement?
+      options:
+        - Low - Simple change, minimal impact
+        - Medium - Moderate change, some refactoring needed
+        - High - Complex change, significant development effort
+        - Unknown - Not sure about implementation complexity
+
+  - type: textarea
+    id: implementation-notes
+    attributes:
+      label: Implementation Notes
+      description: Any technical considerations or suggestions
+      placeholder: |
+        - API changes needed
+        - Database schema changes
+        - Breaking changes or migration requirements
+        - Performance considerations
+        - Security considerations
+
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: Acceptance Criteria
+      description: How will we know this feature is complete and working correctly?
+      placeholder: |
+        - [ ] Specific, testable criteria
+        - [ ] User-facing functionality works as expected
+        - [ ] Performance requirements are met
+        - [ ] Documentation is updated
+
+  - type: textarea
+    id: mockups
+    attributes:
+      label: Mockups/Examples
+      description: Any mockups, wireframes, or examples from other tools
+      placeholder: Drag and drop images or provide links to examples
+
+  - type: checkboxes
+    id: validation
+    attributes:
+      label: Validation
+      options:
+        - label: I have searched existing issues and feature requests
+          required: true
+        - label: I have provided a clear problem statement and solution
+          required: true
+        - label: I understand this may take time to implement based on priority and complexity
+          required: true

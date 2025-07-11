@@ -1,0 +1,104 @@
+# .github/ISSUE_TEMPLATE/03-enhancement.yml
+name: 🚀 Enhancement
+description: Suggest an improvement to existing functionality
+title: "[Enhancement]: "
+labels: ["enhancement"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting an improvement! Please describe what could be enhanced and how.
+
+  - type: textarea
+    id: enhancement-summary
+    attributes:
+      label: Enhancement Summary
+      description: What would you like to improve?
+      placeholder: Brief description of the enhancement
+    validations:
+      required: true
+
+  - type: textarea
+    id: current-behavior
+    attributes:
+      label: Current Behavior
+      description: How does this functionality work currently?
+      placeholder: |
+        - What is the current implementation?
+        - What are the current limitations?
+        - What works well that should be preserved?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed-enhancement
+    attributes:
+      label: Proposed Enhancement
+      description: How should this be improved?
+      placeholder: |
+        - What specific changes do you propose?
+        - How would the user experience change?
+        - What new capabilities would this enable?
+    validations:
+      required: true
+
+  - type: textarea
+    id: benefits
+    attributes:
+      label: Benefits
+      description: What are the benefits of this enhancement?
+      placeholder: |
+        - Performance improvements
+        - Better user experience
+        - Reduced complexity
+        - Increased functionality
+        - Other benefits
+    validations:
+      required: true
+
+  - type: dropdown
+    id: impact
+    attributes:
+      label: Impact Level
+      description: How significant would this change be?
+      options:
+        - Low - Minor improvement, minimal user impact
+        - Medium - Noticeable improvement, moderate user impact
+        - High - Significant improvement, major user impact
+        - Breaking - Would require breaking changes
+    validations:
+      required: true
+
+  - type: textarea
+    id: implementation-approach
+    attributes:
+      label: Implementation Approach
+      description: Any suggestions on how to implement this enhancement?
+      placeholder: |
+        - Technical approach suggestions
+        - Potential challenges or considerations
+        - Backward compatibility requirements
+        - Migration strategies if needed
+
+  - type: textarea
+    id: examples
+    attributes:
+      label: Examples/References
+      description: Examples from other tools or implementations
+      placeholder: |
+        - Links to similar implementations
+        - Screenshots or mockups
+        - Code examples or pseudocode
+
+  - type: checkboxes
+    id: validation
+    attributes:
+      label: Validation
+      options:
+        - label: I have checked that this enhancement hasn't been requested before
+          required: true
+        - label: I have clearly described the current state and proposed improvements
+          required: true
+        - label: I understand this may require discussion and design review
+          required: true

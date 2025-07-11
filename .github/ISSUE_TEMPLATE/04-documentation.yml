@@ -1,0 +1,114 @@
+# .github/ISSUE_TEMPLATE/04-documentation.yml
+name: 📚 Documentation
+description: Report missing, unclear, or incorrect documentation
+title: "[Docs]: "
+labels: ["documentation"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Help us improve our documentation! Please let us know what's missing, unclear, or incorrect.
+
+  - type: dropdown
+    id: doc-type
+    attributes:
+      label: Documentation Type
+      description: What type of documentation issue is this?
+      options:
+        - Missing - Documentation doesn't exist
+        - Unclear - Documentation exists but is confusing
+        - Incorrect - Documentation has errors or is outdated
+        - Improvement - Documentation could be enhanced
+    validations:
+      required: true
+
+  - type: textarea
+    id: doc-summary
+    attributes:
+      label: Documentation Issue Summary
+      description: What documentation needs attention?
+      placeholder: Brief description of the documentation issue
+    validations:
+      required: true
+
+  - type: textarea
+    id: current-state
+    attributes:
+      label: Current Documentation State
+      description: What documentation exists currently?
+      placeholder: |
+        - Link to current documentation (if any)
+        - What is currently documented?
+        - What specific sections are problematic?
+
+  - type: textarea
+    id: proposed-documentation
+    attributes:
+      label: Proposed Documentation
+      description: What should be documented or how should it be improved?
+      placeholder: |
+        - What content should be added/changed?
+        - How should it be structured?
+        - What examples would be helpful?
+    validations:
+      required: true
+
+  - type: textarea
+    id: target-audience
+    attributes:
+      label: Target Audience
+      description: Who is this documentation for?
+      placeholder: |
+        - New users/developers
+        - Advanced users
+        - Contributors
+        - API consumers
+        - Specific user personas
+    validations:
+      required: true
+
+  - type: dropdown
+    id: doc-priority
+    attributes:
+      label: Priority
+      description: How important is this documentation?
+      options:
+        - Low - Nice to have, not blocking anyone
+        - Medium - Would help users, moderate impact
+        - High - Important for user onboarding/adoption
+        - Critical - Blocking users or causing confusion
+    validations:
+      required: true
+
+  - type: textarea
+    id: examples-references
+    attributes:
+      label: Examples/References
+      description: Any examples, screenshots, or references that would help
+      placeholder: |
+        - Screenshots of confusing areas
+        - Examples of good documentation from other projects
+        - Specific error messages or confusion points
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Any other context about this documentation need
+      placeholder: |
+        - Related issues or discussions
+        - User feedback that prompted this
+        - Specific use cases that need coverage
+
+  - type: checkboxes
+    id: validation
+    attributes:
+      label: Validation
+      options:
+        - label: I have searched existing documentation issues
+          required: true
+        - label: I have clearly identified what needs to be documented
+          required: true
+        - label: I have specified the target audience for this documentation
+          required: true

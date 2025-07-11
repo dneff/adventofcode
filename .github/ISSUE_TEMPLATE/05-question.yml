@@ -1,0 +1,81 @@
+# .github/ISSUE_TEMPLATE/05-question.yml
+name: ❓ Question
+description: Ask a question about usage, implementation, or project direction
+title: "[Question]: "
+labels: ["question"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Have a question? We're here to help! Please provide as much context as possible.
+        
+        > **Note**: For general discussions, consider using [GitHub Discussions](https://github.com/YOUR_USERNAME/YOUR_REPO/discussions) instead.
+
+  - type: dropdown
+    id: question-type
+    attributes:
+      label: Question Type
+      description: What type of question is this?
+      options:
+        - Usage - How to use existing functionality
+        - Implementation - How something works internally
+        - Best Practices - Recommended approaches
+        - Project Direction - Future plans or decisions
+        - Troubleshooting - Help with a specific problem
+        - Other - Something else
+    validations:
+      required: true
+
+  - type: textarea
+    id: question
+    attributes:
+      label: Question
+      description: What would you like to know?
+      placeholder: Ask your question in detail
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: What are you trying to accomplish?
+      placeholder: |
+        - What is your goal or use case?
+        - What have you already tried?
+        - What specific part are you stuck on?
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment (if relevant)
+      description: Your setup details if they're relevant to the question
+      placeholder: |
+        - Version: [e.g., v1.2.3]
+        - Platform: [e.g., Node.js, Browser, etc.]
+        - Other relevant tools or configurations
+
+  - type: textarea
+    id: code-examples
+    attributes:
+      label: Code Examples (if relevant)
+      description: Any relevant code snippets or examples
+      placeholder: |
+        ```javascript
+        // Your code here
+        ```
+
+  - type: checkboxes
+    id: validation
+    attributes:
+      label: Validation
+      options:
+        - label: I have searched existing issues and discussions
+          required: true
+        - label: I have provided sufficient context for my question
+          required: true
+        - label: I understand this is for project-related questions
+          required: true
