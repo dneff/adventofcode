@@ -10,7 +10,7 @@ body:
       value: |
         Thanks for taking the time to report a bug! Please fill out this form as completely as possible.
         
-        > **Note**: For security vulnerabilities, please use our [private reporting system](https://github.com/YOUR_USERNAME/YOUR_REPO/security/advisories/new) instead.
+        > **Note**: For security vulnerabilities, please use our [private reporting system](https://github.com/dneff/adventofcode/security/advisories/new) instead.
 
   - type: textarea
     id: summary

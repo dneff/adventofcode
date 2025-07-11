@@ -2,11 +2,11 @@
 blank_issues_enabled: false
 contact_links:
   - name: 💬 Discussions
-    url: https://github.com/YOUR_USERNAME/YOUR_REPO/discussions
+    url: https://github.com/dneff/adventofcode/discussions
     about: Ask questions and discuss ideas with the community
   - name: 🔒 Security Issues
-    url: https://github.com/YOUR_USERNAME/YOUR_REPO/security/advisories/new
+    url: https://github.com/dneff/adventofcode/security/advisories/new
     about: Report security vulnerabilities privately
   - name: 📖 Documentation
-    url: https://github.com/YOUR_USERNAME/YOUR_REPO/wiki
+    url: https://github.com/dneff/adventofcode/wiki
     about: Browse our documentation and guides
