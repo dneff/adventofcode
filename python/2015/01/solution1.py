@@ -1,23 +1,20 @@
 
-def printSolution(x):
-    print(f"The solution is: {x}")
+from aoc_helpers import AoCInput, AoCUtils
 
 
-def main():
-
-    file = open("input.txt", "r")
-
+def solve_part1():
+    content = AoCInput.read_lines("input.txt")[0]
     floor = 0
     buttons = {
         '(': 1,
         ')': -1
     }
 
-    for push in file.readline():
+    for push in content:
         floor += buttons[push]
 
-    printSolution(floor)
+    return floor
 
 
-if __name__ == "__main__":
-    main()
+answer = solve_part1()
+AoCUtils.print_solution(1, answer)
