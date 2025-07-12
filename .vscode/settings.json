@@ -1,4 +1,4 @@
 {
     "terminal.integrated.fontSize": 10,
-    "terminal.integrated.fontFamily": "Source Code Pro"
+    "terminal.integrated.fontFamily": "monospace"
 }
