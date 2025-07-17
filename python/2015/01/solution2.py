@@ -1,20 +1,33 @@
+"""
+Advent of Code 2015 - Day 1, Part 2
+https://adventofcode.com/2015/day/1
+
+This script finds the position of the first character in the input that causes Santa to enter the basement (floor -1).
+"""
+
+import os
+import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_PATH = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2015/1/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
 
 from aoc_helpers import AoCInput, AoCUtils
 
 
-def solve_part2():
-    content = AoCInput.read_lines("input.txt")[0]
-    floor = 0
-    buttons = {
-        '(': 1,
-        ')': -1
-    }
+def find_basement_entry_position():
+    """
+    Returns the position (1-based index) of the first character that causes Santa to enter the basement.
+    """
+    instructions = AoCInput.read_lines(INPUT_PATH)[0]
+    current_floor = 0
+    move_map = {'(': 1, ')': -1}
 
-    for count, push in enumerate(content):
-        floor += buttons[push]
-        if floor == -1:
-            return count + 1
+    for idx, char in enumerate(instructions):
+        current_floor += move_map[char]
+        if current_floor == -1:
+            return idx + 1
 
 
-answer = solve_part2()
-AoCUtils.print_solution(2, answer)
+# Compute and print the solution for Part 2
+solution = find_basement_entry_position()
+AoCUtils.print_solution(2, solution)
