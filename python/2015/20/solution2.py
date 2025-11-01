@@ -1,5 +1,10 @@
-def printSolution(x):
-    print(f"The solution is: {x}")
+import os
+import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2015/20/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
+
+from aoc_helpers import AoCInput, AoCUtils
 
 
 def getFactors(x):
@@ -10,7 +15,7 @@ def getFactors(x):
     return list(set(results))
 
 
-def main():
+def solve_part2():
 
     target_presents = 36000000
     house_number = 0
@@ -23,8 +28,7 @@ def main():
         presents_delivered = sum([11 * elf for elf in visiting_elves])
         delivering = presents_delivered <= target_presents
 
-    printSolution(house_number)
+    return house_number
 
-
-if __name__ == "__main__":
-    main()
+answer = solve_part2()
+AoCUtils.print_solution(2, answer)

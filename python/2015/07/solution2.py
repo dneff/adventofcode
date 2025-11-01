@@ -222,41 +222,56 @@ class Circuit:
         return True
 
 
-def solve_part1():
+def solve_part2():
     """
-    Simulate the circuit by processing instructions iteratively.
+    Simulate the circuit twice for Part 2.
 
-    Instructions are processed in order. If an instruction can't be processed because
-    its input wires don't have signals yet, it's deferred to the next iteration.
-    This continues until all instructions are processed.
+    First run: Process all instructions to get the signal on wire 'a'.
+    Second run: Reset the circuit, override wire 'b' with the value from wire 'a',
+                then re-run the circuit while skipping any instruction that would
+                assign to wire 'b' (to preserve the override).
+
+    Part 2 instruction: "Take the signal you got on wire a, override wire b to that
+    signal, and reset the other wires (including wire a)."
 
     Returns:
-        int: The signal value on wire 'a'
+        int: The new signal value on wire 'a' after the override
     """
     lines = AoCInput.read_lines(INPUT_FILE)
 
+    # First run: Get the initial signal on wire 'a'
     circuit = Circuit()
-
-    # Parse all instructions
     pending_instructions = [line.strip() for line in lines]
 
-    # Process instructions iteratively until all are complete
     while pending_instructions:
-        # Instructions that couldn't be processed this round (dependencies not ready)
         deferred_instructions = []
-
         for instruction in pending_instructions:
-            # Try to process the instruction
             if not circuit.process_instruction(instruction):
-                # If processing failed, defer it for the next iteration
                 deferred_instructions.append(instruction)
-
-        # Update pending list with deferred instructions
         pending_instructions = deferred_instructions[:]
 
-    # Return the signal on wire 'a' (the goal of the puzzle)
+    # Save the signal from wire 'a'
+    signal_from_a = circuit.wire_signals["a"]
+
+    # Second run: Reset circuit and override wire 'b'
+    circuit = Circuit()
+    circuit.wire_signals["b"] = signal_from_a
+
+    # Re-process instructions, but skip any that assign to wire 'b'
+    pending_instructions = [line.strip() for line in lines]
+    # Filter out any instruction that assigns to wire 'b'
+    pending_instructions = [inst for inst in pending_instructions if not inst.endswith(" -> b")]
+
+    while pending_instructions:
+        deferred_instructions = []
+        for instruction in pending_instructions:
+            if not circuit.process_instruction(instruction):
+                deferred_instructions.append(instruction)
+        pending_instructions = deferred_instructions[:]
+
+    # Return the new signal on wire 'a'
     return circuit.wire_signals["a"]
 
 
-answer = solve_part1()
-AoCUtils.print_solution(1, answer)
+answer = solve_part2()
+AoCUtils.print_solution(2, answer)

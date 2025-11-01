@@ -1,8 +1,11 @@
+import os
+import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2015/5/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
+
+from aoc_helpers import AoCInput, AoCUtils
 from collections import defaultdict
-
-
-def printSolution(x):
-    print(f"The solution is: {x}")
 
 
 def propertyOne(s):
@@ -35,22 +38,21 @@ def propertyThree(s):
     return True
 
 
-def main():
-
-    file = open("input.txt", "r")
+def solve_part1():
+    lines = AoCInput.read_lines(INPUT_FILE)
 
     nice = []
     naughty = []
 
-    for line in file:
+    for line in lines:
         line = line.strip()
         if all([propertyOne(line), propertyTwo(line), propertyThree(line)]):
             nice.append(line)
         else:
             naughty.append(line)
 
-    printSolution(len(nice))
+    return len(nice)
 
 
-if __name__ == "__main__":
-    main()
+answer = solve_part1()
+AoCUtils.print_solution(1, answer)

@@ -1,15 +1,19 @@
-def printSolution(x):
-    print(f"The solution is: {x}")
+import os
+import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2015/8/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
+
+from aoc_helpers import AoCInput, AoCUtils
 
 
-def main():
-
-    file = open("input.txt", "r")
+def solve_part2():
+    lines = AoCInput.read_lines(INPUT_FILE)
 
     original = []
     reencoded = []
 
-    for line in file:
+    for line in lines:
         original.append(line.strip())
 
         encoded = line.strip()
@@ -19,8 +23,8 @@ def main():
 
     diff = [len(x) - len(y) for x, y in zip(reencoded, original)]
 
-    printSolution(sum(diff))
+    return sum(diff)
 
 
-if __name__ == "__main__":
-    main()
+answer = solve_part2()
+AoCUtils.print_solution(2, answer)

@@ -1,8 +1,11 @@
+import os
+import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2015/16/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
+
+from aoc_helpers import AoCInput, AoCUtils
 from collections import defaultdict
-
-
-def printSolution(x):
-    print(f"The solution is: {x}")
 
 
 def scoreAunt(details):
@@ -33,13 +36,13 @@ def scoreAunt(details):
 
     return result
 
-def main():
 
-    file = open("input.txt", "r")
+def solve_part2():
+    lines = AoCInput.read_lines(INPUT_FILE)
 
     aunts = {}
     matches = defaultdict(int)
-    for line in file:
+    for line in lines:
         line = line.strip().lstrip("Sue ")
         line = line.replace(":", "").replace(",", "")
         line = line.split()
@@ -53,8 +56,8 @@ def main():
     for aunt, details in aunts.items():
         matches[aunt] = scoreAunt(details)
 
-    printSolution(max(matches, key=matches.get))
+    return max(matches, key=matches.get)
 
 
-if __name__ == "__main__":
-    main()
+answer = solve_part2()
+AoCUtils.print_solution(2, answer)

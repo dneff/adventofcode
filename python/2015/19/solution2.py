@@ -1,11 +1,15 @@
+import os
+import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2015/19/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
+
+from aoc_helpers import AoCInput, AoCUtils
 import re
 from collections import defaultdict
 
+
 memo = set()
-
-
-def printSolution(x):
-    print(f"The solution is: {x}")
 
 
 def getPermutations(molecule, transforms):
@@ -45,22 +49,21 @@ def dissolveMolecule(start, target, transforms):
     return False
 
 
-def main():
+def solve_part2():
 
     replacements = defaultdict(list)
-    file = open("input.txt", "r")
-    for line in file:
+    lines = AoCInput.read_lines(INPUT_FILE)
+    for line in lines:
         if not line.strip():
             break
         start, end = line.strip().split(" => ")
         replacements[end].append(start)
 
-    molecule = file.readline().strip()
+    molecule = lines[0].strip()
 
     result = dissolveMolecule(molecule, 'e', replacements)
 
-    printSolution(len(result) - 1)
+    return len(result - 1)
 
-
-if __name__ == "__main__":
-    main()
+answer = solve_part2()
+AoCUtils.print_solution(2, answer)

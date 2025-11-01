@@ -1,8 +1,11 @@
+import os
+import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2015/11/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
+
+from aoc_helpers import AoCInput, AoCUtils
 import string
-
-
-def printSolution(x):
-    print(f"The solution is: {x}")
 
 
 class PasswordManager:
@@ -64,15 +67,18 @@ class PasswordManager:
             possible = self.increment(possible)
         self.password = possible
 
-def main():
-    input = "hepxcrrq"
+
+def solve_part2():
+    lines = AoCInput.read_lines(INPUT_FILE)
+    input = lines[0].strip()
 
     pm = PasswordManager()
     pm.add(input)
     pm.next()
     pm.next()
-    printSolution(pm.password)
+
+    return pm.password
 
 
-if __name__ == "__main__":
-    main()
+answer = solve_part2()
+AoCUtils.print_solution(2, answer)

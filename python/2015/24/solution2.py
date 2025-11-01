@@ -1,14 +1,18 @@
+import os
+import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2015/24/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
+
+from aoc_helpers import AoCInput, AoCUtils
 from itertools import combinations
 from functools import reduce
 
-def printSolution(x):
-    print(f"The solution is: {x}")
 
+def solve_part2():
 
-def main():
-
-    file = open("input.txt", "r")
-    numbers = [int(x) for x in file.readlines()]
+    lines = AoCInput.read_lines(INPUT_FILE)
+    numbers = [int(x) for x in lines]
     target = sum(numbers) // 4
 
     max_len = 1
@@ -32,6 +36,5 @@ def main():
 
     print(min(qe))
 
-
-if __name__ == "__main__":
-    main()
+answer = solve_part2()
+AoCUtils.print_solution(2, answer)

@@ -1,17 +1,19 @@
+import os
+import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2015/9/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
+
+from aoc_helpers import AoCInput, AoCUtils
 from itertools import permutations
 
 
-def printSolution(x):
-    print(f"The solution is: {x}")
-
-
-def main():
+def solve_part1():
+    lines = AoCInput.read_lines(INPUT_FILE)
 
     cities = {}
 
-    file = open("input.txt", "r")
-
-    for line in file:
+    for line in lines:
         c1c2, distance = line.strip().split(" = ")
         c1, c2 = c1c2.split(" to ")
         distance = int(distance)
@@ -29,8 +31,8 @@ def main():
         else:
             shortest = min(shortest, sum(route))
 
-    printSolution(shortest)
+    return shortest
 
 
-if __name__ == "__main__":
-    main()
+answer = solve_part1()
+AoCUtils.print_solution(1, answer)

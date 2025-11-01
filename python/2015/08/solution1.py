@@ -1,13 +1,17 @@
-def printSolution(x):
-    print(f"The solution is: {x}")
+import os
+import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2015/8/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
+
+from aoc_helpers import AoCInput, AoCUtils
 
 
-def main():
-
-    file = open("input.txt", "r")
+def solve_part1():
+    lines = AoCInput.read_lines(INPUT_FILE)
 
     diff = 0
-    for line in file:
+    for line in lines:
         line = line.strip()
         processed = bytes(line, "utf-8").decode("unicode_escape")
         if processed[0] == '"':
@@ -16,8 +20,8 @@ def main():
             processed = processed[:-1]
         diff += len(line) - len(processed)
 
-    printSolution(diff)
+    return diff
 
 
-if __name__ == "__main__":
-    main()
+answer = solve_part1()
+AoCUtils.print_solution(1, answer)

@@ -1,8 +1,11 @@
+import os
+import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2015/6/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
+
+from aoc_helpers import AoCInput, AoCUtils
 from collections import defaultdict
-
-
-def printSolution(x):
-    print(f"The solution is: {x}")
 
 
 class Lights:
@@ -28,13 +31,12 @@ class Lights:
         return sum(self.grid.values())
 
 
-def main():
-
-    file = open("input.txt", "r")
+def solve_part2():
+    lines = AoCInput.read_lines(INPUT_FILE)
 
     display = Lights()
 
-    for line in file:
+    for line in lines:
         line = line.strip()
         line = line.replace("turn on", "on").replace("turn off", "off").replace("through", "")
         action, start, end = line.split()
@@ -43,8 +45,8 @@ def main():
 
         getattr(display, action)(start, end)
 
-    printSolution(display.lit())
+    return display.lit()
 
 
-if __name__ == "__main__":
-    main()
+answer = solve_part2()
+AoCUtils.print_solution(2, answer)

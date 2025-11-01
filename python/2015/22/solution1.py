@@ -1,4 +1,12 @@
+import os
+import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2015/22/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
+
+from aoc_helpers import AoCInput, AoCUtils
 import copy
+
 
 spells = {}
 spells['missle'] = {'name': 'missle', 'cost': 53, 'attack': 4, 'armor': 0, 'heal': 0, 'mana': 0, 'turns': 0}
@@ -8,9 +16,6 @@ spells['poison'] = {'name': 'poison', 'cost': 173, 'attack': 3, 'armor': 0, 'hea
 spells['recharge'] = {'name': 'recharge', 'cost': 229, 'attack': 0, 'armor': 0, 'heal': 0, 'mana': 101, 'turns': 5}
 
 minimum_mana = 100 ** 15
-
-def printSolution(x):
-    print(f"The solution is: {x}")
 
 class Wizard():
     def __init__(self, hp, mana):
@@ -89,7 +94,7 @@ def resolveTurn(player, boss, spell):
     return min(costs)
 
 
-def main():
+def solve_part1():
     global minimum_mana
     player = Wizard(50, 500)
     boss = Wizard(55, 0)
@@ -100,8 +105,7 @@ def main():
         if type(result) == int:
             minimum_mana = min(minimum_mana, result)
 
-    printSolution(minimum_mana)
+    return minimum_mana
 
-
-if __name__ == "__main__":
-    main()
+answer = solve_part1()
+AoCUtils.print_solution(1, answer)

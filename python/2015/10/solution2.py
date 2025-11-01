@@ -1,5 +1,10 @@
-def printSolution(x):
-    print(f"The solution is: {x}")
+import os
+import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2015/10/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
+
+from aoc_helpers import AoCInput, AoCUtils
 
 
 class LookSay():
@@ -28,16 +33,17 @@ class LookSay():
         self.sequence = updated
 
 
-def main():
-    input = '1321131112'
+def solve_part2():
+    lines = AoCInput.read_lines(INPUT_FILE)
+    input = lines[0].strip()
     turns = 50
 
     game = LookSay(input)
     for i in range(1, turns + 1):
         game.step()
 
-    printSolution(len(game.sequence))
+    return len(game.sequence)
 
 
-if __name__ == "__main__":
-    main()
+answer = solve_part2()
+AoCUtils.print_solution(2, answer)

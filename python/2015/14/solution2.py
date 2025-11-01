@@ -1,5 +1,10 @@
-def printSolution(x):
-    print(f"The solution is: {x}")
+import os
+import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2015/14/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
+
+from aoc_helpers import AoCInput, AoCUtils
 
 
 class Reindeer:
@@ -23,16 +28,15 @@ class Reindeer:
         return f"Reindeer: name: {self.name}, time: {self.time}, distance: {self.distance}"
 
 
-def main():
+def solve_part2():
+    lines = AoCInput.read_lines(INPUT_FILE)
 
     race_time = 2503
-
-    file = open("input.txt", "r")
 
     racers = []
     scores = {}
 
-    for line in file:
+    for line in lines:
         fly_speed, fly_time, rest_time = [int(x) for x in line.split() if x.isdigit()]
         name = line.split()[0]
         racers.append(Reindeer(name, fly_speed, fly_time, rest_time))
@@ -48,8 +52,8 @@ def main():
                 scores[racers[idx].name] += 1
         race_time -= 1
 
-    printSolution(max(scores.values()))
+    return max(scores.values())
 
 
-if __name__ == "__main__":
-    main()
+answer = solve_part2()
+AoCUtils.print_solution(2, answer)

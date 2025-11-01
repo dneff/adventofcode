@@ -1,13 +1,15 @@
+import os
+import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2015/16/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
+
+from aoc_helpers import AoCInput, AoCUtils
 from collections import defaultdict
 
 
-def printSolution(x):
-    print(f"The solution is: {x}")
-
-
-def main():
-
-    file = open("input.txt", "r")
+def solve_part1():
+    lines = AoCInput.read_lines(INPUT_FILE)
 
     detected = {
         "children": 3,
@@ -21,11 +23,11 @@ def main():
         "cars": 2,
         "perfumes": 1,
     }
-    
+
 
     aunts = {}
     matches = defaultdict(int)
-    for line in file:
+    for line in lines:
         line = line.strip().lstrip("Sue ")
         line = line.replace(":", "").replace(",", "")
         line = line.split()
@@ -41,8 +43,8 @@ def main():
             if k in detected and detected[k] == v:
                 matches[aunt] += 1
 
-    printSolution(max(matches, key=matches.get))
+    return max(matches, key=matches.get)
 
 
-if __name__ == "__main__":
-    main()
+answer = solve_part1()
+AoCUtils.print_solution(1, answer)

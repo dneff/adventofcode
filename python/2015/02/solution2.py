@@ -1,5 +1,10 @@
-def printSolution(x):
-    print(f"The solution is: {x}")
+import os
+import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2015/2/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
+
+from aoc_helpers import AoCInput, AoCUtils
 
 
 def getWrapping(length, width, height):
@@ -20,18 +25,17 @@ def getBow(length, width, height):
     return bow
 
 
-def main():
-
-    file = open("input.txt", "r")
+def solve_part2():
+    lines = AoCInput.read_lines(INPUT_FILE)
 
     total_ribbon = 0
-    for line in file:
+    for line in lines:
         l, w, h = [int(x) for x in line.strip().split("x")]
         total_ribbon += getRibbon(l, w, h)
         total_ribbon += getBow(l, w, h)
 
-    printSolution(total_ribbon)
+    return total_ribbon
 
 
-if __name__ == "__main__":
-    main()
+answer = solve_part2()
+AoCUtils.print_solution(2, answer)

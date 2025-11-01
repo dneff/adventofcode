@@ -1,16 +1,19 @@
+import os
+import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2015/17/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
+
+from aoc_helpers import AoCInput, AoCUtils
 from collections import defaultdict
 
 
-def printSolution(x):
-    print(f"The solution is: {x}")
-
-
-def main():
+def solve_part2():
+    lines = AoCInput.read_lines(INPUT_FILE)
 
     eggnog = 150
 
-    file = open("input.txt", "r")
-    containers = [int(x) for x in file.readlines()]
+    containers = [int(x) for x in lines]
 
     combo_size = defaultdict(int)
 
@@ -22,8 +25,8 @@ def main():
         if container_value == eggnog:
             combo_size[sum(mask)] += 1
 
-    printSolution(combo_size[min(combo_size.keys())])
+    return combo_size[min(combo_size.keys())]
 
 
-if __name__ == "__main__":
-    main()
+answer = solve_part2()
+AoCUtils.print_solution(2, answer)

@@ -1,9 +1,12 @@
+import os
+import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2015/15/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
+
+from aoc_helpers import AoCInput, AoCUtils
 import math
 from collections import defaultdict
-
-
-def printSolution(x):
-    print(f"The solution is: {x}")
 
 
 def isNumber(x):
@@ -42,15 +45,14 @@ class Ingredient:
         self.calories = calories
 
 
-def main():
-
-    file = open("input.txt", "r")
+def solve_part2():
+    lines = AoCInput.read_lines(INPUT_FILE)
 
     ingredients = []
     max_count = 100
     calorie_target = 500
 
-    for line in file:
+    for line in lines:
         line = line.strip().replace(",", "").replace(":", "").split()
         name = line[0]
         capacity, durability, flavor, texture, calories = [int(x) for x in line if isNumber(x)]
@@ -65,8 +67,8 @@ def main():
                 weights = [i1, i2, i3, i4]
                 max_score = max(max_score, scoreRecipe(ingredients, weights, calorie_target))
 
-    printSolution(max_score)
+    return max_score
 
 
-if __name__ == "__main__":
-    main()
+answer = solve_part2()
+AoCUtils.print_solution(2, answer)

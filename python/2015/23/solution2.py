@@ -1,5 +1,10 @@
-def printSolution(x):
-    print(f"The solution is: {x}")
+import os
+import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2015/23/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
+
+from aoc_helpers import AoCInput, AoCUtils
 
 
 class Computer:
@@ -49,18 +54,17 @@ class Computer:
             self.index += 1
 
 
-def main():
+def solve_part2():
 
     gift = Computer()
 
-    file = open("input.txt", "r")
-    gift.load(file.readlines())
+    lines = AoCInput.read_lines(INPUT_FILE)
+    gift.load(lines)
 
     gift.registers['a'] = 1
     gift.run()
 
-    printSolution(gift.registers['b'])
+    return gift.registers['b']
 
-
-if __name__ == "__main__":
-    main()
+answer = solve_part2()
+AoCUtils.print_solution(2, answer)

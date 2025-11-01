@@ -1,8 +1,11 @@
+import os
+import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2015/18/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
+
+from aoc_helpers import AoCInput, AoCUtils
 from collections import defaultdict
-
-
-def printSolution(x):
-    print(f"The solution is: {x}")
 
 
 class Display:
@@ -51,14 +54,15 @@ class Display:
             grid.append(row)
         return ('\n').join(grid)
 
-def main():
+
+def solve_part1():
+    lines = AoCInput.read_lines(INPUT_FILE)
 
     step_count = 100
     xmas_lights = Display()
 
-    file = open("input.txt", "r")
     width = 0
-    for row, line in enumerate(file.readlines()):
+    for row, line in enumerate(lines):
         for column, char in enumerate(line.strip()):
             if char == "#":
                 xmas_lights.add((row, column))
@@ -69,8 +73,8 @@ def main():
     while xmas_lights.step < step_count:
         xmas_lights.cycle()
 
-    printSolution(len(xmas_lights.lights))
+    return len(xmas_lights.lights)
 
 
-if __name__ == "__main__":
-    main()
+answer = solve_part1()
+AoCUtils.print_solution(1, answer)

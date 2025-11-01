@@ -1,8 +1,11 @@
+import os
+import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2015/21/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
+
+from aoc_helpers import AoCInput, AoCUtils
 from collections import defaultdict
-
-
-def printSolution(x):
-    print(f"The solution is: {x}")
 
 
 item_shop = {}
@@ -92,7 +95,7 @@ def getCheapestOutfit():
             yield (p, outfit[0], outfit[1])
 
 
-def main():
+def solve_part1():
 
     player = Fighter()
     player.hp = 100
@@ -106,8 +109,7 @@ def main():
 
     while not player.fight(boss):
         player.equip(*next(outfits))
-    printSolution(player.cost)
+    return player.cost
 
-
-if __name__ == "__main__":
-    main()
+answer = solve_part1()
+AoCUtils.print_solution(1, answer)

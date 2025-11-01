@@ -1,5 +1,10 @@
-def printSolution(x):
-    print(f"The solution is: {x}")
+import os
+import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2015/25/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
+
+from aoc_helpers import AoCInput, AoCUtils
 
 
 def nextCode(x):
@@ -16,15 +21,14 @@ def getIterations(row, col):
     return iterations
 
 
-def main():
+def solve_part1():
     code_loc = (2978, 3083)
 
     code = 0
     for _ in range(getIterations(*code_loc)):
         code = nextCode(code)
 
-    printSolution(code)
+    return code
 
-
-if __name__ == "__main__":
-    main()
+answer = solve_part1()
+AoCUtils.print_solution(1, answer)

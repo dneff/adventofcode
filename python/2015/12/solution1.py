@@ -1,7 +1,11 @@
-import json
+import os
+import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2015/12/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
 
-def printSolution(x):
-    print(f"The solution is: {x}")
+from aoc_helpers import AoCInput, AoCUtils
+import json
 
 
 def getValue(data):
@@ -21,15 +25,14 @@ def getValue(data):
     return result
 
 
-def main():
+def solve_part1():
+    lines = AoCInput.read_lines(INPUT_FILE)
 
-    file = open("input.txt", "r")
-
-    json_data = file.read()
+    json_data = lines[0]
     data = json.loads(json_data)
 
-    printSolution(getValue(data))
+    return getValue(data)
 
 
-if __name__ == "__main__":
-    main()
+answer = solve_part1()
+AoCUtils.print_solution(1, answer)

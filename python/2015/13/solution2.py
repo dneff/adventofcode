@@ -1,18 +1,20 @@
+import os
+import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2015/13/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
+
+from aoc_helpers import AoCInput, AoCUtils
 from collections import defaultdict
 from itertools import permutations
 
 
-def printSolution(x):
-    print(f"The solution is: {x}")
-
-
-def main():
-
-    file = open("input.txt", "r")
+def solve_part2():
+    lines = AoCInput.read_lines(INPUT_FILE)
 
     happiness = defaultdict(dict)
 
-    for line in file:
+    for line in lines:
         line = line.strip().strip(".")
         if "would lose" in line:
             line = line.replace("would lose ", "-").split()
@@ -33,8 +35,8 @@ def main():
         table_happiness += happiness[seating[0]][seating[-1]] + happiness[seating[-1]][seating[0]]
         most_happy = max(most_happy, table_happiness)
 
-    printSolution(most_happy)
+    return most_happy
 
 
-if __name__ == "__main__":
-    main()
+answer = solve_part2()
+AoCUtils.print_solution(2, answer)
