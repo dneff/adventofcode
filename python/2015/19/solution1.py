@@ -10,24 +10,47 @@ from collections import defaultdict
 
 
 def solve_part1():
+    """
+    Solve Day 19 Part 1: Medicine for Rudolph
 
+    Count how many distinct molecules can be created by doing exactly one
+    replacement on the starting medicine molecule.
+
+    Returns:
+        int: Number of distinct molecules that can be created
+    """
+    # Parse replacement rules from input
+    # Each rule maps a source pattern (e.g., "H") to one or more replacement patterns (e.g., "HO", "OH")
     replacements = defaultdict(list)
     lines = AoCInput.read_lines(INPUT_FILE)
+
+    # Read replacement rules until we hit the blank line
     for line in lines:
         if not line.strip():
             break
-        start, end = line.strip().split(" => ")
-        replacements[start].append(end)
+        source_pattern, replacement_pattern = line.strip().split(" => ")
+        replacements[source_pattern].append(replacement_pattern)
 
-    molecule = lines[0].strip()
-    created = set()
-    for element in replacements:
-        element_locs = [loc.span() for loc in re.finditer(element, molecule)]
-        for loc in element_locs:
-            for substitution in replacements[element]:
-                created.add(molecule[:loc[0]] + substitution + molecule[loc[1]:])
+    # The medicine molecule is the last line of the input
+    medicine_molecule = lines[-1].strip()
 
-    return len(created)
+    # Track all distinct molecules that can be created with one replacement
+    distinct_molecules = set()
+
+    # For each source pattern in our replacement rules
+    for source_pattern in replacements:
+        # Find all locations where this pattern appears in the molecule
+        pattern_locations = [match.span() for match in re.finditer(source_pattern, medicine_molecule)]
+
+        # For each location where the pattern appears
+        for start_pos, end_pos in pattern_locations:
+            # Try each possible replacement for this pattern
+            for replacement_pattern in replacements[source_pattern]:
+                # Create new molecule: prefix + replacement + suffix
+                new_molecule = medicine_molecule[:start_pos] + replacement_pattern + medicine_molecule[end_pos:]
+                distinct_molecules.add(new_molecule)
+
+    return len(distinct_molecules)
 
 answer = solve_part1()
 AoCUtils.print_solution(1, answer)
