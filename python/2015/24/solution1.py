@@ -10,31 +10,57 @@ from functools import reduce
 
 
 def solve_part1():
+    """
+    Solve Day 24 Part 1: It Hangs in the Balance
 
+    Santa needs to balance packages on his sleigh by dividing them into 3 groups
+    of equal weight. The first group (passenger compartment) must have the fewest
+    packages possible. If multiple configurations have the same minimum package count,
+    choose the one with the lowest quantum entanglement (product of package weights).
+
+    Returns:
+        The quantum entanglement of the ideal first group configuration
+    """
     lines = AoCInput.read_lines(INPUT_FILE)
-    numbers = [int(x) for x in lines]
-    target = sum(numbers) // 3
+    package_weights = [int(x) for x in lines]
 
-    max_len = 1
-    while sum(numbers[:max_len]) <= target:
-        max_len += 1
-    min_len = 1
-    while sum(numbers[-min_len:]) <= target:
-        min_len += 1
+    # Each of the 3 groups must weigh exactly 1/3 of the total
+    target_weight = sum(package_weights) // 3
 
-    buckets = set()
-    min_combo = len(numbers)
-    qe = {}
+    # Find the maximum possible size for the first group (passenger compartment)
+    # This occurs when we take the lightest packages until we exceed the target
+    max_packages_in_group = 1
+    while sum(package_weights[:max_packages_in_group]) <= target_weight:
+        max_packages_in_group += 1
 
-    for l in range(min_len, max_len + 1):
-        combos = combinations(numbers, l)
-        for x in combos:
-            if sum(x) == target:
-                buckets.add(x)
-                min_combo = min(min_combo, len(x))
-                qe[reduce((lambda a, b: a*b), x)] = x
+    # Find the minimum possible size for the first group
+    # This occurs when we take the heaviest packages until we exceed the target
+    min_packages_in_group = 1
+    while sum(package_weights[-min_packages_in_group:]) <= target_weight:
+        min_packages_in_group += 1
 
-    print(min(qe))
+    # Find combinations starting with the smallest group size
+    # Once we find valid combinations of size N, that's our minimum, so we can stop
+    for group_size in range(min_packages_in_group, max_packages_in_group + 1):
+        # Track the minimum quantum entanglement for this group size
+        min_quantum_entanglement = None
+
+        package_combinations = combinations(package_weights, group_size)
+        for combo in package_combinations:
+            if sum(combo) == target_weight:
+                # Calculate quantum entanglement (product of all package weights)
+                qe = reduce((lambda a, b: a * b), combo)
+
+                if min_quantum_entanglement is None or qe < min_quantum_entanglement:
+                    min_quantum_entanglement = qe
+
+        # If we found valid combinations for this size, return the minimum QE
+        # No need to check larger group sizes since we want the minimum package count
+        if min_quantum_entanglement is not None:
+            return min_quantum_entanglement
+
+    # Should never reach here with valid input
+    return None
 
 answer = solve_part1()
 AoCUtils.print_solution(1, answer)
