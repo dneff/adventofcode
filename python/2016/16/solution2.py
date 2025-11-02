@@ -94,14 +94,14 @@ def main():
 
 
     # Select which puzzle to solve
-    active_puzzle = part_1
+    active_puzzle = part_2
 
     # Generate dragon curve data to fill the disk
     disk_data = generate_dragon_curve_data(active_puzzle['init'], active_puzzle['length'])
     # Calculate the checksum for the generated data
     checksum = calculate_checksum(disk_data)
 
-    AoCUtils.print_solution(1, checksum)
+    AoCUtils.print_solution(2, checksum)
 
 if __name__ == "__main__":
     main()
