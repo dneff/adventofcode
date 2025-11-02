@@ -5,6 +5,8 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 INPUT_FILE = os.path.join(SCRIPT_DIR, "../../../../aoc-data/2016/14/input")
 sys.path.append(os.path.join(SCRIPT_DIR, "../../"))
 
+from aoc_helpers import AoCInput, AoCUtils
+
 from hashlib import md5
 from multiprocessing import Pool
 
@@ -79,7 +81,9 @@ def main():
     # We need to compute at least up to where the 64th key might be (around 23500)
     MAX_INDEX = 24000
     with Pool() as pool:
-        results = pool.map(compute_stretched_hash, [(salt, i) for i in range(MAX_INDEX)], chunksize=100)
+        results = pool.map(
+            compute_stretched_hash, [(salt, i) for i in range(MAX_INDEX)], chunksize=100
+        )
 
     # Store results in a dict for fast lookup
     hashes = {idx: hash_val for idx, hash_val in results}
@@ -93,7 +97,9 @@ def main():
 
         if triplet_char:
             # Found a triplet - check next 1000 hashes for matching quintuplet
-            for lookahead_index in range(index + 1, min(index + LOOKAHEAD_WINDOW + 1, MAX_INDEX)):
+            for lookahead_index in range(
+                index + 1, min(index + LOOKAHEAD_WINDOW + 1, MAX_INDEX)
+            ):
                 lookahead_hash = hashes[lookahead_index]
 
                 if has_quintuplet(lookahead_hash, triplet_char):
@@ -101,7 +107,7 @@ def main():
                     valid_key_count += 1
 
                     if valid_key_count == KEYS_NEEDED:
-                        print(f"The index that produces the 64th one-time pad key (with key stretching) is: {index}")
+                        AoCUtils.print_solution(2, index)
                         return
 
                     # Move to next index after finding a valid key
