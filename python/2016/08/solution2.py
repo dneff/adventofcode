@@ -38,6 +38,172 @@ class cardReader():
         return sum([row.count('#') for row in self.screen])
 
 
+def ocr_screen(screen):
+    """
+    OCR for 6-row tall capital letters (4 pixels wide with 1 pixel spacing).
+    Returns the recognized text string.
+    """
+    # Letter patterns (6 rows x 4 columns, using # for lit pixels, . for off)
+    patterns = {
+        'A': [
+            '.##.',
+            '#..#',
+            '#..#',
+            '####',
+            '#..#',
+            '#..#'
+        ],
+        'B': [
+            '###.',
+            '#..#',
+            '###.',
+            '#..#',
+            '#..#',
+            '###.'
+        ],
+        'C': [
+            '.##.',
+            '#..#',
+            '#...',
+            '#...',
+            '#..#',
+            '.##.'
+        ],
+        'E': [
+            '####',
+            '#...',
+            '###.',
+            '#...',
+            '#...',
+            '####'
+        ],
+        'F': [
+            '####',
+            '#...',
+            '###.',
+            '#...',
+            '#...',
+            '#...'
+        ],
+        'G': [
+            '.##.',
+            '#..#',
+            '#...',
+            '#.##',
+            '#..#',
+            '.###'
+        ],
+        'H': [
+            '#..#',
+            '#..#',
+            '####',
+            '#..#',
+            '#..#',
+            '#..#'
+        ],
+        'J': [
+            '..##',
+            '...#',
+            '...#',
+            '...#',
+            '#..#',
+            '.##.'
+        ],
+        'K': [
+            '#..#',
+            '#.#.',
+            '##..',
+            '#.#.',
+            '#.#.',
+            '#..#'
+        ],
+        'L': [
+            '#...',
+            '#...',
+            '#...',
+            '#...',
+            '#...',
+            '####'
+        ],
+        'P': [
+            '###.',
+            '#..#',
+            '#..#',
+            '###.',
+            '#...',
+            '#...'
+        ],
+        'R': [
+            '###.',
+            '#..#',
+            '#..#',
+            '###.',
+            '#.#.',
+            '#..#'
+        ],
+        'S': [
+            '.###',
+            '#...',
+            '#...',
+            '.##.',
+            '...#',
+            '###.'
+        ],
+        'U': [
+            '#..#',
+            '#..#',
+            '#..#',
+            '#..#',
+            '#..#',
+            '.##.'
+        ],
+        'Z': [
+            '####',
+            '...#',
+            '..#.',
+            '.#..',
+            '#...',
+            '####'
+        ]
+    }
+
+    # Convert screen to string format for matching
+    screen_str = []
+    for row in screen:
+        screen_str.append(''.join(row))
+
+    result = ''
+    x = 0
+    while x < len(screen_str[0]):
+        # Extract 4-column slice for this letter
+        letter_slice = []
+        for row in screen_str:
+            if x + 3 < len(row):
+                letter_slice.append(row[x:x+4])
+            else:
+                letter_slice.append(row[x:].ljust(4, '.'))
+
+        # Match against patterns
+        found = False
+        for letter, pattern in patterns.items():
+            match = True
+            for i in range(6):
+                if letter_slice[i] != pattern[i]:
+                    match = False
+                    break
+            if match:
+                result += letter
+                found = True
+                break
+
+        if not found and any('#' in row for row in letter_slice):
+            result += '?'
+
+        x += 5  # Move to next letter (4 pixels + 1 space)
+
+    return result
+
+
 def main():
 
     door = cardReader()
@@ -56,10 +222,16 @@ def main():
         instruction = getattr(door, line[0])
         instruction(int(line[1]), int(line[2]))
 
+    # Display the screen
     for r in door.screen:
         row = ''.join(r)
         row = row.replace('.', ' ')
         print(row)
+
+    # OCR the result
+    result = ocr_screen(door.screen)
+    print()
+    AoCUtils.print_solution(2, result)
 
 
 if __name__ == '__main__':
