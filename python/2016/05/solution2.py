@@ -5,8 +5,30 @@ INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2016/5/input')
 sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
 
 from aoc_helpers import AoCInput, AoCUtils
-import string
 import hashlib
+from multiprocessing import Pool, cpu_count
+
+def find_hashes_in_range(args):
+    """
+    Worker function to find hashes with five leading zeros in a given range.
+    Returns list of (index, position, password_char) tuples.
+    """
+    door_id, start, end = args
+    results = []
+
+    for index in range(start, end):
+        digest = hashlib.md5(f"{door_id}{index}".encode()).digest()
+
+        # Check if first 2 bytes are zero and first nibble of 3rd byte is zero
+        if digest[0] == 0 and digest[1] == 0 and digest[2] < 16:
+            hex_hash = digest.hex()
+            # Check if 6th character is a valid position (0-7)
+            if hex_hash[5] in '01234567':
+                position = int(hex_hash[5])
+                char = hex_hash[6]
+                results.append((index, position, char))
+
+    return results
 
 def main():
     """
@@ -19,38 +41,44 @@ def main():
     - Only use the first result for each position
     - Ignore invalid positions (non-digits or positions >= 8)
 
-    Example: Hash "000001f" means 'f' goes in position 1 of the password
+    Uses multiprocessing to parallelize the MD5 computation across CPU cores.
     """
     # Read the door ID from input file
     door_id = AoCInput.read_lines(INPUT_FILE)[0].strip()
 
-    index = 0
-    # Initialize password with 8 empty positions (marked with '_')
-    password_chars = ['_'] * 8
+    # Use multiprocessing to search in parallel
+    num_cores = cpu_count()
+    chunk_size = 100000  # Process 100k indices per chunk
 
-    # Continue until all 8 positions are filled
-    while '_' in password_chars:
-        # Create MD5 hash of door_id + index
-        h = hashlib.md5()
-        h.update(str.encode(door_id + str(index)))
-        hex_hash = str(h.hexdigest())
+    # Initialize password with 8 empty positions (marked with None)
+    password_chars = [None] * 8
+    current_index = 0
 
-        # Check if hash starts with five zeros
-        if hex_hash[:5] == '00000':
-            try:
-                # The sixth character (index 5) indicates the position in the password
-                position = int(hex_hash[5])
+    with Pool(num_cores) as pool:
+        while None in password_chars:
+            # Create work chunks for each core
+            chunks = [
+                (door_id, current_index + i * chunk_size, current_index + (i + 1) * chunk_size)
+                for i in range(num_cores)
+            ]
 
-                # Only use positions 0-7 and only if not already filled
-                if position < 8 and password_chars[position] == '_':
-                    # The seventh character (index 6) is the password character for that position
-                    password_chars[position] = hex_hash[6]
-                print(".",)  # Progress indicator
-            except ValueError:
-                # Ignore if the sixth character is not a valid digit
-                pass
+            # Process chunks in parallel
+            results = pool.map(find_hashes_in_range, chunks)
 
-        index += 1
+            # Collect all results and sort by index to maintain order
+            all_matches = []
+            for chunk_results in results:
+                all_matches.extend(chunk_results)
+
+            all_matches.sort(key=lambda x: x[0])
+
+            # Fill password positions in order (only first occurrence of each position)
+            for _, position, char in all_matches:
+                if password_chars[position] is None:
+                    password_chars[position] = char
+
+            # Move to next batch
+            current_index += num_cores * chunk_size
 
     # Join all password characters to form the final 8-character password
     password = ''.join(password_chars)
