@@ -1,13 +1,17 @@
+import os
+import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2016/21/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
 
-def printSolution(x):
+from aoc_helpers import AoCInput, AoCUtils
+
+def AoCUtils.print_solution(1, x):
     print(f"The solution is {x}")
-
 class Scrambler():
     def __init__(self, password):
         self.password = password
         self.data = ''
-
-
     def swap_position(self, a, b):
         # letters at indexes X and Y (counting from 0) should be swapped
         x = min(a,b)
@@ -103,7 +107,7 @@ def main():
         move = getattr(scram, method)
         move(*args)
     
-    printSolution(scram.password)
+    AoCUtils.print_solution(1, scram.password)
     
 
 

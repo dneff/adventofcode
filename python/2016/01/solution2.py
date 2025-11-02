@@ -1,5 +1,10 @@
-def printSolution(x):
-    print(f"The solution is: {x}")
+import os
+import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2016/1/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
+
+from aoc_helpers import AoCInput, AoCUtils
 
 
 class GridBug:
@@ -30,18 +35,18 @@ class GridBug:
 
 
 def main():
-    file = open("input.txt", "r")
+    lines = AoCInput.read_lines(INPUT_FILE)
 
     sleigh = GridBug()
 
-    instructions = [(x[0], int(x[1:])) for x in file.readline().split(", ")]
+    instructions = [(x[0], int(x[1:])) for x in lines[0].split(", ")]
 
     for i in instructions:
         sleigh.turn(i[0])
         try:
             sleigh.move(i[1])
         except ValueError:
-            printSolution(sleigh.getDistance())
+            AoCUtils.print_solution(2, sleigh.getDistance())
             break
 
 

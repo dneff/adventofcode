@@ -1,8 +1,11 @@
+import os
+import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2016/13/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
 
+from aoc_helpers import AoCInput, AoCUtils
 from queue import PriorityQueue
-
-def printSolution(x):
-    print(f"The solution is {x}")
 
 def isOpen(grid_loc, seed):
     x, y = grid_loc
@@ -68,7 +71,7 @@ def main():
                 continue
 
             if distanceToDestination(state[0], active['destination']) == 0:
-                printSolution(state[1])
+                AoCUtils.print_solution(1, state[1])
                 searching = False
             
             score = getScore(state[0], active['destination'], state[1])

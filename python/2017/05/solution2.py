@@ -1,11 +1,15 @@
+import os
+import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2017/5/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
 
-def printSolution(x):
-    print(f"The solution is: {x}")
+from aoc_helpers import AoCInput, AoCUtils
 
 
 def main():
-    file = open("input.txt", "r")
-    instructions = [int(value) for value in file.readlines()]
+    lines = AoCInput.read_lines(INPUT_FILE)
+    instructions = [int(value) for value in lines]
 
     step = 0
     offset = 0
@@ -18,7 +22,7 @@ def main():
             instructions[offset] += 1
         offset += delta
 
-    printSolution(step)
+    AoCUtils.print_solution(2, step)
 
 
 if __name__ == "__main__":

@@ -1,8 +1,12 @@
+import os
+import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2017/8/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
+
+from aoc_helpers import AoCInput, AoCUtils
 from collections import defaultdict
 from dis import Instruction
-
-def print_solution(x):
-    print(f"The solution is: {x}")
 
 
 class Computer():
@@ -15,9 +19,9 @@ class Computer():
         for i in self.instructions:
             inst = 'self.register[\'' + i[0] + '\']'
             if i[1] == 'inc':
-                inst = f"{inst} += {i[2]}" 
+                inst = f"{inst} += {i[2]}"
             else:
-                inst = f"{inst} -= {i[2]}" 
+                inst = f"{inst} -= {i[2]}"
             cond = f"self.register['{i[4]}'] {i[5]} {i[6]}"
 
             if eval(cond):
@@ -27,13 +31,13 @@ class Computer():
 
 def main():
     pc = Computer()
-    file = open('input.txt', 'r', encoding='utf-8')
-    for line in file.readlines():
+    lines = AoCInput.read_lines(INPUT_FILE)
+    for line in lines:
         pc.instructions.append(line.strip().split())
 
     pc.run()
 
-    print_solution(pc.max_mem)
+    AoCUtils.print_solution(2, pc.max_mem)
 
 
 if __name__ == "__main__":

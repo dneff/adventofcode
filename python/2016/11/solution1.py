@@ -1,3 +1,10 @@
+import os
+import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2016/11/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
+
+from aoc_helpers import AoCInput, AoCUtils
 import copy
 from queue import PriorityQueue
 from collections import defaultdict
@@ -9,9 +16,6 @@ from itertools import combinations
 # state rating = distance from start + distance to complete + current move count
 # using a priority queue to get best next state to explore
 
-
-def printSolution(x):
-    print(f"The solution is {x}")
 
 def parseItems(sentence):
     items = []
@@ -26,8 +30,8 @@ def createBuilding(filename):
     building['elevator'] = 1
     building['floors'] = 0
     items = defaultdict(lambda: [0] * 2)
-    file = open(filename, 'r')
-    for floor, sentence in enumerate(file):
+    lines = AoCInput.read_lines(filename)
+    for floor, sentence in enumerate(lines):
         building['floors'] += 1
         for item in parseItems(sentence):
             element, type = item.split('.')
@@ -114,7 +118,7 @@ def main():
     states_to_evaluate = PriorityQueue()
     moves = 0
 
-    items, floors, elevator = createBuilding('input.txt')
+    items, floors, elevator = createBuilding(INPUT_FILE)
     start_distance = distanceToComplete(items, floors)
     
     start_state = (items, elevator, moves)
@@ -134,7 +138,7 @@ def main():
             if (state[0], state[1]) in states_seen:
                 continue
             if distanceToComplete(state[0], floors) == 0:
-                printSolution(state[-1])
+                AoCUtils.print_solution(1, state[-1])
                 searching = False
 
             states_to_evaluate.put((getScore(state, start_distance, floors), state))

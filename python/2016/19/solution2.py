@@ -1,8 +1,13 @@
+import os
+import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2016/19/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
 
-def printSolution(x):
+from aoc_helpers import AoCInput, AoCUtils
+
+def AoCUtils.print_solution(2, x):
     print(f"The solution is {x}")
-
-
 def movePointer(elf_id, elves, moves):
     elf_pointer = elf_id
     while moves > 0:
@@ -37,7 +42,7 @@ def main():
         ring_size -= 1
         current_elf = elves[current_elf]
 
-    printSolution(current_elf)
+    AoCUtils.print_solution(2, current_elf)
     
     
 

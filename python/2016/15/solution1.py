@@ -1,12 +1,17 @@
-def printSolution(x):
+def AoCUtils.print_solution(1, x):
     print(f"The solution is: {x}")
-
 def getPosition(modulus, start_position, time):
     return (start_position + time) % modulus
-
 def main():
     device = {}
-    file = open('input.txt', 'r')
+import os
+import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2016/15/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
+
+from aoc_helpers import AoCInput, AoCUtils
+
     for idx, line in enumerate(file):
         l = line.strip().split()
         device[idx] = {'mod': int(l[3]), 'position': int(l[-1][:-1])}
@@ -20,7 +25,7 @@ def main():
         else:
             time += 1
 
-    printSolution(time)
+    AoCUtils.print_solution(1, time)
 
 if __name__ == "__main__":
     main()

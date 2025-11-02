@@ -1,13 +1,16 @@
 from collections import defaultdict
-
-def printSolution(x):
+def AoCUtils.print_solution(1, x):
     print(f"The solution is {x}")
-
 def main():
-
     nodes = defaultdict(list)
+import os
+import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2016/22/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
 
-    f = open('input.txt', 'r')
+from aoc_helpers import AoCInput, AoCUtils
+
     for line in f.readlines():
         node, size, used, available, usage_pct = line.strip().split()
         _, x, y = node.split('-')
@@ -26,7 +29,7 @@ def main():
                 continue
             if nodes[A][1] <= nodes[B][2]:
                 valid_pairs += 1
-    printSolution(valid_pairs)
+    AoCUtils.print_solution(1, valid_pairs)
 
 if __name__ == "__main__":
     main()

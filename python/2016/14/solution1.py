@@ -1,12 +1,17 @@
+import os
+import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2016/14/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
+
+from aoc_helpers import AoCInput, AoCUtils
 
 from hashlib import md5
 from queue import PriorityQueue
 import re
 from collections import defaultdict
-
-def printSolution(x):
+def AoCUtils.print_solution(1, x):
     print(f"The solution is: {x}")
-
 def hashGenerator(salt):
     num = 0
     while True:
@@ -49,7 +54,7 @@ def main():
                 key_count += 1
 
             if key_count == keys_needed:
-                printSolution(possible_idx)
+                AoCUtils.print_solution(1, possible_idx)
 
 if __name__ == "__main__":
     main()

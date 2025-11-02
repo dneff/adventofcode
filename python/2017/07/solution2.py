@@ -1,9 +1,11 @@
+import os
+import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2017/7/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
+
+from aoc_helpers import AoCInput, AoCUtils
 from collections import defaultdict
-
-
-def print_solution(x):
-    """ prints solution """
-    print(f"The solution is: {x}")
 
 
 class Node():
@@ -24,7 +26,7 @@ def correctBalance(node):
     child_weights = defaultdict(list)
     if len(node.children) == 0:
         return node.weight
-        
+
     for child in node.children:
         balance = correctBalance(child)
         child_weights[balance].append(child)
@@ -42,7 +44,7 @@ def correctBalance(node):
                 balanced = k
         correction = balanced - imbalanced
         imbalanced_node.weight += correction
-        print_solution(imbalanced_node.weight)
+        AoCUtils.print_solution(2, imbalanced_node.weight)
         return correctBalance(node)
 
     total_weight = child_sum + node.weight
@@ -51,23 +53,20 @@ def correctBalance(node):
 
 def main():
     """ calculates solution """
-    file = open('input.txt', 'r', encoding='utf-8')
+    lines = AoCInput.read_lines(INPUT_FILE)
 
     node_hash = {}
 
     # creates nodes without relationships
-    for line in file.readlines():
+    for line in lines:
         node_name, node_weight = line.strip().split()[:2]
         node_weight = int(node_weight.strip('()'))
         node_hash[node_name] = Node()
         node_hash[node_name].name = node_name
         node_hash[node_name].weight = node_weight
 
-    # second pass for relationships
-    file.seek(0)
-
     # create parent/child relationships
-    for line in file.readlines():
+    for line in lines:
         values = line.strip().split()
         if len(values) > 3:
             parent = values[0]

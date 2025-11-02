@@ -1,15 +1,17 @@
+import os
+import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2017/10/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
+
+from aoc_helpers import AoCInput, AoCUtils
 from collections import deque
-
-
-def print_solution(x):
-    """ formats solution and prints """
-    print(f"The solution is: {x}")
 
 
 def main():
     """main solution for problem"""
-    file = open('input.txt', 'r', encoding='utf-8')
-    instructions = [int(x) for x in file.readline().strip().split(',')]
+    line = AoCInput.read_lines(INPUT_FILE)[0]
+    instructions = [int(x) for x in line.strip().split(',')]
     offset = 0
     skip_size = 0
     ring = deque()
@@ -26,7 +28,7 @@ def main():
         skip_size += 1
 
     ring.rotate(offset)
-    print_solution(ring[0] * ring[1])
+    AoCUtils.print_solution(1, ring[0] * ring[1])
 
 
 if __name__ == "__main__":

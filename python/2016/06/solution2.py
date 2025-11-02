@@ -1,9 +1,12 @@
+import os
+import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2016/6/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
+
+from aoc_helpers import AoCInput, AoCUtils
 from collections import defaultdict
 from operator import itemgetter
-
-
-def printSolution(x):
-    print(f"The solution is: {x}")
 
 
 def getMinKey(dict_x):
@@ -12,14 +15,14 @@ def getMinKey(dict_x):
 
 
 def main():
-    file = open("input.txt", "r")
+    lines = AoCInput.read_lines(INPUT_FILE)
 
     position = []
 
     for _ in range(8):
         position.append(defaultdict(int))
 
-    for line in file:
+    for line in lines:
         for index, char in enumerate(line.strip()):
             position[index][char] += 1
 
@@ -27,7 +30,7 @@ def main():
     for d in position:
         message += getMinKey(d)
 
-    printSolution(message)
+    AoCUtils.print_solution(2, message)
 
 
 if __name__ == "__main__":

@@ -1,9 +1,11 @@
+import os
+import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2017/22/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
+
+from aoc_helpers import AoCInput, AoCUtils
 from collections import defaultdict
-
-
-def print_solution(x):
-    """formats input for printing"""
-    print(f"The solution is: {x}")
 
 
 class GridBug():
@@ -40,12 +42,13 @@ class GridBug():
 
 
 def main():
-    file = open('input.txt', 'r', encoding='utf-8')
+    lines = AoCInput.read_lines(INPUT_FILE)
+
     node_status = defaultdict(int)
 
     max_x = 0
     max_y = 0
-    for y, line in enumerate(file.readlines()):
+    for y, line in enumerate(lines):
         max_y = max(y, max_y)
         for x, node in enumerate(line):
             max_x = max(x, max_x)
@@ -58,7 +61,7 @@ def main():
     for _ in range(10000):
         virus.burst(node_status)
 
-    print_solution(virus.infection_count)
+    AoCUtils.print_solution(1, virus.infection_count)
 
 
 if __name__ == "__main__":

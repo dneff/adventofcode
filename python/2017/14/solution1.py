@@ -1,8 +1,11 @@
-from collections import deque
+import os
+import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2017/14/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
 
-def print_solution(x):
-    """format input for printing as solution"""
-    print(f"The solution is: {x}")
+from aoc_helpers import AoCInput, AoCUtils
+from collections import deque
 
 
 def knot_hash(s):
@@ -50,7 +53,7 @@ def main():
         row_hash = f"{input}-{r}"
         k = knot_hash(row_hash)
         used += hash_to_binary(k).count('1')
-    print_solution(used)
+    AoCUtils.print_solution(1, used)
 
 
 if __name__ == "__main__":

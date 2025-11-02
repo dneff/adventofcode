@@ -1,7 +1,10 @@
+import os
+import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2017/6/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
 
-def printSolution(x) -> None:
-    """ print input in formatted string """
-    print(f"The solution is: {x}")
+from aoc_helpers import AoCInput, AoCUtils
 
 
 def reallocate(memory):
@@ -17,9 +20,9 @@ def reallocate(memory):
 
 
 def main():
-    file = open('input.txt', 'r')
+    line = AoCInput.read_lines(INPUT_FILE)[0]
     memory_bank_history = set()
-    memory_banks = [int(x) for x in file.readline().strip().split()]
+    memory_banks = [int(x) for x in line.strip().split()]
     memory_bank_history.add(tuple(memory_banks))
 
     reallocate_count = 0
@@ -31,7 +34,7 @@ def main():
         new_mem = reallocate(new_mem)
         reallocate_count += 1
 
-    printSolution(reallocate_count)
+    AoCUtils.print_solution(1, reallocate_count)
     
 
 

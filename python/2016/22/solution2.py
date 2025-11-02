@@ -1,15 +1,19 @@
 from collections import defaultdict
-
-def printSolution(x):
+def AoCUtils.print_solution(2, x):
     print(f"The solution is {x}")
-
 def main():
-
     nodes = defaultdict(list)
     max_x = 0
     max_y = 0
 
-    f = open('input.txt', 'r')
+import os
+import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2016/22/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
+
+from aoc_helpers import AoCInput, AoCUtils
+
     for line in f.readlines():
         node, size, used, available, usage_pct = line.strip().split()
         _, x, y = node.split('-')
@@ -43,7 +47,7 @@ def main():
     # solve by hand from here. The algo is to A* path
     # search to beginning of S, then move it along via
     # sliding tile logic to F
-    printSolution(213)
+    AoCUtils.print_solution(2, 213)
 
 
 if __name__ == "__main__":

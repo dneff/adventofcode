@@ -1,7 +1,10 @@
+import os
+import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2017/11/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
 
-def print_solution(x):
-    """prints input in solution format"""
-    print(f"The solution is: {x}")
+from aoc_helpers import AoCInput, AoCUtils
 
 
 class GridMap():
@@ -27,13 +30,13 @@ class GridMap():
 
 
 def main():
-    file = open('input.txt', 'r', encoding='utf-8')
+    line = AoCInput.read_lines(INPUT_FILE)[0]
     map = GridMap()
-    moves = file.readline().strip().split(',')
+    moves = line.strip().split(',')
     for m in moves:
         map.move(m)
 
-    print_solution(map.distance())
+    AoCUtils.print_solution(1, map.distance())
     
 
 

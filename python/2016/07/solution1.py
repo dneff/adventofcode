@@ -1,8 +1,11 @@
+import os
+import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2016/7/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
+
+from aoc_helpers import AoCInput, AoCUtils
 import re
-
-
-def printSolution(x):
-    print(f"The solution is: {x}")
 
 
 def hasABBA(s):
@@ -16,9 +19,9 @@ def hasABBA(s):
 def main():
 
     support_tls = []
-    file = open("input.txt", "r")
+    lines = AoCInput.read_lines(INPUT_FILE)
 
-    for line in file:
+    for line in lines:
         hypernet = []
         for s in re.findall("(\[\w*\])", line):
             if s[0] == '[':
@@ -36,8 +39,8 @@ def main():
         else:
             continue
         support_tls.append(line.strip())
-    
-    printSolution(len(support_tls))
+
+    AoCUtils.print_solution(1, len(support_tls))
 
 
 if __name__ == "__main__":

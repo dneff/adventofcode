@@ -1,6 +1,10 @@
+import os
+import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2017/20/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
 
-def print_solution(x):
-    print(f"The solution is: {x}")
+from aoc_helpers import AoCInput, AoCUtils
 
 
 class Particle():
@@ -26,9 +30,9 @@ class Particle():
 
 
 def main():
-    file = open('input.txt', 'r', encoding='utf-8')
+    lines = AoCInput.read_lines(INPUT_FILE)
     particles = []
-    for idx, line in enumerate(file.readlines()):
+    for idx, line in enumerate(lines):
         p,v,a = [x.split('<')[1][:-1] for x in line.strip().split(', ')]
         satellite = Particle()
         satellite.acceleration = tuple([int(x) for x in a.split(',')])
@@ -44,13 +48,13 @@ def main():
             p.move()
             deltas.append(p.delta)
         low_delta = min(deltas)
-    
+
     accel = []
     for p in particles:
         a = p.acceleration
         accel.append(abs(a[0]) + abs(a[1]) + abs(a[2]))
 
-    print_solution(accel.index(min(accel)))
+    AoCUtils.print_solution(1, accel.index(min(accel)))
 
 
 if __name__ == "__main__":

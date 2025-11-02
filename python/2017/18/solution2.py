@@ -1,9 +1,13 @@
+import os
+import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2017/18/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
+
+from aoc_helpers import AoCInput, AoCUtils
 from collections import defaultdict
 from string import ascii_lowercase as letters
 
-def print_solution(x):
-    """format input for printing"""
-    print(f"The solution is {x}")
 
 class Duet():
     """simulated computer"""
@@ -93,35 +97,16 @@ def main():
     pc0.duet = pc1
     pc1.duet = pc0
 
-    file = open('input.txt', 'r', encoding='utf-8')
-    for line in file.readlines():
+    lines = AoCInput.read_lines(INPUT_FILE)
+    for line in lines:
         pc0.program.append(line.strip().split())
         pc1.program.append(line.strip().split())
 
-    """     pc0.snd('1')
-    pc0.snd('2')
-    pc0.snd('0')
-
-    pc1.snd('1')
-    pc1.snd('2')
-    pc1.snd('1')
-
-    pc0.rcv('a')
-    pc0.rcv('b')
-    pc0.rcv('c')
-
-    pc1.rcv('a')
-    pc1.rcv('b')
-    pc1.rcv('c') """
-
-
     while pc0.locked == False or pc0.locked == False or len(pc0.buffer) > 0 or len(pc1.buffer) > 0:
-        #print(f"run 0")
         pc0.run()
-        #print(f"run 1")
         pc1.run()
 
-    print_solution(pc1.tx_count)
+    AoCUtils.print_solution(2, pc1.tx_count)
 
 
 if __name__ == "__main__":

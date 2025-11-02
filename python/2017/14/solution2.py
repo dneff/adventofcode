@@ -1,10 +1,12 @@
+import os
+import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2017/14/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
+
+from aoc_helpers import AoCInput, AoCUtils
 from collections import deque
 import networkx as nx
-
-
-def print_solution(x):
-    """format input for printing as solution"""
-    print(f"The solution is: {x}")
 
 
 def knot_hash(s):
@@ -33,7 +35,7 @@ def knot_hash(s):
         for x in list(ring)[block:block+16]:
             hash_val ^= x
         hashes.append(hash_val)
-    
+
     final_hash = ''.join([format(hex(x)[2:],'0>2') for x in hashes])
     return final_hash
 
@@ -55,10 +57,10 @@ def main():
         for i,v in enumerate(hash_to_binary(k)):
             if v == '0':
                 drive.remove_node((i,r))
-    
+
     drive = nx.to_directed(drive)
     view = nx.condensation(drive)
-    print_solution(len(set(view.graph['mapping'].values())))
+    AoCUtils.print_solution(2, len(set(view.graph['mapping'].values())))
 
 
 if __name__ == "__main__":

@@ -1,7 +1,13 @@
+import os
+import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2016/18/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
 
-def printSolution(x):
+from aoc_helpers import AoCInput, AoCUtils
+
+def AoCUtils.print_solution(1, x):
     print(f"The solution is {x}")
-
 def generateTile(trio):
     # traps are ones, else zero
     convert = {
@@ -57,7 +63,7 @@ def main():
         safe_tiles += countSafe(current_row)
         row_count += 1
 
-    printSolution(safe_tiles)
+    AoCUtils.print_solution(1, safe_tiles)
 
 if __name__ == "__main__":
     main()

@@ -1,8 +1,11 @@
+import os
+import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2016/13/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
 
+from aoc_helpers import AoCInput, AoCUtils
 from queue import Queue
-
-def printSolution(x):
-    print(f"The solution is {x}")
 
 def isOpen(grid_loc, seed):
     x, y = grid_loc
@@ -53,7 +56,7 @@ def main():
                 continue
             loc_to_evaluate.put(state)
 
-    printSolution(len(loc_seen))
+    AoCUtils.print_solution(2, len(loc_seen))
 
 
 

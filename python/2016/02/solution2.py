@@ -1,5 +1,10 @@
-def printSolution(x):
-    print(f"The solution is: {x}")
+import os
+import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2016/2/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
+
+from aoc_helpers import AoCInput, AoCUtils
 
 
 class Keypad:
@@ -36,18 +41,18 @@ class Keypad:
 
 
 def main():
-    file = open("input.txt", "r")
+    lines = AoCInput.read_lines(INPUT_FILE)
 
     bathroom = Keypad()
 
     code = ""
-    for sequence in file:
+    for sequence in lines:
         for direction in sequence.strip():
             bathroom.move(direction)
 
         code += bathroom.getPosition()
 
-    printSolution(code)
+    AoCUtils.print_solution(2, code)
 
 
 if __name__ == "__main__":

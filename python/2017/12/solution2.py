@@ -1,14 +1,17 @@
-import networkx as nx
+import os
+import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2017/12/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
 
-def print_solution(x):
-    """Format the input to print as solution"""
-    print(f"The solution is: {x}")
+from aoc_helpers import AoCInput, AoCUtils
+import networkx as nx
 
 
 def main():
     network = nx.DiGraph()
-    file = open('input.txt', 'r', encoding='utf-8')
-    for line in file.readlines():
+    lines = AoCInput.read_lines(INPUT_FILE)
+    for line in lines:
         node, connections = line.strip().split(' <-> ')
         node = int(node)
         connections = [int(x) for x in connections.split(',')]
@@ -16,7 +19,7 @@ def main():
             network.add_edge(node,c)
 
     view = nx.condensation(network)
-    print_solution(len(set(view.graph['mapping'].values())))
+    AoCUtils.print_solution(2, len(set(view.graph['mapping'].values())))
 
 
 if __name__ == "__main__":

@@ -1,5 +1,10 @@
-def printSolution(x):
-    print(f"The solution is: {x}")
+import os
+import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2017/3/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
+
+from aoc_helpers import AoCInput, AoCUtils
 
 
 def getAdjacent(loc):
@@ -41,7 +46,7 @@ def main():
                 adj_values.append(locations[point])
         locations[(x, y)] = sum(adj_values)
 
-    printSolution(locations[(x,y)])
+    AoCUtils.print_solution(2, locations[(x,y)])
 
 
 if __name__ == "__main__":

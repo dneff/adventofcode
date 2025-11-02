@@ -1,8 +1,11 @@
+import os
+import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2016/7/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
+
+from aoc_helpers import AoCInput, AoCUtils
 import re
-
-
-def printSolution(x):
-    print(f"The solution is: {x}")
 
 
 def getABA(s):
@@ -20,9 +23,9 @@ def invertABA(s):
 def main():
 
     support_ssl = []
-    file = open("input.txt", "r")
+    lines = AoCInput.read_lines(INPUT_FILE)
 
-    for line in file:
+    for line in lines:
         hypernet = []
         for s in re.findall("(\[\w*\])", line):
             if s[0] == '[':
@@ -47,8 +50,8 @@ def main():
                         ssl_match.append(s)
                         support_ssl.append(line.strip())
                         break
-    
-    printSolution(len(set(support_ssl)))
+
+    AoCUtils.print_solution(2, len(set(support_ssl)))
     
 
 if __name__ == "__main__":

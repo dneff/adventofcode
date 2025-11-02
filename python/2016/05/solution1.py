@@ -1,11 +1,15 @@
+import os
+import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2016/5/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
+
+from aoc_helpers import AoCInput, AoCUtils
 import string
 import hashlib
 
-def printSolution(x):
-    print(f"The solution is: {x}")
-
 def main():
-    seed = 'abbhdwsy'
+    seed = AoCInput.read_lines(INPUT_FILE)[0].strip()
     index = 0
     hashed = []
     while len(hashed) < 8:
@@ -17,7 +21,7 @@ def main():
             print(".",)
         index += 1
     
-    printSolution(''.join(hashed))
+    AoCUtils.print_solution(1, ''.join(hashed))
 
 if __name__ == "__main__":
     main()

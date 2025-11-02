@@ -1,13 +1,16 @@
+import os
+import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2017/1/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
 
-def print_solution(x):
-    """ print solution """
-    print(f"The solution is: {x}")
+from aoc_helpers import AoCInput, AoCUtils
 
 
 def main():
     """ calculate solution """
-    f = open('input.txt', 'r', encoding='utf-8')
-    digits = [int(x) for x in f.readline().strip()]
+    line = AoCInput.read_lines(INPUT_FILE)[0]
+    digits = [int(x) for x in line.strip()]
 
     same_sum = 0
     half = len(digits)//2
@@ -16,7 +19,7 @@ def main():
         compare = (i + half) % len(digits)
         if digits[i] == digits[compare]:
             same_sum += digits[i]
-    print_solution(same_sum)
+    AoCUtils.print_solution(2, same_sum)
 
 
 if __name__ == "__main__":

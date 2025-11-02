@@ -1,6 +1,10 @@
+import os
+import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2016/25/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
 
-def printSolution(x):
-    print(f"The solution is {x}")
+from aoc_helpers import AoCInput, AoCUtils
 
 class BunnyPC():
     def __init__(self):
@@ -10,8 +14,8 @@ class BunnyPC():
         self.instruction_pointer = 0
 
     def load(self, filename):
-        file = open(filename, 'r')
-        for line in file:
+        lines = AoCInput.read_lines(filename)
+        for line in lines:
             self.code.append(line.strip())
 
     def clear(self):
@@ -103,7 +107,7 @@ def main():
 
     pc = BunnyPC()
     pc.register['a'] = value
-    pc.load('input.txt')
+    pc.load(INPUT_FILE)
 
     tuning = True
 
@@ -118,7 +122,7 @@ def main():
             pc.clear()
             pc.register['a'] = value
     
-    printSolution(value)
+    AoCUtils.print_solution(1, value)
 
 
     

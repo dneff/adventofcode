@@ -1,13 +1,18 @@
+import os
+import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2016/21/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
+
+from aoc_helpers import AoCInput, AoCUtils
+
 from itertools import permutations
-
-def printSolution(x):
+def AoCUtils.print_solution(2, x):
     print(f"The solution is {x}")
-
 class Scrambler():    
     def __init__(self, password):
         self.password = password
         self.data = []
-
     def load(self, filepath):
         fh = open(filepath, 'r')
         for l in fh:
@@ -118,7 +123,7 @@ def main():
         scram.compile()
 
         if scram.password == scrambled:
-            printSolution(pwd)
+            AoCUtils.print_solution(2, pwd)
             break
 
 

@@ -1,8 +1,10 @@
+import os
+import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2017/17/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
 
-
-def print_solution(x):
-    """format input for printing"""
-    print(f"The solution is: {x}")
+from aoc_helpers import AoCInput, AoCUtils
 
 
 def main():
@@ -15,7 +17,7 @@ def main():
         ring.insert(idx + 1, i)
         idx += 1
 
-    print(ring[idx+1])
+    AoCUtils.print_solution(1, ring[idx+1])
 
 
 if __name__ == "__main__":

@@ -1,10 +1,12 @@
+import os
+import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2017/15/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
 
+from aoc_helpers import AoCInput, AoCUtils
 from operator import ge
 
-
-def print_solution(x):
-    """Format input for solution printing"""
-    print(f"The solution is: {x}")
 
 def generator(factor, seed):
     val = seed
@@ -37,7 +39,7 @@ def main():
         if format(x,'b')[-16:] == format(y,'b')[-16:]:
             matches += 1
 
-    print_solution(matches)
+    AoCUtils.print_solution(2, matches)
 
 
 if __name__ == "__main__":

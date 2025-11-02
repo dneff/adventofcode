@@ -1,6 +1,10 @@
+import os
+import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2016/8/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
 
-def printSolution(x):
-    print(f"The solution is: {x}")
+from aoc_helpers import AoCInput, AoCUtils
 
 
 class cardReader():
@@ -38,8 +42,8 @@ def main():
 
     door = cardReader()
 
-    file = open('input.txt', 'r')
-    for line in file:
+    lines = AoCInput.read_lines(INPUT_FILE)
+    for line in lines:
         line = line.strip()
         line = line.replace('x=', '')
         line = line.replace('y=', '')

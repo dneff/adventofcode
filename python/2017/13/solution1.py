@@ -1,12 +1,16 @@
-def print_solution(x):
-    """Format input for printing solution"""
-    print(f"The solution is: {x}")
+import os
+import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2017/13/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
+
+from aoc_helpers import AoCInput, AoCUtils
 
 
 def main():
-    file = open('input.txt', 'r', encoding='utf-8')
+    lines = AoCInput.read_lines(INPUT_FILE)
     firewall = {}
-    for line in file.readlines():
+    for line in lines:
         layer, depth = [int(x) for x in line.split(': ')]
         firewall[layer] = depth
 
@@ -16,7 +20,7 @@ def main():
             if time % ((firewall[time] - 1) * 2) == 0:
                 severity += firewall[time] * time
 
-    print_solution(severity)
+    AoCUtils.print_solution(1, severity)
 
 
 if __name__ == "__main__":

@@ -1,9 +1,11 @@
+import os
+import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2017/21/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
+
+from aoc_helpers import AoCInput, AoCUtils
 from math import isqrt
-
-
-def print_solution(x):
-    """format input for printing"""
-    print(f"The solution is: {x}")
 
 
 def rotate_patterns(pattern):
@@ -101,9 +103,10 @@ def find_enhancement(enhancements, patterns):
 
 
 def main():
-    file = open('input.txt', 'r', encoding='utf-8')
+    lines = AoCInput.read_lines(INPUT_FILE)
+
     enhancements = {}
-    for line in file.readlines():
+    for line in lines:
         k, v = line.strip().split(' => ')
         enhancements[k] = v
 
@@ -116,7 +119,7 @@ def main():
             new_pattern.append(find_enhancement(enhancements, rotate_patterns(p)))
         pattern = join_patterns(new_pattern)
 
-    print_solution(pattern.count('#'))
+    AoCUtils.print_solution(2, pattern.count('#'))
 
 
 if __name__ == "__main__":

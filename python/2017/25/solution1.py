@@ -1,8 +1,12 @@
+import os
+import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2017/25/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
+
+from aoc_helpers import AoCInput, AoCUtils
 from collections import defaultdict
 
-def print_solution(x):
-    """format input for printing"""
-    print(f"The solution is: {x}")
 
 class Turing():
     def __init__(self):
@@ -91,7 +95,7 @@ def main():
     pc = Turing()
     pc.run(12425180)
 
-    print_solution(pc.checksum())
+    AoCUtils.print_solution(1, pc.checksum())
 
 
 if __name__ == "__main__":

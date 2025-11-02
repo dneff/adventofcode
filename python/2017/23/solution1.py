@@ -1,9 +1,13 @@
+import os
+import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2017/23/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
+
+from aoc_helpers import AoCInput, AoCUtils
 from collections import defaultdict
 from string import ascii_lowercase as letters
 
-def print_solution(x):
-    """format input for printing"""
-    print(f"The solution is {x}")
 
 class Duet():
     """simulated computer"""
@@ -68,14 +72,15 @@ class Duet():
 def main():
     pc0 = Duet(0)
 
-    file = open('input.txt', 'r', encoding='utf-8')
-    for line in file.readlines():
+    lines = AoCInput.read_lines(INPUT_FILE)
+
+    for line in lines:
         pc0.program.append(line.strip().split())
 
     while not pc0.locked:
         pc0.run()
 
-    print_solution(pc0.mul_count)
+    AoCUtils.print_solution(1, pc0.mul_count)
 
 
 if __name__ == "__main__":

@@ -1,6 +1,10 @@
-def printSolution(x):
-    print(f"The solution is: {x}")
+import os
+import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2016/9/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
 
+from aoc_helpers import AoCInput, AoCUtils
 
 
 def decompress(s):
@@ -27,10 +31,10 @@ def decompress(s):
     return result
 
 def main():
-    file = open("input.txt", "r")
+    lines = AoCInput.read_lines(INPUT_FILE)
 
-    for data in file.readlines():
-        printSolution(decompress(data.strip()))
+    for data in lines:
+        AoCUtils.print_solution(2, decompress(data.strip()))
 
 
 

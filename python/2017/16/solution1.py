@@ -1,9 +1,12 @@
+import os
+import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2017/16/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
 
+from aoc_helpers import AoCInput, AoCUtils
 from socket import INADDR_MAX_LOCAL_GROUP
 
-
-def print_solution(x):
-    print(f"The solution is: {x}")
 
 class Computer():
     def __init__(self):
@@ -36,13 +39,13 @@ class Computer():
 
 
 def main():
-    file = open('input.txt', 'r', encoding='utf-8')
-    instructions = file.readline().strip().split(',')
-    
+    line = AoCInput.read_lines(INPUT_FILE)[0]
+    instructions = line.strip().split(',')
+
     pc = Computer()
     pc.instructions = instructions
     pc.run()
-    print_solution(''.join(pc.progs))
+    AoCUtils.print_solution(1, ''.join(pc.progs))
 
     
 

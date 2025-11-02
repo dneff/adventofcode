@@ -1,15 +1,17 @@
+import os
+import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2017/10/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
+
+from aoc_helpers import AoCInput, AoCUtils
 from collections import deque
-
-
-def print_solution(x):
-    """ formats solution and prints """
-    print(f"The solution is: {x}")
 
 
 def main():
     """main solution for problem"""
-    file = open('input.txt', 'r', encoding='utf-8')
-    instructions = [ord(x) for x in file.readline().strip()]
+    line = AoCInput.read_lines(INPUT_FILE)[0]
+    instructions = [ord(x) for x in line.strip()]
     instructions.extend([17, 31, 73, 47, 23])
 
     ring = deque()
@@ -35,7 +37,7 @@ def main():
             hash_val ^= x
         hashes.append(hash_val)
 
-    print_solution(''.join([hex(x)[2:] for x in hashes]))
+    AoCUtils.print_solution(2, ''.join([hex(x)[2:] for x in hashes]))
 
 
 if __name__ == "__main__":

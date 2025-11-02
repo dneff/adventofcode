@@ -1,9 +1,12 @@
+import os
+import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2016/4/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
+
+from aoc_helpers import AoCInput, AoCUtils
 import re
 from collections import defaultdict
-
-
-def printSolution(x):
-    print(f"The solution is: {x}")
 
 
 def isRealRoom(name, checksum):
@@ -27,16 +30,16 @@ def isRealRoom(name, checksum):
 
 
 def main():
-    file = open("input.txt", "r")
+    lines = AoCInput.read_lines(INPUT_FILE)
 
     sector_ids = []
-    for line in file:
+    for line in lines:
         sector = re.search("(\d+)", line)[0]
         checksum = re.search("\[(.*)\]", line).group(1)
         name = line.split(sector)[0]
         if isRealRoom(name, checksum):
             sector_ids.append(int(sector))
-    printSolution(sum(sector_ids))
+    AoCUtils.print_solution(1, sum(sector_ids))
 
 
 if __name__ == "__main__":

@@ -1,6 +1,10 @@
+import os
+import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2016/23/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
 
-def printSolution(x):
-    print(f"The solution is {x}")
+from aoc_helpers import AoCInput, AoCUtils
 
 class BunnyPC():
     def __init__(self):
@@ -9,8 +13,8 @@ class BunnyPC():
         self.instruction_pointer = 0
 
     def load(self, filename):
-        file = open(filename, 'r')
-        for line in file:
+        lines = AoCInput.read_lines(filename)
+        for line in lines:
             self.code.append(line.strip())
 
     def resolveX(self, x):
@@ -80,7 +84,7 @@ class BunnyPC():
             command = getattr(self, inst[0])
             command(*inst[1:])
             #print(inst, self.register, self.code)
-        printSolution(self.register["a"])
+        AoCUtils.print_solution(1, self.register["a"])
 
 def main():
     test = 0
@@ -91,7 +95,7 @@ def main():
 
     pc = BunnyPC()
     pc.register['a'] = active
-    pc.load('input.txt')
+    pc.load(INPUT_FILE)
     pc.run()
     # 239500799
 

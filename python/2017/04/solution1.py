@@ -1,17 +1,21 @@
+import os
+import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2017/4/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
 
-def printSolution(x):
-    print(f"The solution is: {x}")
+from aoc_helpers import AoCInput, AoCUtils
 
 
 def main():
-    file = open('input.txt', 'r')
+    lines = AoCInput.read_lines(INPUT_FILE)
     valid_count = 0
-    for line in file.readlines():
+    for line in lines:
         words = line.strip().split()
         if len(words) == len(set(words)):
             valid_count += 1
 
-    printSolution(valid_count)
+    AoCUtils.print_solution(1, valid_count)
 
 
 if __name__ == "__main__":

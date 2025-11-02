@@ -1,14 +1,17 @@
+import os
+import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2017/19/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
 
-def print_solution(x):
-    """format input for printing"""
-    print(f"The solution is: {x}")
+from aoc_helpers import AoCInput, AoCUtils
 
 
 def main():
-    file = open('input.txt', 'r', encoding='utf-8')
+    lines = AoCInput.read_lines(INPUT_FILE)
 
     tubes = {}
-    for y, line in enumerate(file.readlines()):
+    for y, line in enumerate(lines):
         for x, point in enumerate([*line]):
             if point != ' ':
                 tubes[(x, y)] = point
@@ -40,7 +43,7 @@ def main():
         position = (x, y)
         steps += 1
 
-    print_solution(steps)
+    AoCUtils.print_solution(2, steps)
 
 
 if __name__ == "__main__":

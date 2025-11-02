@@ -1,10 +1,12 @@
+import os
+import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2017/24/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
+
+from aoc_helpers import AoCInput, AoCUtils
 from copy import deepcopy
 from collections import defaultdict
-
-
-def print_solution(x):
-    """format solution for printing"""
-    print(f"The solution is: {x}")
 
 
 def sum_bridge(b):
@@ -42,9 +44,10 @@ def get_bridge(pipes, bridge, connector):
 
 
 def main():
-    file = open('input.txt', 'r', encoding='utf-8')
+    lines = AoCInput.read_lines(INPUT_FILE)
+
     pipes = set()
-    for line in file.readlines():
+    for line in lines:
         a, b = [int(x) for x in line.split('/')]
         pipes.add((a, b))
 
@@ -75,7 +78,7 @@ def main():
 
     final = bridges[longest][best_idx]
 
-    print_solution(sum_bridge(final))
+    AoCUtils.print_solution(2, sum_bridge(final))
 
 
 if __name__ == "__main__":

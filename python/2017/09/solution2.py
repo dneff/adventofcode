@@ -1,7 +1,10 @@
+import os
+import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2017/9/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
 
-def print_solution(x):
-    """ prints input with sol'n formatting """
-    print(f"The solution is: {x}")
+from aoc_helpers import AoCInput, AoCUtils
 
 
 def filter_garbage(stream):
@@ -29,9 +32,8 @@ def filter_garbage(stream):
 
 
 def main():
-    file = open('input.txt', 'r', encoding='utf-8')
-    stream = file.readline().strip()
-    print_solution(len(filter_garbage(stream)))
+    stream = AoCInput.read_lines(INPUT_FILE)[0].strip()
+    AoCUtils.print_solution(2, len(filter_garbage(stream)))
 
 
 if __name__ == "__main__":

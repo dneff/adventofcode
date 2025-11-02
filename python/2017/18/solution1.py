@@ -1,10 +1,12 @@
+import os
+import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2017/18/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
+
+from aoc_helpers import AoCInput, AoCUtils
 from collections import defaultdict
 from string import ascii_lowercase as letters
-
-
-def print_solution(x):
-    """format input for printing"""
-    print(f"The solution is {x}")
 
 
 class Duet():
@@ -55,7 +57,7 @@ class Duet():
         if self.registers[x] != 0:
             self.registers[x] = self.played
             if self.played != 0:
-                print_solution(self.played)
+                AoCUtils.print_solution(1, self.played)
                 exit(0)
 
     def jgz(self, x, y):
@@ -77,8 +79,8 @@ class Duet():
 
 def main():
     pc = Duet()
-    file = open('input.txt', 'r', encoding='utf-8')
-    for line in file.readlines():
+    lines = AoCInput.read_lines(INPUT_FILE)
+    for line in lines:
         pc.program.append(line.strip().split())
 
     pc.run()

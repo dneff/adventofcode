@@ -1,9 +1,15 @@
-def printSolution(x):
-    print(f"The solution is: {x}")
+import os
+import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2016/16/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
 
+from aoc_helpers import AoCInput, AoCUtils
+
+def AoCUtils.print_solution(1, x):
+    print(f"The solution is: {x}")
 def dataGenerator(initial_state, target_length):
     data = initial_state
-
     while len(data) < target_length:
         # copy data, reverse order, invert O's and 1's, join with "0"
         # repeat until data is larger than target size
@@ -48,7 +54,7 @@ def main():
     data = dataGenerator(active['init'], active['length'])
     checksum = checksumGenerator(data)
 
-    printSolution(checksum)
+    AoCUtils.print_solution(1, checksum)
 
 if __name__ == "__main__":
     main()

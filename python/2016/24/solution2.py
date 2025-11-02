@@ -1,9 +1,7 @@
 from queue import PriorityQueue
 from itertools import permutations
-
-def printSolution(x):
+def AoCUtils.print_solution(2, x):
     print(f"The solution is {x}")
-
 class Map():
     def __init__(self):
         self.valid = set()
@@ -80,7 +78,14 @@ def main():
 
     ducts = Map()
 
-    file = open('input.txt', 'r')
+import os
+import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2016/24/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
+
+from aoc_helpers import AoCInput, AoCUtils
+
     for row, l in enumerate(file.readlines()):
         for col, c in enumerate(l):
             if c == '.':

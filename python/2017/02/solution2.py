@@ -1,12 +1,16 @@
+import os
+import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2017/2/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
 
-def printSolution(x):
-    print(f"The solution is: {x}")
+from aoc_helpers import AoCInput, AoCUtils
 
 
 def main():
-    f = open('input.txt', 'r')
+    lines = AoCInput.read_lines(INPUT_FILE)
     row_div = []
-    for row in f.readlines():
+    for row in lines:
         r = [int(x) for x in row.split()]
         r.sort(reverse=True)
 
@@ -14,7 +18,7 @@ def main():
             for y in r[i+1:]:
                 if x % y == 0:
                     row_div.append(x//y)
-    printSolution(sum(row_div))
+    AoCUtils.print_solution(2, sum(row_div))
 
 
 if __name__ == "__main__":

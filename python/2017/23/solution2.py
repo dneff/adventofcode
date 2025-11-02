@@ -1,10 +1,14 @@
+import os
+import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2017/23/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
+
+from aoc_helpers import AoCInput, AoCUtils
 from collections import defaultdict
 from string import ascii_lowercase as letters
 from sympy import isprime
 
-def print_solution(x):
-    """format input for printing"""
-    print(f"The solution is {x}")
 
 class Duet():
     """simulated computer"""
@@ -73,13 +77,14 @@ def main():
     pc0 = Duet(0)
     pc0.registers['a'] = 1
 
-    file = open('input.txt', 'r', encoding='utf-8')
-    for line in file.readlines():
+    lines = AoCInput.read_lines(INPUT_FILE)
+
+    for line in lines:
         pc0.program.append(line.strip().split())
 
     """while not pc0.locked:
         pc0.run()
-    print_solution(pc.registers['h'])
+    AoCUtils.print_solution(2, pc.registers['h'])
     """
 
     # painful debugging to figure out actual ask
@@ -91,7 +96,7 @@ def main():
         test_val += 17
 
     # not 85, 916
-    print_solution(composite_count)
+    AoCUtils.print_solution(2, composite_count)
 
 if __name__ == "__main__":
     main()

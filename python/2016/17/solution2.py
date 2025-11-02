@@ -1,11 +1,16 @@
+import os
+import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2016/17/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
+
+from aoc_helpers import AoCInput, AoCUtils
+
 import copy
 from hashlib import md5
 from queue import PriorityQueue
-
-
-def printSolution(x):
+def AoCUtils.print_solution(2, x):
     print(f"The solution is {x}")
-
 def getHash(salted_path):
     result = md5(salted_path.encode())
     return result.hexdigest()
@@ -66,7 +71,7 @@ def main():
             if isValidRoom(new_room, dimensions):
                 path_queue.put((len(new_path), [new_path, copy.copy(new_room)]))
 
-    printSolution(max(paths_to_vault))
+    AoCUtils.print_solution(2, max(paths_to_vault))
 
 
 if __name__ == "__main__":

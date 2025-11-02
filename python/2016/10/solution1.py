@@ -1,7 +1,11 @@
-from collections import defaultdict
+import os
+import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2016/10/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
 
-def printSolution(x):
-    print(f"The solution is: {x}")
+from aoc_helpers import AoCInput, AoCUtils
+from collections import defaultdict
 
 def main():
     instructions = defaultdict(list)
@@ -24,8 +28,8 @@ def main():
                 if len(bot[i[1]]) == 2:
                     processBot(i[1])
 
-    file = open('input.txt', 'r')
-    for line in file:
+    lines = AoCInput.read_lines(INPUT_FILE)
+    for line in lines:
         line = line.strip().split()
         if line[0] == "bot":
             instructions[line[1]] = [(line[-7],line[-6]), (line[-2],line[-1])]
