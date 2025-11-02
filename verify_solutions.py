@@ -1,15 +1,21 @@
 #!/usr/bin/env python3
 """
-Verify all 2015 Advent of Code solutions against known correct answers.
+Verify Advent of Code solutions against known correct answers.
 
-This script runs each solution file in python/2015 and compares the output
-against the answer files stored in aoc-data/2015.
+This script runs each solution file for a specified year and compares the output
+against the answer files stored in aoc-data.
+
+Usage:
+    python verify_solutions.py [YEAR]
+
+    YEAR: The year to verify (e.g., 2015, 2016, 2017). Defaults to 2015.
 """
 
 import os
 import sys
 import subprocess
 import time
+import argparse
 from pathlib import Path
 
 # Colors for terminal output
@@ -20,20 +26,21 @@ BLUE = '\033[94m'
 RESET = '\033[0m'
 
 
-def get_expected_answer(day: int, part: int, base_dir: Path) -> str | None:
+def get_expected_answer(day: int, part: int, year: int, base_dir: Path) -> str | None:
     """
     Read the expected answer from aoc-data directory.
 
     Args:
         day: Day number (1-25)
         part: Part number (1 or 2)
+        year: Year (e.g., 2015, 2016, 2017)
         base_dir: Base directory of the adventofcode repo
 
     Returns:
         Expected answer as string, or None if file doesn't exist or is invalid
     """
-    # Path from python/2015/XX/ to aoc-data is ../../../../aoc-data
-    answer_file = base_dir.parent / "aoc-data" / "2015" / str(day) / f"solution-{part}"
+    # Path from repo root to aoc-data is ../aoc-data
+    answer_file = base_dir.parent / "aoc-data" / str(year) / str(day) / f"solution-{part}"
 
     if not answer_file.exists():
         return None
@@ -48,19 +55,20 @@ def get_expected_answer(day: int, part: int, base_dir: Path) -> str | None:
         return None
 
 
-def run_solution(day: int, part: int) -> tuple[str | None, bool, float]:
+def run_solution(day: int, part: int, year: int) -> tuple[str | None, bool, float]:
     """
     Run a solution file and extract the answer.
 
     Args:
         day: Day number (1-25)
         part: Part number (1 or 2)
+        year: Year (e.g., 2015, 2016, 2017)
 
     Returns:
         Tuple of (answer, success, elapsed_time) where answer is the solution output or None if failed,
         and elapsed_time is the execution time in seconds
     """
-    solution_file = Path(f"python/2015/{day:02d}/solution{part}.py")
+    solution_file = Path(f"python/{year}/{day:02d}/solution{part}.py")
 
     if not solution_file.exists():
         return None, False, 0.0
@@ -92,11 +100,38 @@ def run_solution(day: int, part: int) -> tuple[str | None, bool, float]:
 
 
 def main():
-    """Run verification for all 2015 solutions."""
-    print(f"{BLUE}Verifying 2015 Advent of Code Solutions{RESET}")
+    """Run verification for all solutions for a specified year."""
+    parser = argparse.ArgumentParser(
+        description='Verify Advent of Code solutions against known correct answers.'
+    )
+    parser.add_argument(
+        'year',
+        type=int,
+        nargs='?',
+        default=2015,
+        help='Year to verify (default: 2015)'
+    )
+    args = parser.parse_args()
+    year = args.year
+
+    # Validate year
+    base_dir = Path(__file__).parent
+    python_year_dir = base_dir / "python" / str(year)
+    aoc_data_dir = base_dir.parent / "aoc-data" / str(year)
+
+    if not python_year_dir.exists():
+        print(f"{RED}Error: Python solutions directory not found for year {year}{RESET}")
+        print(f"Expected directory: {python_year_dir}")
+        sys.exit(1)
+
+    if not aoc_data_dir.exists():
+        print(f"{YELLOW}Warning: aoc-data directory not found for year {year}{RESET}")
+        print(f"Expected directory: {aoc_data_dir}")
+        print("Continuing anyway, but no answers will be verified.")
+
+    print(f"{BLUE}Verifying {year} Advent of Code Solutions{RESET}")
     print("=" * 60)
 
-    base_dir = Path(__file__).parent
     total_verified = 0
     total_correct = 0
     total_incorrect = 0
@@ -105,14 +140,14 @@ def main():
 
     for day in range(1, 26):
         for part in [1, 2]:
-            expected = get_expected_answer(day, part, base_dir)
+            expected = get_expected_answer(day, part, year, base_dir)
 
             if expected is None:
                 # No verified answer available
                 total_missing += 1
                 continue
 
-            actual, success, elapsed_time = run_solution(day, part)
+            actual, success, elapsed_time = run_solution(day, part, year)
 
             if not success or actual is None:
                 print(f"{RED}✗{RESET} Day {day:2d} Part {part}: {RED}FAILED TO RUN{RESET} ({elapsed_time:.3f}s)")
@@ -130,7 +165,7 @@ def main():
 
     # Print summary
     print("\n" + "=" * 60)
-    print(f"{BLUE}Summary:{RESET}")
+    print(f"{BLUE}Summary for {year}:{RESET}")
     print(f"  {GREEN}Correct:{RESET}      {total_correct}")
     print(f"  {RED}Incorrect:{RESET}    {total_incorrect}")
     print(f"  {RED}Failed:{RESET}       {total_failed}")
