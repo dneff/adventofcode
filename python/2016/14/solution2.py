@@ -1,64 +1,114 @@
 import os
 import sys
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2016/14/input')
-sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
 
-from aoc_helpers import AoCInput, AoCUtils
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, "../../../../aoc-data/2016/14/input")
+sys.path.append(os.path.join(SCRIPT_DIR, "../../"))
 
 from hashlib import md5
-from queue import PriorityQueue
-import re
-from collections import defaultdict
-def AoCUtils.print_solution(2, x):
-    print(f"The solution is: {x}")
-def hashGenerator(salt):
-    num = 0
-    while True:
-        to_hash = salt + str(num)
-        result = md5(to_hash.encode())
+from multiprocessing import Pool
 
-        for _ in range(2016):
-            result = md5(result.hexdigest().encode())
 
-        yield num, result.hexdigest()
-        num += 1
+def compute_stretched_hash(args):
+    """
+    Compute a stretched MD5 hash for the given salt and index.
+
+    Key stretching makes hash generation more secure by requiring additional
+    computational work. After computing the initial MD5 hash of salt+index,
+    we apply MD5 an additional 2016 times (2017 total MD5 operations).
+
+    Args:
+        args: Tuple of (salt, index)
+
+    Returns:
+        tuple: (index, hash_string) - The index and stretched MD5 hash
+    """
+    salt, index = args
+    # Initial input: salt + index
+    result = salt + str(index)
+
+    # Key stretching: Apply MD5 2017 times total
+    for _ in range(2017):
+        result = md5(result.encode()).hexdigest()
+
+    return index, result
+
+
+def find_triplet(hash_str):
+    """
+    Find the first character that appears three times in a row.
+
+    Args:
+        hash_str: The hash string to search
+
+    Returns:
+        str or None: The character that appears in triplet, or None if not found
+    """
+    for i in range(len(hash_str) - 2):
+        if hash_str[i] == hash_str[i + 1] == hash_str[i + 2]:
+            return hash_str[i]
+    return None
+
+
+def has_quintuplet(hash_str, char):
+    """
+    Check if a character appears five times in a row in the hash.
+
+    Args:
+        hash_str: The hash string to search
+        char: The character to look for
+
+    Returns:
+        bool: True if the character appears 5 times consecutively
+    """
+    target = char * 5
+    return target in hash_str
+
 
 def main():
-    keys_needed = 64
+    # Goal: Find the index that produces the 64th valid one-time pad key
+    # using key stretching (2017 total MD5 operations per hash)
+    KEYS_NEEDED = 64
+    LOOKAHEAD_WINDOW = 1000  # Must check next 1000 hashes for quintuplet validation
 
-    test_salt = 'abc'
-    puzzle_salt = 'zpqevtbw'
+    test_salt = "abc"
+    puzzle_salt = "zpqevtbw"
     salt = puzzle_salt
-    
-    hasher = hashGenerator(salt)
-    possible_keys = PriorityQueue()
-    
-    len_5 = defaultdict(list)
 
-    key_count = 0
-    hash_idx, possible_key = next(hasher)
-    possible_keys.put((hash_idx, possible_key))
+    # Pre-compute a large batch of hashes in parallel
+    # We need to compute at least up to where the 64th key might be (around 23500)
+    MAX_INDEX = 24000
+    with Pool() as pool:
+        results = pool.map(compute_stretched_hash, [(salt, i) for i in range(MAX_INDEX)], chunksize=100)
 
-    while key_count < keys_needed:
-        possible_idx, possible_key = possible_keys.get()
-        cutoff = possible_idx + 1000
-        while hash_idx <= cutoff:
-            hash_idx, h = next(hasher)
-            three = re.search(r'((\w)\2{2})', h)
-            five = re.findall(r'((\w)\2{4})', h)
-            if three:
-                possible_keys.put((hash_idx, three.group(0)[1]))
-            if five:
-                len_5[five[0][0][0]].append(hash_idx)
-            possible_keys.put((hash_idx, h))
+    # Store results in a dict for fast lookup
+    hashes = {idx: hash_val for idx, hash_val in results}
 
-        if possible_key in len_5.keys():
-            if possible_idx < len_5[possible_key][-1] <= cutoff:
-                key_count += 1
+    valid_key_count = 0
+    index = 0
 
-            if key_count == keys_needed:
-                AoCUtils.print_solution(2, possible_idx)
+    while valid_key_count < KEYS_NEEDED and index < MAX_INDEX:
+        current_hash = hashes[index]
+        triplet_char = find_triplet(current_hash)
+
+        if triplet_char:
+            # Found a triplet - check next 1000 hashes for matching quintuplet
+            for lookahead_index in range(index + 1, min(index + LOOKAHEAD_WINDOW + 1, MAX_INDEX)):
+                lookahead_hash = hashes[lookahead_index]
+
+                if has_quintuplet(lookahead_hash, triplet_char):
+                    # Valid key found!
+                    valid_key_count += 1
+
+                    if valid_key_count == KEYS_NEEDED:
+                        print(f"The index that produces the 64th one-time pad key (with key stretching) is: {index}")
+                        return
+
+                    # Move to next index after finding a valid key
+                    break
+
+        index += 1
+
 
 if __name__ == "__main__":
     main()
