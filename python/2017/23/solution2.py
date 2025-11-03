@@ -1,3 +1,15 @@
+"""
+Advent of Code 2017 - Day 23: Coprocessor Conflagration (Part 2)
+
+Part 2 asks what value would be in register 'h' after the program completes
+if register 'a' starts at 1 instead of 0.
+
+Running the program directly would take too long. Through analysis/debugging,
+the program is found to count composite (non-prime) numbers in a specific range.
+
+The optimized solution checks which numbers in the range [106500, 106500+1000*17]
+with step 17 are composite (not prime).
+"""
 import os
 import sys
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -10,63 +22,62 @@ from string import ascii_lowercase as letters
 from sympy import isprime
 
 
-class Duet():
-    """simulated computer"""
-    def __init__(self, id):
-        self.id = id
-        self.duet = None
+class Coprocessor():
+    """Simulates a simple coprocessor with registers and basic instructions."""
+    def __init__(self, program_id):
+        self.id = program_id
+        self.duet = None  # For compatibility (unused in this puzzle)
         self.program = []
-        self.buffer = []
-        self.tx_count = 0
-        self.mul_count = 0
-        self.pointer = 0
-        self.locked = False
+        self.buffer = []  # For compatibility (unused in this puzzle)
+        self.tx_count = 0  # For compatibility (unused in this puzzle)
+        self.mul_count = 0  # Count mul instruction invocations
+        self.pointer = 0  # Instruction pointer
+        self.halted = False  # True when program terminates
         self.registers = defaultdict(int)
 
     def run(self):
-        """executes the instructions and advances instruction pointer
-        until out of range of instruction list"""
+        """Execute instructions until the program terminates (for debugging only).
+
+        This method includes debug print statements that are commented out in production.
+        """
         while -1 < self.pointer < len(self.program):
             instruction = self.program[self.pointer]
-            print(f"pc{self.id}:{self.pointer} - {instruction[0]} - {instruction[1]} ({self.get(instruction[1])}) - {instruction[2]} - ({self.get(instruction[2])})")
-            i = getattr(self, instruction[0])
-            i(*instruction[1:],)
+            # Uncomment for debugging:
+            # print(f"pc{self.id}:{self.pointer} - {instruction[0]} - {instruction[1]} ({self.get(instruction[1])}) - {instruction[2]} - ({self.get(instruction[2])})")
+            method = getattr(self, instruction[0])
+            method(*instruction[1:],)
             if instruction[0] != 'jnz':
                 self.pointer += 1
-            if self.locked == True:
+            if self.halted == True:
                 return
-            print(f"register b, d, e: {self.registers['b']} {self.registers['d']} {self.registers['e']}")
+            # Uncomment for debugging:
+            # print(f"register b, d, e: {self.registers['b']} {self.registers['d']} {self.registers['e']}")
 
-        self.locked = True
+        self.halted = True
         return
 
-
     def set(self, x, y):
-        """sets register X to the value of Y"""
+        """Set register X to the value of Y."""
         self.registers[x] = self.get(y)
 
     def sub(self, x, y):
-        """decreases register X by the value of Y"""
+        """Decrease register X by the value of Y."""
         self.registers[x] -= self.get(y)
 
     def mul(self, x, y):
-        """sets register X to the result of multiplying
-        the value contained in register X by the value of Y"""
+        """Multiply register X by the value of Y."""
         self.registers[x] *= self.get(y)
         self.mul_count += 1
 
     def jnz(self, x, y):
-        """jumps with an offset of the value of Y,
-        but only if the value of X is not zero.
-        (An offset of 2 skips the next instruction, an
-        offset of -1 jumps to the previous instruction, and so on.)"""
-
+        """Jump by offset Y if X is not zero."""
         if self.get(x) != 0:
             self.pointer += self.get(y)
         else:
             self.pointer += 1
 
-    def get(self,x):
+    def get(self, x):
+        """Get the value of x, either from a register or as a literal integer."""
         if x in letters:
             return self.registers[x]
         else:
@@ -74,29 +85,29 @@ class Duet():
 
 
 def main():
-    pc0 = Duet(0)
-    pc0.registers['a'] = 1
+    """Solve Part 2 using optimized prime-checking instead of running the slow program."""
+    processor = Coprocessor(0)
+    processor.registers['a'] = 1
 
     lines = AoCInput.read_lines(INPUT_FILE)
 
     for line in lines:
-        pc0.program.append(line.strip().split())
+        processor.program.append(line.strip().split())
 
-    """while not pc0.locked:
-        pc0.run()
-    AoCUtils.print_solution(2, pc.registers['h'])
-    """
-
-    # painful debugging to figure out actual ask
-    test_val = 106500
+    # The program would be extremely slow to run directly.
+    # After debugging/analysis, it counts composite numbers in a specific range.
+    # Optimized solution:
+    test_value = 106500  # Starting value (specific to puzzle input)
     composite_count = 0
-    for x in range(1001):
-        if not isprime(test_val):
-            composite_count += 1
-        test_val += 17
 
-    # not 85, 916
+    # Check 1001 numbers in the sequence: 106500, 106517, 106534, ...
+    for x in range(1001):
+        if not isprime(test_value):
+            composite_count += 1
+        test_value += 17
+
     AoCUtils.print_solution(2, composite_count)
+
 
 if __name__ == "__main__":
     main()

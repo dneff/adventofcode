@@ -1,3 +1,15 @@
+"""
+Advent of Code 2017 - Day 18: Duet (Part 2)
+
+In Part 2, the program interpretation changes completely. Now 'snd' sends values
+to another program and 'rcv' receives from a buffer. Two programs run in parallel,
+each with their own set of registers and a unique program ID (0 and 1) in register 'p'.
+
+The programs communicate via message queues. When a program tries to receive but
+has no messages, it waits. When both programs are waiting (deadlock), execution stops.
+
+The goal is to determine how many times program 1 sends a value.
+"""
 import os
 import sys
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -9,37 +21,46 @@ from collections import defaultdict
 from string import ascii_lowercase as letters
 
 
-class Duet():
-    """simulated computer"""
-    def __init__(self, id):
-        self.id = id
-        self.duet = None
+class DuetProgram():
+    """Simulates a concurrent program that communicates with another program via message passing."""
+    def __init__(self, program_id):
+        self.id = program_id
+        self.partner_program = None  # Reference to the other program
         self.program = []
-        self.buffer = []
-        self.tx_count = 0
-        self.pointer = 0
-        self.locked = False
+        self.receive_buffer = []  # Incoming messages queue
+        self.send_count = 0  # Number of values sent to partner
+        self.pointer = 0  # Instruction pointer
+        self.waiting = False  # True when blocked waiting for input
         self.registers = defaultdict(int)
 
     def run(self):
-        """executes the instructions and advances instruction pointer
-        until out of range of instruction list"""
+        """Execute instructions until blocked or program terminates.
+
+        Runs instructions sequentially until:
+        - The instruction pointer goes out of range (program terminates)
+        - A receive instruction blocks due to empty buffer (waiting state)
+        """
         while -1 < self.pointer < len(self.program):
             instruction = self.program[self.pointer]
-            #print(f"pc{self.id} - {instruction}")
             i = getattr(self, instruction[0])
             i(*instruction[1:],)
             if instruction[0] != 'jgz':
                 self.pointer += 1
-            if self.locked == True:
+            # If blocked on receive, return control to allow partner to run
+            if self.waiting == True:
                 return
-        self.locked = True
+        # Program terminated (pointer out of range)
+        self.waiting = True
         return
 
     def snd(self, x):
-        """send value to other program"""
-        self.duet.buffer.append(str(self.get(x)))
-        self.tx_count += 1
+        """Send a value to the partner program's receive buffer.
+
+        Args:
+            x: Register name or literal value to send
+        """
+        self.partner_program.receive_buffer.append(str(self.get(x)))
+        self.send_count += 1
 
     def set(self, x, y):
         """sets register X to the value of Y"""
@@ -61,13 +82,21 @@ class Duet():
         self.registers[x] %= self.get(y)
 
     def rcv(self, x):
-        """read value from buffer and write to X"""
-        if len(self.buffer) > 0:
-            self.locked = False
-            self.registers[x] = self.get(self.buffer.pop(0))
+        """Receive a value from the buffer and write to register X.
+
+        If the buffer is empty, the program waits (blocks) and backs up
+        the instruction pointer to retry this instruction later.
+
+        Args:
+            x: Register name to store the received value
+        """
+        if len(self.receive_buffer) > 0:
+            self.waiting = False
+            self.registers[x] = self.get(self.receive_buffer.pop(0))
             return
         else:
-            self.locked = True
+            # Block: set waiting flag and rewind pointer to retry this instruction
+            self.waiting = True
             self.pointer -= 1
 
     def jgz(self, x, y):
@@ -81,7 +110,15 @@ class Duet():
         else:
             self.pointer += 1
 
-    def get(self,x):
+    def get(self, x):
+        """Get the value of x, either from a register or as a literal integer.
+
+        Args:
+            x: Either a register name (letter) or a string representation of an integer
+
+        Returns:
+            The integer value from the register or the literal value
+        """
         if x in letters:
             return self.registers[x]
         else:
@@ -89,24 +126,30 @@ class Duet():
 
 
 def main():
-    pc0 = Duet(0)
-    pc0.registers['p'] = 0
-    pc1 = Duet(1)
-    pc1.registers['p'] = 1
+    """Run two Duet programs in parallel and count how many times program 1 sends values."""
+    # Create two programs with IDs 0 and 1
+    program0 = DuetProgram(0)
+    program0.registers['p'] = 0
+    program1 = DuetProgram(1)
+    program1.registers['p'] = 1
 
-    pc0.duet = pc1
-    pc1.duet = pc0
+    # Link the programs so they can communicate
+    program0.partner_program = program1
+    program1.partner_program = program0
 
+    # Load the same program into both
     lines = AoCInput.read_lines(INPUT_FILE)
     for line in lines:
-        pc0.program.append(line.strip().split())
-        pc1.program.append(line.strip().split())
+        program0.program.append(line.strip().split())
+        program1.program.append(line.strip().split())
 
-    while pc0.locked == False or pc0.locked == False or len(pc0.buffer) > 0 or len(pc1.buffer) > 0:
-        pc0.run()
-        pc1.run()
+    # Run both programs until both are waiting (deadlock) with no messages in transit
+    while (not program0.waiting or not program1.waiting or
+           len(program0.receive_buffer) > 0 or len(program1.receive_buffer) > 0):
+        program0.run()
+        program1.run()
 
-    AoCUtils.print_solution(2, pc1.tx_count)
+    AoCUtils.print_solution(2, program1.send_count)
 
 
 if __name__ == "__main__":

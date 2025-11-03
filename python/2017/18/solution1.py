@@ -1,3 +1,19 @@
+"""
+Advent of Code 2017 - Day 18: Duet (Part 1)
+
+You discover a tablet with assembly-like instructions. The goal is to execute
+the program and find the value of the recovered frequency the first time a
+'rcv' instruction is executed with a non-zero value.
+
+Instructions:
+- snd X: plays a sound with frequency equal to X's value
+- set X Y: sets register X to Y's value
+- add X Y: increases register X by Y's value
+- mul X Y: multiplies register X by Y's value
+- mod X Y: sets X to the remainder of X divided by Y
+- rcv X: recovers the last sound's frequency (only if X is non-zero)
+- jgz X Y: jumps by Y's offset if X is greater than zero
+"""
 import os
 import sys
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -9,17 +25,20 @@ from collections import defaultdict
 from string import ascii_lowercase as letters
 
 
-class Duet():
-    """simulated computer"""
+class DuetProgram():
+    """Simulates a single-threaded assembly program that plays sounds."""
     def __init__(self):
         self.program = []
-        self.played = 0
-        self.pointer = 0
+        self.last_sound_played = 0  # Frequency of the most recently played sound
+        self.pointer = 0  # Instruction pointer
         self.registers = defaultdict(int)
 
     def run(self):
-        """executes the instructions and advances instruction pointer
-        until out of range of instruction list"""
+        """Execute the program instructions until completion.
+
+        Runs instructions sequentially, advancing the instruction pointer
+        until it goes out of range of the instruction list.
+        """
         while -1 < self.pointer < len(self.program):
             instruction = self.program[self.pointer]
             i = getattr(self, instruction[0])
@@ -28,8 +47,12 @@ class Duet():
                 self.pointer += 1
 
     def snd(self, x):
-        """plays a sound with a frequency equal to the value of X"""
-        self.played = self.registers[x]
+        """Play a sound with a frequency equal to the value of X.
+
+        Args:
+            x: Register name containing the frequency value
+        """
+        self.last_sound_played = self.registers[x]
 
     def set(self, x, y):
         """sets register X to the value of Y"""
@@ -51,13 +74,18 @@ class Duet():
         self.registers[x] %= self.get(y)
 
     def rcv(self, x):
-        """recovers the frequency of the last sound
-        played, but only when the value of X is not zero.
-        (If it is zero, the command does nothing.)"""
+        """Recover the frequency of the last sound played (only if X is non-zero).
+
+        If the value in register X is not zero, recovers the last sound frequency.
+        When a non-zero frequency is recovered, prints the solution and exits.
+
+        Args:
+            x: Register name to check for non-zero value
+        """
         if self.registers[x] != 0:
-            self.registers[x] = self.played
-            if self.played != 0:
-                AoCUtils.print_solution(1, self.played)
+            self.registers[x] = self.last_sound_played
+            if self.last_sound_played != 0:
+                AoCUtils.print_solution(1, self.last_sound_played)
                 exit(0)
 
     def jgz(self, x, y):
@@ -71,6 +99,14 @@ class Duet():
             self.pointer += 1
 
     def get(self, x):
+        """Get the value of x, either from a register or as a literal integer.
+
+        Args:
+            x: Either a register name (letter) or a string representation of an integer
+
+        Returns:
+            The integer value from the register or the literal value
+        """
         if x in letters:
             return self.registers[x]
         else:
@@ -78,12 +114,13 @@ class Duet():
 
 
 def main():
-    pc = Duet()
+    """Parse and execute the Duet assembly program to find the recovered frequency."""
+    program = DuetProgram()
     lines = AoCInput.read_lines(INPUT_FILE)
     for line in lines:
-        pc.program.append(line.strip().split())
+        program.program.append(line.strip().split())
 
-    pc.run()
+    program.run()
 
 
 if __name__ == "__main__":

@@ -1,3 +1,12 @@
+"""
+Advent of Code 2017 - Day 21: Fractal Art (Part 2)
+
+Part 2 is the same as Part 1, but runs for 18 iterations instead of 5.
+The fractal pattern grows exponentially, so this requires significantly more
+computation time.
+
+After 18 iterations, count how many pixels are "on" (#).
+"""
 import os
 import sys
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -9,7 +18,14 @@ from math import isqrt
 
 
 def rotate_patterns(pattern):
-    """ return all rotations for given pattern"""
+    """Generate all rotations and flips of a pattern.
+
+    Args:
+        pattern: A pattern string with rows separated by '/' (e.g., '../.#')
+
+    Returns:
+        A set of all unique orientations (rotations and flips) of the pattern
+    """
     pattern = pattern.split('/')
     if len(pattern) == 2 and len(pattern[0]) == 2:
         pass
@@ -18,14 +34,15 @@ def rotate_patterns(pattern):
     else:
         raise ValueError('pattern must be only 2x2 or 3x3')
     rotations = ['/'.join(pattern)]
-    # rotate three times and add
+
+    # Generate 3 additional rotations (90, 180, 270 degrees)
     rotated = pattern[:]
     for _ in range(3):
         rotated = list(zip(*rotated[::-1]))
         rotated = [''.join(list(x)) for x in rotated]
         rotations.append('/'.join(rotated))
 
-    # flip top/bottom and add rotations
+    # Flip top/bottom and add its rotations
     flip = pattern[:]
     flip[0], flip[-1] = flip[-1], flip[0]
     rotations.append('/'.join(flip))
@@ -34,7 +51,7 @@ def rotate_patterns(pattern):
         flip = [''.join(list(x)) for x in flip]
         rotations.append('/'.join(flip))
 
-    # flip left/right and add rotations
+    # Flip left/right and add its rotations
     flip_side = pattern[:]
     flip_side = [line[::-1] for line in flip_side]
     rotations.append('/'.join(flip_side))
@@ -46,7 +63,14 @@ def rotate_patterns(pattern):
 
 
 def join_patterns(pattern_list):
-    """join list of patterns into single pattern"""
+    """Join a list of square patterns back into a single larger pattern.
+
+    Args:
+        pattern_list: List of pattern strings to join
+
+    Returns:
+        A single pattern string representing the joined grid
+    """
     if not isinstance(pattern_list, list):
         raise TypeError('join_patterns: not a list')
     length = len(pattern_list)
@@ -60,10 +84,12 @@ def join_patterns(pattern_list):
     else:
         raise ValueError('join_patterns: pattern list length must be divisible by 2 or 3')
 
+    # Arrange patterns in a square grid
     step = isqrt(length)
     final_pattern = []
     for i in range(0, length, step):
         scope = [x.split('/') for x in pattern_list[i:i + step]]
+        # Concatenate corresponding rows from each pattern in this row of patterns
         for idx in range(len(scope[0])):
             full_row = ''.join([x[idx] for x in scope])
             final_pattern.append(full_row)
@@ -72,9 +98,17 @@ def join_patterns(pattern_list):
 
 
 def split_pattern(pattern):
-    """if pattern is divisible by 2, divide into 2x2 patterns
-       if pattern is divisible by 3, divide into 3x3 patterns
-       else, throw an exception"""
+    """Split a pattern into smaller square patterns.
+
+    If the pattern size is divisible by 2, split into 2x2 patterns.
+    If the pattern size is divisible by 3, split into 3x3 patterns.
+
+    Args:
+        pattern: A pattern string with rows separated by '/'
+
+    Returns:
+        List of smaller pattern strings
+    """
     pattern = pattern.split('/')
     width, length = len(pattern), len(pattern[0])
     if width % 2 == 0 and length % 2 == 0:
@@ -95,7 +129,15 @@ def split_pattern(pattern):
 
 
 def find_enhancement(enhancements, patterns):
-    """find enhancement in pattern"""
+    """Find the enhancement rule that matches one of the pattern orientations.
+
+    Args:
+        enhancements: Dictionary mapping patterns to their enhancements
+        patterns: Set of all orientations of a pattern
+
+    Returns:
+        The enhanced pattern string
+    """
     result = set(enhancements.keys()).intersection(set(patterns))
     if len(result) != 1:
         raise ValueError(f"find_enhancement: result not unique - {result}")
@@ -103,13 +145,16 @@ def find_enhancement(enhancements, patterns):
 
 
 def main():
+    """Run the fractal art program for 18 iterations and count lit pixels."""
     lines = AoCInput.read_lines(INPUT_FILE)
 
+    # Parse enhancement rules
     enhancements = {}
     for line in lines:
         k, v = line.strip().split(' => ')
         enhancements[k] = v
 
+    # Start with the initial pattern
     cycle_count = 18
     pattern = '.#./..#/###'
     for _ in range(cycle_count):
