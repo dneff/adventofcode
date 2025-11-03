@@ -100,8 +100,8 @@ def main():
         'count': 400000
     }
 
-    # Use puzzle1 for Part 1 (40 rows)
-    active = puzzle1
+    # Use puzzle2 for Part 2 (400000 rows)
+    active = puzzle2
 
     total_safe_tiles = 0
     row_count = 0
@@ -119,7 +119,7 @@ def main():
         total_safe_tiles += count_safe_tiles(current_row)
         row_count += 1
 
-    AoCUtils.print_solution(1, total_safe_tiles)
+    AoCUtils.print_solution(2, total_safe_tiles)
 
 if __name__ == "__main__":
     main()
