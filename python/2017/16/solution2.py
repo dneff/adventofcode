@@ -1,3 +1,20 @@
+"""
+Advent of Code 2017 - Day 16: Permutation Promenade (Part 2)
+
+The dance is performed one billion times! Simulating all iterations would be too slow.
+
+The key insight: The dance moves create a cycle. After some number of iterations, the
+programs return to their starting positions. By detecting this cycle, we can calculate
+which state in the cycle corresponds to the billionth iteration without actually
+performing all billion dances.
+
+Strategy:
+1. Perform the dance repeatedly
+2. Track when we return to the starting configuration
+3. Calculate the cycle length
+4. Use modulo arithmetic to find the state at iteration 1,000,000,000
+"""
+
 import os
 import sys
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -7,65 +24,98 @@ sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
 from aoc_helpers import AoCInput, AoCUtils
 
 
-class Computer():
-    def __init__(self):
-        self.progs = []
+class DanceSimulator():
+    """Simulates the dancing programs and their three types of moves."""
+
+    def __init__(self, num_programs=16):
+        """
+        Initialize with programs labeled a through p.
+
+        Args:
+            num_programs: Number of programs (default 16 for a-p)
+        """
+        self.programs = list('abcdefghijklmnop'[:num_programs])
         self.instructions = []
-        self.mapped = {}
 
     def run(self):
+        """Execute all dance instructions in sequence."""
+        for instruction in self.instructions:
+            self.execute_move(instruction)
 
-        for i in self.instructions:
-            if i[0] == 's':
-                x = int(i[1:])
-                self.spin(x)
-            elif i[0] == 'x':
-                x,y = [int(x) for x in i[1:].split('/')]
-                self.exchange(x,y)
-            elif i[0] == 'p':
-                x,y = [x for x in i[1:].split('/')]
-                self.partner(x,y)
+    def execute_move(self, instruction):
+        """
+        Execute a single dance move.
 
-    def spin(self, a):
-        self.progs = self.progs[-a:] + self.progs[:-a]
+        Args:
+            instruction: String starting with 's', 'x', or 'p'
+        """
+        move_type = instruction[0]
 
-    def exchange(self, a, b):
-        self.progs[a],self.progs[b] = self.progs[b],self.progs[a]
+        if move_type == 's':
+            spin_count = int(instruction[1:])
+            self.spin(spin_count)
+        elif move_type == 'x':
+            pos_a, pos_b = [int(x) for x in instruction[1:].split('/')]
+            self.exchange(pos_a, pos_b)
+        elif move_type == 'p':
+            name_a, name_b = instruction[1:].split('/')
+            self.partner(name_a, name_b)
 
-    def partner(self, a, b):
-        idx_a = self.progs.index(a)
-        idx_b = self.progs.index(b)
-        self.progs[idx_a],self.progs[idx_b] = self.progs[idx_b], self.progs[idx_a]
+    def spin(self, count):
+        """Rotate programs: move count programs from end to front."""
+        self.programs = self.programs[-count:] + self.programs[:-count]
+
+    def exchange(self, pos_a, pos_b):
+        """Swap programs at two positions."""
+        self.programs[pos_a], self.programs[pos_b] = self.programs[pos_b], self.programs[pos_a]
+
+    def partner(self, name_a, name_b):
+        """Swap two programs by name."""
+        idx_a = self.programs.index(name_a)
+        idx_b = self.programs.index(name_b)
+        self.programs[idx_a], self.programs[idx_b] = self.programs[idx_b], self.programs[idx_a]
 
 
 def main():
+    """Find program order after one billion dances using cycle detection."""
     line = AoCInput.read_lines(INPUT_FILE)[0]
     instructions = line.strip().split(',')
 
-    pc = Computer()
-    pc.instructions = instructions
-    start_prog = list('abcdefghijklmnop')
+    simulator = DanceSimulator()
+    simulator.instructions = instructions
+    starting_configuration = simulator.programs[:]
 
-    pc.progs = start_prog[:]
-    pc.run()
+    # Perform dance once first
+    simulator.run()
 
-    repeating = []
-    total_runs = 10000000000
-    for cycle in range(1, total_runs + 1):
-        pc.run()
-        if pc.progs == start_prog:
-            repeating.append(cycle)
-        if len(repeating) >= 3:
+    # Detect cycle: find when we return to starting configuration
+    cycle_states = []
+    target_iterations = 1000000000
+
+    for cycle_num in range(1, target_iterations + 1):
+        simulator.run()
+
+        if simulator.programs == starting_configuration:
+            cycle_states.append(cycle_num)
+
+        # We've found enough cycles to determine the pattern
+        if len(cycle_states) >= 3:
             break
 
-    #skip remaining
-    cycle_size = repeating[-1] - repeating[-2]
-    remaining_runs = total_runs - 1 - repeating[-1]
-    remaining_runs = remaining_runs % cycle_size
-    for cycle in range(remaining_runs):
-        pc.run()
+    # Calculate cycle length
+    cycle_length = cycle_states[-1] - cycle_states[-2]
 
-    AoCUtils.print_solution(2, ''.join(pc.progs))
+    # Find how many additional iterations needed after the last complete cycle
+    remaining_iterations = target_iterations - 1 - cycle_states[-1]
+    remaining_iterations = remaining_iterations % cycle_length
+
+    # Perform remaining dances
+    for _ in range(remaining_iterations):
+        simulator.run()
+
+    final_order = ''.join(simulator.programs)
+    AoCUtils.print_solution(2, final_order)
+
 
 if __name__ == "__main__":
     main()

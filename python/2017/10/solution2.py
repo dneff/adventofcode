@@ -1,3 +1,20 @@
+"""
+Advent of Code 2017 - Day 10: Knot Hash (Part 2)
+
+Implement the full Knot Hash algorithm with these modifications from Part 1:
+1. Convert input to ASCII byte values instead of parsing as numbers
+2. Append magic suffix: [17, 31, 73, 47, 23]
+3. Run 64 rounds (preserving position and skip size between rounds)
+4. Create dense hash: XOR each block of 16 numbers from sparse hash
+5. Convert dense hash to hexadecimal string (two digits per number)
+
+Examples:
+    Empty string "" = a2582a3a0e66e6e86e3812dcb672a272
+    "AoC 2017" = 33efeb34ea91902bb2f59c9920caa6cd
+    "1,2,3" = 3efbe78a8d82f29979031a4aa0b16a9d
+    "1,2,4" = 63960835bcdc130f0b66d7ff4f6a5a8e
+"""
+
 import os
 import sys
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -8,36 +25,64 @@ from aoc_helpers import AoCInput, AoCUtils
 from collections import deque
 
 
-def main():
-    """main solution for problem"""
-    line = AoCInput.read_lines(INPUT_FILE)[0]
-    instructions = [ord(x) for x in line.strip()]
-    instructions.extend([17, 31, 73, 47, 23])
+def compute_knot_hash(input_string):
+    """
+    Compute the full Knot Hash for a given input string.
 
-    ring = deque()
-    ring.extend(range(256))
-    offset = 0
+    Args:
+        input_string: String to hash
+
+    Returns:
+        Hexadecimal hash string (32 characters)
+    """
+    # Convert input to ASCII byte values
+    lengths = [ord(c) for c in input_string.strip()]
+    # Append magic suffix
+    lengths.extend([17, 31, 73, 47, 23])
+
+    # Initialize ring with numbers 0-255
+    ring = deque(range(256))
+    total_offset = 0
     skip_size = 0
-    for _ in range(64):
 
-        for i in instructions:
-            flip, keep = list(ring)[:i], list(ring)[i:]
-            flip.reverse()
-            ring = deque(flip + keep)
-            ring.rotate(-((i + skip_size) % len(ring)))
-            offset += i + skip_size
+    # Run 64 rounds
+    for _ in range(64):
+        for length in lengths:
+            # Reverse the first 'length' elements
+            reversed_section = list(ring)[:length]
+            reversed_section.reverse()
+            remaining_section = list(ring)[length:]
+            ring = deque(reversed_section + remaining_section)
+
+            # Rotate the ring by (length + skip_size)
+            rotation = (length + skip_size) % len(ring)
+            ring.rotate(-rotation)
+
+            total_offset += length + skip_size
             skip_size += 1
 
-    ring.rotate(offset)
+    # Rotate back to original reference frame (sparse hash)
+    ring.rotate(total_offset)
 
-    hashes = []
-    for block in range(0, 256, 16):
-        hash_val = 0
-        for x in list(ring)[block:block+16]:
-            hash_val ^= x
-        hashes.append(hash_val)
+    # Create dense hash by XORing blocks of 16
+    dense_hash = []
+    for block_start in range(0, 256, 16):
+        block = list(ring)[block_start:block_start + 16]
+        xor_value = 0
+        for num in block:
+            xor_value ^= num
+        dense_hash.append(xor_value)
 
-    AoCUtils.print_solution(2, ''.join([hex(x)[2:] for x in hashes]))
+    # Convert to hexadecimal string (2 digits per number)
+    hex_hash = ''.join([hex(x)[2:].zfill(2) for x in dense_hash])
+    return hex_hash
+
+
+def main():
+    """Compute and print the Knot Hash."""
+    line = AoCInput.read_lines(INPUT_FILE)[0]
+    hash_result = compute_knot_hash(line)
+    AoCUtils.print_solution(2, hash_result)
 
 
 if __name__ == "__main__":
