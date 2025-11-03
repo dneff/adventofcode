@@ -1,3 +1,16 @@
+"""
+Advent of Code 2017 - Day 6: Memory Reallocation (Part 2)
+
+Find the size of the infinite loop. After detecting when a configuration repeats, determine
+how many cycles are in the loop between the first and second occurrence of that configuration.
+
+Example:
+    Starting with [0, 2, 7, 0]:
+    - Configuration [2, 4, 1, 2] first appears after 1 cycle
+    - It appears again after 5 cycles
+    - Loop size: 5 - 1 = 4
+"""
+
 import os
 import sys
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -8,40 +21,59 @@ from aoc_helpers import AoCInput, AoCUtils
 from collections import defaultdict
 
 
-def reallocate(memory):
-    workbench = memory[:]
-    pointer = workbench.index(max(workbench))
-    mem = workbench[pointer]
-    workbench[pointer] = 0
-    while mem:
-        pointer = (pointer + 1) % len(workbench)
-        workbench[pointer] += 1
-        mem -= 1
-    return workbench
+def reallocate_memory(memory_banks):
+    """
+    Redistribute blocks from the fullest bank to subsequent banks.
+
+    Args:
+        memory_banks: List of integers representing blocks in each bank
+
+    Returns:
+        New memory bank configuration after reallocation
+    """
+    banks = memory_banks[:]
+    # Find the bank with the most blocks (ties go to lowest index)
+    max_index = banks.index(max(banks))
+    blocks_to_distribute = banks[max_index]
+    banks[max_index] = 0
+
+    # Distribute blocks one at a time in circular fashion
+    current_index = max_index
+    while blocks_to_distribute > 0:
+        current_index = (current_index + 1) % len(banks)
+        banks[current_index] += 1
+        blocks_to_distribute -= 1
+
+    return banks
 
 
 def main():
+    """Calculate the size of the infinite loop."""
     line = AoCInput.read_lines(INPUT_FILE)[0]
-    memory_bank_history = set()
-    allocation_history = defaultdict(list)
     memory_banks = [int(x) for x in line.strip().split()]
 
-    reallocate_count = 0
-    memory_bank_history.add(tuple(memory_banks))
-    allocation_history[tuple(memory_banks)].append(reallocate_count)
+    seen_configurations = set()
+    configuration_cycle_map = defaultdict(list)
 
-    new_mem = reallocate(memory_banks)
-    reallocate_count += 1
+    cycles = 0
+    seen_configurations.add(tuple(memory_banks))
+    configuration_cycle_map[tuple(memory_banks)].append(cycles)
 
-    while tuple(new_mem) not in memory_bank_history:
-        memory_bank_history.add(tuple(new_mem))
-        allocation_history[tuple(new_mem)].append(reallocate_count)
+    current_banks = reallocate_memory(memory_banks)
+    cycles += 1
 
-        new_mem = reallocate(new_mem)
-        reallocate_count += 1
+    while tuple(current_banks) not in seen_configurations:
+        seen_configurations.add(tuple(current_banks))
+        configuration_cycle_map[tuple(current_banks)].append(cycles)
 
-    # solution is current count - last count for current mem
-    AoCUtils.print_solution(2, reallocate_count - allocation_history[tuple(new_mem)][0])
+        current_banks = reallocate_memory(current_banks)
+        cycles += 1
+
+    # Loop size is current cycle minus the cycle when this configuration first appeared
+    first_occurrence = configuration_cycle_map[tuple(current_banks)][0]
+    loop_size = cycles - first_occurrence
+
+    AoCUtils.print_solution(2, loop_size)
 
 
 if __name__ == "__main__":
