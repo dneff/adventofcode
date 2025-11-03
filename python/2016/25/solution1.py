@@ -1,3 +1,13 @@
+"""
+Advent of Code 2016 - Day 25: Clock Signal
+https://adventofcode.com/2016/day/25
+
+This solution finds the lowest positive integer to initialize register 'a' that causes
+the assembunny code to output an alternating clock signal pattern: 0, 1, 0, 1, 0, 1...
+
+The antenna on the roof requires this specific timing signal to properly read transmitted data.
+"""
+
 import os
 import sys
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -7,23 +17,32 @@ sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
 from aoc_helpers import AoCInput, AoCUtils
 
 class BunnyPC():
+    """
+    Assembunny computer interpreter for generating clock signals.
+
+    This interpreter extends the standard assembunny instruction set with an 'out' instruction
+    that transmits values to create the clock signal pattern needed by the antenna.
+    """
     def __init__(self):
-        self.register = {"a":0, "b":0, "c":0, "d":0}
-        self.code = []
-        self.signal = []
-        self.instruction_pointer = 0
+        self.register = {"a":0, "b":0, "c":0, "d":0}  # Four registers for the assembunny computer
+        self.code = []  # Assembunny program instructions
+        self.signal = []  # Clock signal output values (produced by 'out' instruction)
+        self.instruction_pointer = 0  # Current position in the program
 
     def load(self, filename):
+        """Load assembunny program from input file."""
         lines = AoCInput.read_lines(filename)
         for line in lines:
             self.code.append(line.strip())
 
     def clear(self):
+        """Reset the computer state for testing a new initial value."""
         self.register = {"a":0, "b":0, "c":0, "d":0}
         self.instruction_pointer = 0
-        self.signal.clear()
+        self.signal.clear()  # Clear previous clock signal output
 
     def resolveX(self, x):
+        """Resolve parameter x to either a register value or integer literal."""
         if x in "abcd":
             return self.register[x]
         return int(x)
@@ -97,32 +116,52 @@ class BunnyPC():
             command(*inst[1:])
 
     def out(self, x):
+        """
+        Output instruction (Day 25 specific): Transmit value x to the clock signal.
+
+        This is the key instruction for this problem - it outputs values that form
+        the clock signal pattern. We need the pattern to be: 0, 1, 0, 1, 0, 1...
+        """
         self.signal.append(self.resolveX(x))
         self.instruction_pointer += 1
 
 def main():
+    """
+    Find the lowest positive integer that produces a valid clock signal.
 
-    value = 0
-    test_signal = [0,1] * 5
+    Strategy:
+    1. Test each initial value for register 'a' starting from 0
+    2. Run the assembunny program and capture the clock signal output
+    3. Check if the output matches the expected alternating pattern: 0,1,0,1,0,1...
+    4. Return the first value that produces the correct pattern
+    """
 
-    pc = BunnyPC()
-    pc.register['a'] = value
-    pc.load(INPUT_FILE)
+    initial_a_value = 0  # Initial value to test in register 'a'
+    expected_clock_signal = [0,1] * 5  # Expected alternating clock signal pattern (checking first 10 outputs)
 
-    tuning = True
+    # Initialize the assembunny computer (antenna's signal generator)
+    antenna_computer = BunnyPC()
+    antenna_computer.register['a'] = initial_a_value
+    antenna_computer.load(INPUT_FILE)
 
-    while tuning:
-        while len(pc.signal) < len(test_signal):
-            pc.step()
+    searching = True  # Flag to continue searching for the correct initial value
 
-        if pc.signal == test_signal:
-            tuning = False
+    # Search for the correct initial value that produces a valid clock signal
+    while searching:
+        # Run the program until we have enough clock signal output to test
+        while len(antenna_computer.signal) < len(expected_clock_signal):
+            antenna_computer.step()
+
+        # Check if the clock signal matches the expected alternating pattern
+        if antenna_computer.signal == expected_clock_signal:
+            searching = False  # Found the correct initial value!
         else:
-            value += 1
-            pc.clear()
-            pc.register['a'] = value
-    
-    AoCUtils.print_solution(1, value)
+            # Try the next value
+            initial_a_value += 1
+            antenna_computer.clear()  # Reset the computer state
+            antenna_computer.register['a'] = initial_a_value  # Set new test value
+
+    AoCUtils.print_solution(1, initial_a_value)
 
 
     
