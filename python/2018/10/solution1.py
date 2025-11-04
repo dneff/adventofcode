@@ -19,6 +19,122 @@ sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
 
 from aoc_helpers import AoCInput, AoCUtils
 
+def ocr_screen(screen):
+    """
+    OCR for 10-row tall capital letters (6 pixels wide with variable spacing).
+    Returns the recognized text string.
+    """
+    # Letter patterns (10 rows x 6 columns, using # for lit pixels, space for off)
+    patterns = {
+        "G": [
+            " #### ",
+            "#    #",
+            "#     ",
+            "#     ",
+            "#     ",
+            "#  ###",
+            "#    #",
+            "#    #",
+            "#   ##",
+            " ### #"
+        ],
+        "P": [
+            "##### ",
+            "#    #",
+            "#    #",
+            "#    #",
+            "##### ",
+            "#     ",
+            "#     ",
+            "#     ",
+            "#     ",
+            "#     "
+        ],
+        "J": [
+            "   ###",
+            "    # ",
+            "    # ",
+            "    # ",
+            "    # ",
+            "    # ",
+            "    # ",
+            "#   # ",
+            "#   # ",
+            " ###  "
+        ],
+        "L": [
+            "#     ",
+            "#     ",
+            "#     ",
+            "#     ",
+            "#     ",
+            "#     ",
+            "#     ",
+            "#     ",
+            "#     ",
+            "######"
+        ],
+        "H": [
+            "#    #",
+            "#    #",
+            "#    #",
+            "#    #",
+            "######",
+            "#    #",
+            "#    #",
+            "#    #",
+            "#    #",
+            "#    #"
+        ],
+    }
+
+    lines = screen.splitlines()
+    if not lines:
+        return ""
+
+    # Find letter boundaries by detecting columns that are entirely spaces
+    width = len(lines[0])
+    empty_columns = []
+    for col in range(width):
+        if all(col >= len(line) or line[col] == ' ' for line in lines):
+            empty_columns.append(col)
+
+    # Find letter start/end positions by grouping consecutive non-empty columns
+    letter_positions = []
+    start = None
+    for col in range(width + 1):
+        is_empty = col in empty_columns or col == width
+        if start is None and not is_empty:
+            start = col
+        elif start is not None and is_empty:
+            letter_positions.append((start, col))
+            start = None
+
+    # Extract and match each letter
+    message = ""
+    for start, end in letter_positions:
+        # Extract letter pattern (pad or trim to 6 characters wide)
+        letter_pattern = []
+        for line in lines:
+            segment = line[start:end]
+            # Pad to 6 characters if needed
+            if len(segment) < 6:
+                segment = segment + ' ' * (6 - len(segment))
+            elif len(segment) > 6:
+                segment = segment[:6]
+            letter_pattern.append(segment)
+
+        # Match against known patterns
+        matched = False
+        for letter, pattern in patterns.items():
+            if letter_pattern == pattern:
+                message += letter
+                matched = True
+                break
+        if not matched:
+            message += "?"  # Unknown letter
+
+    return message
 
 class Star:
     """Represents a point of light with position and velocity."""
@@ -155,7 +271,6 @@ def solve():
 # Compute and display the solution
 message, seconds = solve()
 
-print("Part 1 - The message that appears:")
 print(message)
-print()
-AoCUtils.print_solution(2, seconds)
+# using 'ocr_screen' function to read the message
+AoCUtils.print_solution(1, ocr_screen(message))

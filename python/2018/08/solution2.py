@@ -16,7 +16,7 @@ import os
 import sys
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2018/08/input')
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2018/8/input')
 sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
 
 from aoc_helpers import AoCInput, AoCUtils

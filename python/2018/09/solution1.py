@@ -18,7 +18,7 @@ import sys
 from collections import deque, defaultdict
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2018/09/input')
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2018/9/input')
 sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
 
 from aoc_helpers import AoCInput, AoCUtils
