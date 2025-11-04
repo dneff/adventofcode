@@ -95,7 +95,7 @@ def solve_part1():
     Returns:
         str: "x,y" coordinates of the first crash
     """
-    lines = AoCInput.read_lines(INPUT_FILE)
+    lines = AoCInput.read_lines(INPUT_FILE, preserve_leading_space=True)
 
     track_grid = {}
     carts = []

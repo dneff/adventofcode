@@ -95,7 +95,7 @@ def solve_part2():
     Returns:
         str: "x,y" coordinates of the last remaining cart
     """
-    lines = AoCInput.read_lines(INPUT_FILE)
+    lines = AoCInput.read_lines(INPUT_FILE, preserve_leading_space=True)
 
     track_grid = {}
     carts = []
