@@ -18,61 +18,39 @@ INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2017/24/input')
 sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
 
 from aoc_helpers import AoCInput, AoCUtils
-from copy import deepcopy
 
 
-def calculate_bridge_strength(bridge):
-    """Calculate the total strength of a bridge.
-
-    Args:
-        bridge: List of component tuples (port1, port2)
-
-    Returns:
-        Sum of all port values in the bridge
-    """
-    sum_tuple = [sum(x) for x in zip(*bridge)]
-    return sum(sum_tuple)
-
-
-def build_strongest_bridge(available_components, current_bridge, connector_port):
+def build_strongest_bridge(available_components, current_strength, connector_port):
     """Recursively build bridges and return the maximum strength achievable.
 
     Args:
         available_components: Set of remaining component tuples
-        current_bridge: List of components already in the bridge
+        current_strength: Running total of bridge strength so far
         connector_port: The port value that the next component must match
 
     Returns:
         Maximum strength achievable from this state
     """
-    if len(available_components) == 0:
-        return calculate_bridge_strength(current_bridge)
+    max_strength = current_strength  # At minimum, current bridge is valid
 
-    possible_strengths = []
     for component in available_components:
         if connector_port in component:
             # Determine which end connects and which is the new connector
-            if component.index(connector_port) == 0:
-                next_connector = component[1]
-            else:
-                next_connector = component[0]
+            next_connector = component[1] if component[0] == connector_port else component[0]
 
-            # Build new state with this component added
-            next_components = deepcopy(available_components)
-            next_components.remove(component)
-            next_bridge = deepcopy(current_bridge)
-            next_bridge.append(deepcopy(component))
+            # Use set difference instead of copy + remove (much faster!)
+            next_components = available_components - {component}
 
-            # Recursively explore this path
-            possible_strengths.append(
-                build_strongest_bridge(next_components, next_bridge, next_connector)
+            # Add component strength and recurse
+            component_strength = component[0] + component[1]
+            strength = build_strongest_bridge(
+                next_components,
+                current_strength + component_strength,
+                next_connector
             )
+            max_strength = max(max_strength, strength)
 
-    # If no more components can connect, return current bridge strength
-    if len(possible_strengths) == 0:
-        return calculate_bridge_strength(current_bridge)
-
-    return max(possible_strengths)
+    return max_strength
 
 
 def main():
@@ -95,21 +73,18 @@ def main():
     remaining_components = all_components.difference(starting_components)
 
     # Try each possible starting component
-    max_strengths = []
+    max_strength = 0
     for start_component in starting_components:
-        next_components = remaining_components.difference({start_component})
+        next_components = remaining_components - {start_component}
         # Determine the connector port after placing the starting component
-        if start_component.index(0) == 0:
-            next_connector = start_component[1]
-        else:
-            next_connector = start_component[0]
+        next_connector = start_component[1] if start_component[0] == 0 else start_component[0]
 
-        initial_bridge = [deepcopy(start_component)]
-        max_strengths.append(
-            build_strongest_bridge(next_components, initial_bridge, next_connector)
-        )
+        # Start with the strength of the starting component
+        initial_strength = start_component[0] + start_component[1]
+        strength = build_strongest_bridge(next_components, initial_strength, next_connector)
+        max_strength = max(max_strength, strength)
 
-    AoCUtils.print_solution(1, max(max_strengths))
+    AoCUtils.print_solution(1, max_strength)
 
 
 if __name__ == "__main__":

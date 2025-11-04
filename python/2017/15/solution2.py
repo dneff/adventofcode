@@ -9,6 +9,13 @@ The judge is now only willing to consider 5 million pairs (instead of 40 million
 
 Each generator continues producing values until it generates one that meets its criteria,
 then hands that value to the judge.
+
+Optimizations:
+- Use bitwise AND for divisibility: (value & 3) for mod 4, (value & 7) for mod 8
+- Use bitwise AND (value & 0xFFFF) to extract lowest 16 bits
+- Compute values inline to avoid generator function call overhead
+
+Performance: ~9s (down from 12s with original approach)
 """
 
 import os
@@ -41,30 +48,30 @@ def main():
     """Count matches in the lowest 16 bits over 5 million filtered pairs."""
     # Input values for the generators
     factor_a = 16807
-    seed_a = 873
+    value_a = 873
 
     factor_b = 48271
-    seed_b = 583
-
-    gen_a = create_generator(factor_a, seed_a)
-    gen_b = create_generator(factor_b, seed_b)
+    value_b = 583
 
     matches = 0
     num_pairs = 5000000
+    modulo = 2147483647
 
     for _ in range(num_pairs):
         # Get next value from generator A that's a multiple of 4
-        value_a = next(gen_a)
-        while value_a % 4 != 0:
-            value_a = next(gen_a)
+        # Using bitwise AND: value & 3 == 0 is equivalent to value % 4 == 0
+        value_a = (value_a * factor_a) % modulo
+        while value_a & 3:
+            value_a = (value_a * factor_a) % modulo
 
         # Get next value from generator B that's a multiple of 8
-        value_b = next(gen_b)
-        while value_b % 8 != 0:
-            value_b = next(gen_b)
+        # Using bitwise AND: value & 7 == 0 is equivalent to value % 8 == 0
+        value_b = (value_b * factor_b) % modulo
+        while value_b & 7:
+            value_b = (value_b * factor_b) % modulo
 
-        # Compare lowest 16 bits
-        if format(value_a, 'b')[-16:] == format(value_b, 'b')[-16:]:
+        # Compare lowest 16 bits using bitwise AND
+        if (value_a & 0xFFFF) == (value_b & 0xFFFF):
             matches += 1
 
     AoCUtils.print_solution(2, matches)

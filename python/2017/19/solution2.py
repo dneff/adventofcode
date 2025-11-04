@@ -18,7 +18,8 @@ from aoc_helpers import AoCInput, AoCUtils
 
 def main():
     """Follow the routing diagram and count total steps taken."""
-    lines = AoCInput.read_lines(INPUT_FILE)
+    # Read lines preserving leading spaces (they're significant for positioning)
+    lines = AoCInput.read_lines(INPUT_FILE, preserve_leading_space=True)
 
     # Build a dictionary of all non-space positions in the routing diagram
     routing_diagram = {}
@@ -32,8 +33,9 @@ def main():
     # Expected path character when turning (horizontal for vertical travel, vice versa)
     expected_turn_char = [('-'), ('|'), ('-'), ('|')]
 
-    # Start at position (1, 0) heading down
-    position = (1, 0)
+    # Find the starting position on the first line (y=0)
+    start_x = lines[0].index('|')
+    position = (start_x, 0)
     heading = 0  # 0=down, 1=left, 2=up, 3=right
     step_count = 0
     collected_letters = ''

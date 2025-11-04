@@ -17,10 +17,22 @@ class AoCInput:
     """Input reading and parsing utilities."""
     
     @staticmethod
-    def read_lines(filename: str) -> List[str]:
-        """Read all lines from file, stripped of whitespace."""
+    def read_lines(filename: str, preserve_leading_space: bool = False) -> List[str]:
+        """Read all lines from file, stripped of whitespace.
+
+        Args:
+            filename: Path to the file to read
+            preserve_leading_space: If True, only strip trailing whitespace (rstrip).
+                                   If False (default), strip all whitespace (strip).
+
+        Returns:
+            List of lines from the file
+        """
         with open(filename, "r", encoding="utf-8") as f:
-            return [line.strip() for line in f.readlines()]
+            if preserve_leading_space:
+                return [line.rstrip('\n') for line in f.readlines()]
+            else:
+                return [line.strip() for line in f.readlines()]
     
     @staticmethod
     def read_grid(filename: str) -> Dict[Tuple[int, int], str]:

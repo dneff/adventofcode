@@ -15,69 +15,45 @@ INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2017/24/input')
 sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
 
 from aoc_helpers import AoCInput, AoCUtils
-from copy import deepcopy
-from collections import defaultdict
 
 
-def calculate_bridge_strength(bridge):
-    """Calculate the total strength of a bridge.
-
-    Args:
-        bridge: List of component tuples (port1, port2)
-
-    Returns:
-        Sum of all port values in the bridge
-    """
-    sum_tuple = [sum(x) for x in zip(*bridge)]
-    return sum(sum_tuple)
-
-
-def build_longest_bridge(available_components, current_bridge, connector_port):
+def build_longest_bridge(available_components, current_length, current_strength, connector_port):
     """Recursively build bridges and return the longest one (strongest if tied).
 
     Args:
         available_components: Set of remaining component tuples
-        current_bridge: List of components already in the bridge
+        current_length: Number of components in the bridge so far
+        current_strength: Running total of bridge strength so far
         connector_port: The port value that the next component must match
 
     Returns:
-        The bridge list (longest possible from this state)
+        Tuple of (length, strength) for the best bridge from this state
     """
-    if len(available_components) == 0:
-        return current_bridge
+    # Start with current bridge as the best option
+    best = (current_length, current_strength)
 
-    # Group possible bridges by length
-    bridges_by_length = defaultdict(list)
     for component in available_components:
         if connector_port in component:
             # Determine which end connects and which is the new connector
-            if component.index(connector_port) == 0:
-                next_connector = component[1]
-            else:
-                next_connector = component[0]
+            next_connector = component[1] if component[0] == connector_port else component[0]
 
-            # Build new state with this component added
-            next_components = deepcopy(available_components)
-            next_components.remove(component)
-            next_bridge = deepcopy(current_bridge)
-            next_bridge.append(deepcopy(component))
+            # Use set difference instead of copy + remove (much faster!)
+            next_components = available_components - {component}
 
-            # Recursively explore this path
-            resulting_bridge = build_longest_bridge(next_components, next_bridge, next_connector)
-            bridges_by_length[len(resulting_bridge)].append(resulting_bridge)
+            # Add component and recurse
+            component_strength = component[0] + component[1]
+            result = build_longest_bridge(
+                next_components,
+                current_length + 1,
+                current_strength + component_strength,
+                next_connector
+            )
 
-    # If no more components can connect, return current bridge
-    if len(bridges_by_length.keys()) == 0:
-        return current_bridge
+            # Update best if this is longer, or same length but stronger
+            if result[0] > best[0] or (result[0] == best[0] and result[1] > best[1]):
+                best = result
 
-    # Find the longest bridge(s)
-    longest_length = max(bridges_by_length.keys())
-    longest_bridges = bridges_by_length[longest_length]
-
-    # Among longest bridges, find the strongest
-    strengths = [calculate_bridge_strength(b) for b in longest_bridges]
-    strongest_index = strengths.index(max(strengths))
-    return longest_bridges[strongest_index]
+    return best
 
 
 def main():
@@ -99,30 +75,22 @@ def main():
     # Remove starting components from the main pool
     remaining_components = all_components.difference(starting_components)
 
-    # Try each possible starting component and group results by length
-    bridges_by_length = defaultdict(list)
+    # Try each possible starting component
+    best = (0, 0)  # (length, strength)
     for start_component in starting_components:
-        next_components = remaining_components.difference({start_component})
+        next_components = remaining_components - {start_component}
         # Determine the connector port after placing the starting component
-        if start_component.index(0) == 0:
-            next_connector = start_component[1]
-        else:
-            next_connector = start_component[0]
+        next_connector = start_component[1] if start_component[0] == 0 else start_component[0]
 
-        initial_bridge = [deepcopy(start_component)]
-        resulting_bridge = build_longest_bridge(next_components, initial_bridge, next_connector)
-        bridges_by_length[len(resulting_bridge)].append(resulting_bridge)
+        # Start with the length and strength of the starting component
+        initial_strength = start_component[0] + start_component[1]
+        result = build_longest_bridge(next_components, 1, initial_strength, next_connector)
 
-    # Find the longest bridge(s)
-    longest_length = max(bridges_by_length.keys())
-    longest_bridges = bridges_by_length[longest_length]
+        # Update best if this is longer, or same length but stronger
+        if result[0] > best[0] or (result[0] == best[0] and result[1] > best[1]):
+            best = result
 
-    # Among longest bridges, find the strongest
-    strengths = [calculate_bridge_strength(b) for b in longest_bridges]
-    strongest_index = strengths.index(max(strengths))
-    final_bridge = longest_bridges[strongest_index]
-
-    AoCUtils.print_solution(2, calculate_bridge_strength(final_bridge))
+    AoCUtils.print_solution(2, best[1])
 
 
 if __name__ == "__main__":

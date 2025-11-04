@@ -22,7 +22,8 @@ from aoc_helpers import AoCInput, AoCUtils
 
 def main():
     """Follow the routing diagram and collect letters encountered along the path."""
-    lines = AoCInput.read_lines(INPUT_FILE)
+    # Read lines preserving leading spaces (they're significant for positioning)
+    lines = AoCInput.read_lines(INPUT_FILE, preserve_leading_space=True)
 
     # Build a dictionary of all non-space positions in the routing diagram
     routing_diagram = {}
@@ -33,32 +34,42 @@ def main():
 
     # Direction vectors: down, left, up, right (indexed 0-3)
     directions = [(0, 1), (-1, 0), (0, -1), (1, 0)]
-    # Expected path character when turning (horizontal for vertical travel, vice versa)
-    expected_turn_char = [('-'), ('|'), ('-'), ('|')]
 
-    # Start at position (1, 0) heading down
-    position = (1, 0)
+    # Find the starting position on the first line (y=0)
+    start_x = lines[0].index('|')
+    position = (start_x, 0)
     heading = 0  # 0=down, 1=left, 2=up, 3=right
 
     collected_letters = ''
     # Follow the path until we step off the diagram
     while position in routing_diagram:
-        if routing_diagram[position] in ['|', '-']:
-            # Continue straight on path segments
-            pass
-        elif routing_diagram[position] == '+':
-            # Corner: must turn left or right
-            new_path_char = expected_turn_char[heading]
-            # Next position is either left or right of current heading
-            left = (heading - 1) % 4
-            left_x, left_y  = position[0] + directions[left][0], position[1] + directions[left][1]
-            right = (heading + 1) % 4
+        current_char = routing_diagram[position]
 
-            # Turn toward whichever side has the expected path character
-            if (left_x, left_y) in routing_diagram and routing_diagram[(left_x, left_y)] == new_path_char:
-                heading = left
-            else:
-                heading = right
+        if current_char in ['|', '-']:
+            # Continue straight on path segments (paths can cross each other)
+            pass
+        elif current_char == '+':
+            # Corner: check all directions except where we came from
+            reverse = (heading + 2) % 4  # Opposite direction (where we came from)
+
+            # Check all three possible directions (left, right, and straight)
+            found_turn = False
+            for new_heading in range(4):
+                if new_heading == reverse:
+                    continue  # Don't go backwards
+
+                new_x = position[0] + directions[new_heading][0]
+                new_y = position[1] + directions[new_heading][1]
+                next_char = routing_diagram.get((new_x, new_y), '')
+
+                # Valid path if there's any non-space character (except we came from)
+                if next_char and next_char != ' ':
+                    heading = new_heading
+                    found_turn = True
+                    break
+
+            if not found_turn:
+                raise RuntimeError("No valid turn found at corner!")
         else:
             # Letter marker - collect it
             collected_letters = collected_letters + routing_diagram[position]
