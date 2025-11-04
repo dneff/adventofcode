@@ -1,190 +1,210 @@
-import copy
+"""
+Advent of Code 2018 - Day 16: Chronal Classification
+https://adventofcode.com/2018/day/16
+
+Reverse-engineer a device with four registers and 16 opcodes. Given sample instruction
+executions showing before/after register states, determine how many samples behave like
+three or more opcodes.
+
+Part 1: Count samples that behave like three or more opcodes.
+"""
+
+import os
+import sys
 import ast
-from collections import defaultdict
+
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2018/16/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
+
+from aoc_helpers import AoCInput, AoCUtils
 
 
-def printSolution(x):
-    print(f"The solution is {x}")
+class WristDevice:
+    """Simulates a wrist device with 4 registers and 16 opcodes."""
 
-
-class WristCalc:
     def __init__(self):
-        self.registers = [0] * 4
-        self.commands = {}
-        self.command_names = [
-            'addr', 'addi', 'mulr', 'muli',
-            'banr', 'bani', 'borr', 'bori',
-            'setr', 'seti',
-            'gtri', 'gtir', 'gtrr',
-            'eqri', 'eqir', 'eqrr'
-        ]
-        for idx, c in enumerate(self.command_names):
-            func = getattr(self, c)
-            self.commands[idx] = func
+        self.registers = [0, 0, 0, 0]
 
-    def setRegisters(self, values):
-        for i, x in enumerate(values):
-            self.registers[i] = x
+    def set_registers(self, values):
+        """Set register values from a list."""
+        self.registers = list(values)
 
-    def getRegisters(self):
-        return self.registers
+    def get_registers(self):
+        """Get current register values."""
+        return list(self.registers)
 
-    def reset(self):
-        self.registers = [0] * 4
-
+    # Addition operations
     def addr(self, a, b, c):
-        # (add register) stores into register C
-        # the result of adding register A and register B.
+        """Add register: registers[c] = registers[a] + registers[b]"""
         self.registers[c] = self.registers[a] + self.registers[b]
 
     def addi(self, a, b, c):
-        # (add immediate) stores into register C
-        # the result of adding register A and value B.
+        """Add immediate: registers[c] = registers[a] + b"""
         self.registers[c] = self.registers[a] + b
 
+    # Multiplication operations
     def mulr(self, a, b, c):
-        # (multiply register) stores into register C
-        # the result of multiplying register A
-        # and register B.
+        """Multiply register: registers[c] = registers[a] * registers[b]"""
         self.registers[c] = self.registers[a] * self.registers[b]
 
     def muli(self, a, b, c):
-        # (multiply immediate) stores into
-        # register C the result of multiplying
-        # register A and value B.
+        """Multiply immediate: registers[c] = registers[a] * b"""
         self.registers[c] = self.registers[a] * b
 
+    # Bitwise AND operations
     def banr(self, a, b, c):
-        # (bitwise AND register) stores into
-        # register C the result of the bitwise
-        # AND of register A and register B.
+        """Bitwise AND register: registers[c] = registers[a] & registers[b]"""
         self.registers[c] = self.registers[a] & self.registers[b]
 
     def bani(self, a, b, c):
-        # (bitwise AND immediate) stores into
-        # register C the result of the bitwise AND
-        # of register A and value B.
+        """Bitwise AND immediate: registers[c] = registers[a] & b"""
         self.registers[c] = self.registers[a] & b
 
+    # Bitwise OR operations
     def borr(self, a, b, c):
-        # (bitwise OR register) stores into
-        # register C the result of the bitwise OR
-        # of register A and register B.
+        """Bitwise OR register: registers[c] = registers[a] | registers[b]"""
         self.registers[c] = self.registers[a] | self.registers[b]
 
     def bori(self, a, b, c):
-        # (bitwise OR immediate) stores into
-        # register C the result of the bitwise OR
-        # of register A and value B.
+        """Bitwise OR immediate: registers[c] = registers[a] | b"""
         self.registers[c] = self.registers[a] | b
 
+    # Assignment operations
     def setr(self, a, b, c):
-        # (set register) copies the contents of
-        # register A into register C.
-        # (Input B is ignored.)
+        """Set register: registers[c] = registers[a]"""
         self.registers[c] = self.registers[a]
 
     def seti(self, a, b, c):
-        # (set immediate) stores value A
-        # into register C. (Input B is ignored.)
+        """Set immediate: registers[c] = a"""
         self.registers[c] = a
 
+    # Greater-than testing
     def gtir(self, a, b, c):
-        # (greater-than immediate/register) sets
-        # register C to 1 if value A is greater
-        # than register B. Otherwise, register C is set to 0.
-        if a > self.registers[b]:
-            self.registers[c] = 1
-        else:
-            self.registers[c] = 0
+        """Greater-than immediate/register: registers[c] = 1 if a > registers[b] else 0"""
+        self.registers[c] = 1 if a > self.registers[b] else 0
 
     def gtri(self, a, b, c):
-        # (greater-than register/immediate) sets
-        # register C to 1 if register A is greater
-        # than value B. Otherwise, register C is set to 0.
-        if self.registers[a] > b:
-            self.registers[c] = 1
-        else:
-            self.registers[c] = 0
+        """Greater-than register/immediate: registers[c] = 1 if registers[a] > b else 0"""
+        self.registers[c] = 1 if self.registers[a] > b else 0
 
     def gtrr(self, a, b, c):
-        # (greater-than register/register) sets
-        # register C to 1 if register A is greater
-        # than register B. Otherwise, register C is set to 0.
-        if self.registers[a] > self.registers[b]:
-            self.registers[c] = 1
-        else:
-            self.registers[c] = 0
+        """Greater-than register/register: registers[c] = 1 if registers[a] > registers[b] else 0"""
+        self.registers[c] = 1 if self.registers[a] > self.registers[b] else 0
 
+    # Equality testing
     def eqir(self, a, b, c):
-        # (equal immediate/register) sets register C
-        # to 1 if value A is equal to register B.
-        # Otherwise, register C is set to 0.
-        if a == self.registers[b]:
-            self.registers[c] = 1
-        else:
-            self.registers[c] = 0
+        """Equal immediate/register: registers[c] = 1 if a == registers[b] else 0"""
+        self.registers[c] = 1 if a == self.registers[b] else 0
 
     def eqri(self, a, b, c):
-        # (equal register/immediate) sets register C
-        # to 1 if register A is equal to value B.
-        # Otherwise, register C is set to 0.
-        if self.registers[a] == b:
-            self.registers[c] = 1
-        else:
-            self.registers[c] = 0
+        """Equal register/immediate: registers[c] = 1 if registers[a] == b else 0"""
+        self.registers[c] = 1 if self.registers[a] == b else 0
 
     def eqrr(self, a, b, c):
-        # (equal register/register) sets register C
-        # to 1 if register A is equal to register B.
-        # Otherwise, register C is set to 0.
-        if self.registers[a] == self.registers[b]:
-            self.registers[c] = 1
-        else:
-            self.registers[c] = 0
+        """Equal register/register: registers[c] = 1 if registers[a] == registers[b] else 0"""
+        self.registers[c] = 1 if self.registers[a] == self.registers[b] else 0
+
+    def get_all_opcodes(self):
+        """Return list of all opcode methods."""
+        return [
+            self.addr, self.addi, self.mulr, self.muli,
+            self.banr, self.bani, self.borr, self.bori,
+            self.setr, self.seti,
+            self.gtir, self.gtri, self.gtrr,
+            self.eqir, self.eqri, self.eqrr
+        ]
 
 
-def main():
-    file = open('input.txt', 'r')
-    calc = WristCalc()
-    tests = []
-    test = {}
-    empty = 0
-    for line in file.readlines():
-        data = line.strip()
-        if not data:
-            empty += 1
-            if len(test.keys()) > 0:
-                tests.append(copy.deepcopy(test))
-                test.clear()
-            if empty == 3:
+def parse_samples(lines):
+    """
+    Parse instruction samples from input.
+
+    Each sample consists of:
+    - Before: [r0, r1, r2, r3]
+    - Instruction: [opcode, a, b, c]
+    - After: [r0, r1, r2, r3]
+
+    Returns:
+        list: List of sample dictionaries
+    """
+    samples = []
+    i = 0
+
+    while i < len(lines):
+        line = lines[i].strip()
+
+        # Stop at blank lines (indicates end of samples section)
+        if not line:
+            i += 1
+            # Check for multiple consecutive blank lines (end of samples)
+            if i < len(lines) and not lines[i].strip():
                 break
             continue
 
-        if data[0] == 'B':
-            b = data.split(': ')[-1]
-            test['before'] = ast.literal_eval(b)
-            empty = 0
-        elif data[0] == 'A':
-            a = data.split(':  ')[-1]
-            test['after'] = ast.literal_eval(a)
-            empty = 0
+        # Parse a sample
+        if line.startswith('Before:'):
+            before = ast.literal_eval(line.split(': ')[1])
+            instruction = [int(x) for x in lines[i + 1].split()]
+            after = ast.literal_eval(lines[i + 2].split(':  ')[1])
+
+            samples.append({
+                'before': before,
+                'instruction': instruction,
+                'after': after
+            })
+
+            i += 3
         else:
-            test['input'] = [int(x) for x in data.split()]
-            empty = 0
+            i += 1
 
-    matches = [0] * len(tests)
-    for idx_t, test in enumerate(tests):
-        for f in range(16):
-            calc.setRegisters(test['before'])
-            calc.commands[f](*test['input'][1:])
-            if calc.getRegisters() == test['after']:
-                matches[idx_t] += 1
-            calc.reset()
-
-    printSolution(sum([1 for x in matches if x >= 3]))
+    return samples
 
 
+def count_matching_opcodes(device, sample):
+    """
+    Count how many opcodes produce the expected output for a sample.
 
-if __name__ == "__main__":
-    main()
+    Args:
+        device: WristDevice instance
+        sample: Dictionary with 'before', 'instruction', 'after'
+
+    Returns:
+        int: Number of opcodes that match
+    """
+    instruction = sample['instruction']
+    a, b, c = instruction[1], instruction[2], instruction[3]
+
+    matches = 0
+    for opcode_func in device.get_all_opcodes():
+        device.set_registers(sample['before'])
+        opcode_func(a, b, c)
+        if device.get_registers() == sample['after']:
+            matches += 1
+
+    return matches
+
+
+def solve_part1():
+    """
+    Count how many samples behave like three or more opcodes.
+
+    Returns:
+        int: Number of samples matching 3+ opcodes
+    """
+    lines = AoCInput.read_lines(INPUT_FILE)
+    samples = parse_samples(lines)
+
+    device = WristDevice()
+    count = 0
+
+    for sample in samples:
+        if count_matching_opcodes(device, sample) >= 3:
+            count += 1
+
+    return count
+
+
+# Compute and print the answer
+answer = solve_part1()
+AoCUtils.print_solution(1, answer)

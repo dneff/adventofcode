@@ -1,17 +1,29 @@
+"""
+Advent of Code 2018 - Day 17: Reservoir Research (Part 2)
+https://adventofcode.com/2018/day/17
 
-def print_solution(solution):
-    """formats solution for printing"""
-    print(f"The solution is: {solution}")
+Part 2 asks how many water tiles are retained (settled water '~') after the spring stops flowing.
+This counts only the water that remains at rest, not the flowing water.
+"""
+import os
+import sys
+
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2018/17/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
+from aoc_helpers import AoCUtils
 
 
 class Scan():
+    """Simulates water flow through a clay-and-sand landscape."""
+
     def __init__(self):
-        self.clay = {}
-        self.water = {}
+        self.clay = {}  # Clay positions
+        self.water = {}  # Water positions with flow state ('|' or '~')
         self.previous_downs = []
-        self.actions = []
-        self.seen = set()
-        self.drip = (500, 0)
+        self.actions = []  # Queue of pending water flow actions
+        self.seen = set()  # Track processed actions
+        self.drip = (500, 0)  # Water source position
         self.x_min, self.x_max = 0, 0
         self.y_min, self.y_max = 0, 0
         self.add_action(self.drip, 'down')
@@ -136,11 +148,12 @@ class Scan():
 
 
 def main():
-    file = open('input.txt', 'r', encoding='utf-8')
+    """Simulate water flow and count only settled water tiles."""
+    file = open(INPUT_FILE, 'r', encoding='utf-8')
 
     scan = Scan()
 
-    # add clay positions
+    # Parse clay positions from input
     for line in file.readlines():
         part_a, part_b = line.strip().split(', ')
         a = int(part_a.split('=')[-1])
@@ -150,24 +163,27 @@ def main():
                 scan.clay[(a, b)] = '#'
             else:
                 scan.clay[(b, a)] = '#'
-    # add boundries
+
+    # Calculate scan boundaries
     x_all = [x[0] for x in scan.clay]
     y_all = [x[1] for x in scan.clay]
     scan.x_min, scan.x_max = min(x_all), max(x_all)
     scan.y_min, scan.y_max = min(y_all), max(y_all)
 
+    # Process all water flow actions
     cycles = 0
     while scan.process_action():
         cycles += 1
 
     print(scan)
-    
+
+    # Count only settled water ('~') within the vertical bounds
     valid_water = 0
     for position, water in scan.water.items():
         if position[1] >= scan.y_min and water == '~':
             valid_water += 1
 
-    print_solution(valid_water)
+    AoCUtils.print_solution(2, valid_water)
 
 
 if __name__ == "__main__":

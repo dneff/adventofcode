@@ -1,104 +1,147 @@
+"""
+Advent of Code 2018 - Day 13: Mine Cart Madness
+https://adventofcode.com/2018/day/13
 
-def printSolution(x):
-    print(f"The solution is {x}")
+Simulate carts moving on tracks. Carts navigate straight paths, curves, and intersections
+with specific turning rules at intersections. When carts collide, they are removed from
+the simulation.
 
-class Train():
+Part 2: Find the location of the last remaining cart after all collisions.
+"""
+
+import os
+import sys
+
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2018/13/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
+
+from aoc_helpers import AoCInput, AoCUtils
+
+
+class Cart:
+    """Represents a mine cart moving on tracks."""
+
+    # Direction indices: 0=Up, 1=Right, 2=Down, 3=Left
+    ICONS = ['^', '>', 'v', '<']
+    DIRECTIONS = ['U', 'R', 'D', 'L']
 
     def __init__(self, icon, location):
-        self.icons = ['^', '>', 'v', '<']
-        self.orientation = ['U','R','D','L']
-        self.intersection = -1
-
-        self.running = True
-        self.direction = self.icons.index(icon)
+        self.direction = self.ICONS.index(icon)
         self.location = tuple(location)
+        self.intersection_state = -1  # Cycles through -1, 0, 1 for left, straight, right
+        self.active = True  # Whether cart is still in simulation
 
-        self.step = {
+        # Movement deltas for each direction
+        self.step_map = {
             'U': (0, -1),
             'R': (1, 0),
             'D': (0, 1),
             'L': (-1, 0)
         }
 
-    def update_intersection(self):
-        self.intersection += 1
-        if self.intersection == 2:
-            self.intersection = -1
+    def move(self, track_grid):
+        """
+        Move the cart one step, handling curves and intersections.
 
-    def move(self, world):
-        if world[self.location] == '\\':
-            if self.direction % 2 == 0:
-                self.direction += -1
-            else:
-                self.direction += 1 
+        Args:
+            track_grid: Dictionary mapping (x, y) to track characters
+        """
+        current_track = track_grid[self.location]
 
-        if world[self.location] == '/':
-            if self.direction % 2 == 0:
+        # Handle curves
+        if current_track == '\\':
+            if self.direction % 2 == 0:  # Vertical
+                self.direction -= 1
+            else:  # Horizontal
                 self.direction += 1
-            else:
-                self.direction += -1
 
-        if world[self.location] == '+':
-            self.direction += self.intersection % 4
-            self.update_intersection()
+        elif current_track == '/':
+            if self.direction % 2 == 0:  # Vertical
+                self.direction += 1
+            else:  # Horizontal
+                self.direction -= 1
 
+        elif current_track == '+':
+            # Intersection: turn left, go straight, or turn right
+            self.direction += self.intersection_state % 4
+            self.update_intersection_state()
+
+        # Normalize direction to 0-3 range
         self.direction = self.direction % 4
 
-        heading = self.orientation[self.direction]
-        self.location = tuple([x + y  for  x,y in zip(self.location, self.step[heading])])
+        # Move forward
+        heading = self.DIRECTIONS[self.direction]
+        dx, dy = self.step_map[heading]
+        self.location = (self.location[0] + dx, self.location[1] + dy)
+
+    def update_intersection_state(self):
+        """Update the intersection state for next intersection."""
+        self.intersection_state += 1
+        if self.intersection_state == 2:
+            self.intersection_state = -1
 
     def __lt__(self, other):
-        if self.location[1] < other.location[1]:
-            return True
-        elif self.location[1] == other.location[1]:
-            return self.location[0] < other.location[0]
-        return False
-
-    def __repr__(self) -> str:
-        return f"Train: {self.location}, {self.orientation[self.direction]}"
+        """Sort carts by position (top-to-bottom, left-to-right)."""
+        if self.location[1] != other.location[1]:
+            return self.location[1] < other.location[1]
+        return self.location[0] < other.location[0]
 
 
-def main():
-    test = 'test2.txt'
-    puzzle = 'input.txt'
+def solve_part2():
+    """
+    Simulate cart movement with collision removal until one cart remains.
 
-    active = puzzle
+    Returns:
+        str: "x,y" coordinates of the last remaining cart
+    """
+    lines = AoCInput.read_lines(INPUT_FILE)
 
-    file = open(active, 'r')
+    track_grid = {}
+    carts = []
 
-    world = {}
-    trains = []
-    for y, line in enumerate(file.readlines()):
+    # Parse the track layout and carts
+    for y, line in enumerate(lines):
         for x, char in enumerate(line.rstrip('\n')):
-            if char != ' ':
-                if char in ['^', 'v']:
-                    trains.append(Train(char, (x,y)))
-                    world[(x,y)] = '|'
-                elif char in ['>', '<']:
-                    trains.append(Train(char, (x,y)))
-                    world[(x,y)] = '-'
-                else:
-                    world[(x,y)] = char
-
-    ticks = 0
-    while len(trains) > 1:
-        trains.sort()
-        for t in trains:
-            if not t.running:
+            if char == ' ':
                 continue
-            t.move(world)
 
-            train_locs = [tuple(x.location) for x in trains if x.running]            
-            if len(set(train_locs)) != len(train_locs):
-                for wrecked in trains:
-                    if wrecked.location == t.location:
-                        wrecked.running = False
+            if char in ['^', 'v']:
+                carts.append(Cart(char, (x, y)))
+                track_grid[(x, y)] = '|'
+            elif char in ['>', '<']:
+                carts.append(Cart(char, (x, y)))
+                track_grid[(x, y)] = '-'
+            else:
+                track_grid[(x, y)] = char
 
-        ticks += 1
-        trains = [t for t in trains if t.running]
+    # Simulate until only one cart remains
+    while len(carts) > 1:
+        # Sort carts by position for this tick
+        carts.sort()
 
-    printSolution(trains[0].location)
+        for cart in carts:
+            if not cart.active:
+                continue
+
+            cart.move(track_grid)
+
+            # Check for collision with other active carts
+            active_positions = [c.location for c in carts if c.active]
+            if len(set(active_positions)) != len(active_positions):
+                # Mark all carts at this collision location as inactive
+                for other_cart in carts:
+                    if other_cart.location == cart.location:
+                        other_cart.active = False
+
+        # Remove inactive carts
+        carts = [c for c in carts if c.active]
+
+    # Return the location of the last remaining cart
+    final_cart = carts[0]
+    return f"{final_cart.location[0]},{final_cart.location[1]}"
 
 
-if __name__ == "__main__":
-    main()
+# Compute and print the answer
+answer = solve_part2()
+AoCUtils.print_solution(2, answer)

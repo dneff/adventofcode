@@ -1,65 +1,94 @@
+"""
+Advent of Code 2018 - Day 6: Chronal Coordinates (Part 1)
+https://adventofcode.com/2018/day/6
+
+Determine the area around each coordinate by counting the number of integer (X,Y)
+locations that are closest to that coordinate using Manhattan distance.
+
+Find the largest finite area that isn't infinite. Coordinates with areas extending
+to the grid boundary are considered infinite and should be excluded.
+
+Tied locations (equidistant from multiple coordinates) don't count toward any area.
+"""
+
+import os
+import sys
 from collections import defaultdict
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2018/6/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
 
-def printSolution(x):
-    print(f"The solution is {x}")
+from aoc_helpers import AoCInput, AoCUtils, MathUtils
 
-def findDistance(a,b):
-    return abs(b[0] - a[0]) + abs(b[1] - a[1])
 
-def findClosest(point, nodes):
-    distances = []
-    for n in nodes:
-        distances.append((n, findDistance(n, point)))
-    distances.sort(key = lambda x: x[1])
+def find_closest_coordinate(point, coordinates):
+    """
+    Find the closest coordinate to a given point using Manhattan distance.
 
+    Args:
+        point: (x, y) tuple
+        coordinates: List of (x, y) coordinate tuples
+
+    Returns:
+        tuple: Closest coordinate, or (-1, -1) if tied between multiple coordinates
+    """
+    # Calculate distances to all coordinates
+    distances = [(coord, MathUtils.manhattan_distance(point, coord))
+                 for coord in coordinates]
+    distances.sort(key=lambda x: x[1])
+
+    # If there's a tie for closest, return sentinel value
     if distances[0][1] == distances[1][1]:
-        return (-1,-1)
+        return (-1, -1)
     else:
-        return(distances[0][0])
+        return distances[0][0]
 
-def main():
-    locations = []
-    file = open('input.txt', 'r')
-    for line in file:
+
+def solve_part1():
+    """
+    Find the size of the largest finite area around any coordinate.
+
+    Returns:
+        int: Size of the largest finite area
+    """
+    lines = AoCInput.read_lines(INPUT_FILE)
+    coordinates = []
+
+    for line in lines:
         x, y = line.strip().split(', ')
-        x, y = int(x), int(y)
-        locations.append((x, y))
+        coordinates.append((int(x), int(y)))
 
-    loc_x = [x[0] for x in locations]
-    min_x, max_x = min(loc_x), max(loc_x)
+    # Find bounding box
+    x_coords = [x for x, y in coordinates]
+    y_coords = [y for x, y in coordinates]
+    min_x, max_x = min(x_coords), max(x_coords)
+    min_y, max_y = min(y_coords), max(y_coords)
 
-    loc_y = [x[1] for x in locations]
-    min_y, max_y = min(loc_y), max(loc_y)
+    # Find coordinates with infinite areas (extend beyond boundary)
+    infinite_coordinates = set()
 
-    borders = [(min_x, max_x), (min_y, max_y)]
-    infinity_locations = set()
-    for l in locations:
-        if l[0] in borders[0] or l[1] in borders[1]:
-            infinity_locations.add(l)
-    
-    # boarders have infinity locations
-    for boarder_x in range(min_x - 10, max_x + 10):
-        infinity_locations.add(findClosest((boarder_x, min_y - 10), locations))
-        infinity_locations.add(findClosest((boarder_x, max_y + 10), locations))
+    # Check points outside the boundary to find infinite areas
+    for border_x in range(min_x - 10, max_x + 11):
+        infinite_coordinates.add(find_closest_coordinate((border_x, min_y - 10), coordinates))
+        infinite_coordinates.add(find_closest_coordinate((border_x, max_y + 10), coordinates))
 
-    for boarder_y in range(min_y - 10, max_y + 10):
-        infinity_locations.add(findClosest((min_x - 10, boarder_y), locations))
-        infinity_locations.add(findClosest((max_x + 10, boarder_y), locations))
+    for border_y in range(min_y - 10, max_y + 11):
+        infinite_coordinates.add(find_closest_coordinate((min_x - 10, border_y), coordinates))
+        infinite_coordinates.add(find_closest_coordinate((max_x + 10, border_y), coordinates))
 
+    # Calculate areas for each coordinate
     areas = defaultdict(int)
 
     for x in range(min_x, max_x + 1):
         for y in range(min_y, max_y + 1):
-            owner = findClosest((x,y), locations)
-            if owner not in infinity_locations:
-                areas[owner] += 1
-    
-    for l in infinity_locations:
-        if l in areas.keys():
-            areas.pop(l)
+            closest = find_closest_coordinate((x, y), coordinates)
+            if closest not in infinite_coordinates:
+                areas[closest] += 1
 
-    printSolution(max(areas.values()))
+    # Return the largest finite area
+    return max(areas.values())
 
 
-if __name__ == "__main__":
-    main()
+# Compute and print the answer for part 1
+largest_area = solve_part1()
+AoCUtils.print_solution(1, largest_area)

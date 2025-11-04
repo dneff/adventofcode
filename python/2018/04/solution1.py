@@ -1,48 +1,95 @@
+"""
+Advent of Code 2018 - Day 4: Repose Record (Part 1)
+https://adventofcode.com/2018/day/4
 
+Analyze guard shift logs to identify sleep patterns.
+
+Strategy 1: Find the guard who sleeps the most total minutes, then identify which
+specific minute that guard spent asleep most frequently. Multiply the guard's ID
+by that minute.
+
+Records format:
+- [YYYY-MM-DD HH:MM] Guard #ID begins shift
+- [YYYY-MM-DD HH:MM] falls asleep
+- [YYYY-MM-DD HH:MM] wakes up
+
+Only the minute portion (00-59) during the midnight hour matters.
+"""
+
+import os
+import sys
 from collections import defaultdict
 from datetime import datetime
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2018/4/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
 
-def printSolution(x):
-    print(f"The solution is {x}")
+from aoc_helpers import AoCInput, AoCUtils
 
-def main():
-    log = []
-    file = open('input.txt', 'r')
-    for line in file:
-        log.append(line.strip())
-    log.sort()
 
-    date_format= '%Y-%m-%d %H:%M'
+def parse_guard_sleep_patterns(log_entries):
+    """
+    Parse guard logs and build sleep pattern data.
 
-    guards = defaultdict(lambda: defaultdict(int))
-    current_guard = ''
+    Args:
+        log_entries: List of chronologically sorted log entries
+
+    Returns:
+        dict: Guard ID -> {minute -> count of times asleep at that minute}
+    """
+    date_format = '%Y-%m-%d %H:%M'
+    guard_sleep_minutes = defaultdict(lambda: defaultdict(int))
+    current_guard = None
 
     idx = 0
-    while idx < len(log):
-        entry = log[idx].split()
+    while idx < len(log_entries):
+        entry = log_entries[idx].split()
+
         if entry[2] == 'Guard':
-            current_guard = int(entry[3][1:])
+            # New guard begins shift
+            current_guard = int(entry[3][1:])  # Remove '#' prefix
         elif entry[2] == 'falls':
-            start = log[idx].split(']')[0][1:]
-            start = datetime.strptime(start, date_format)
+            # Guard falls asleep - parse start time
+            sleep_start = log_entries[idx].split(']')[0][1:]
+            sleep_start = datetime.strptime(sleep_start, date_format)
+
+            # Next entry should be wake up time
             idx += 1
-            end = log[idx].split(']')[0][1:]
-            end = datetime.strptime(end, date_format)
-            for m in range(start.minute, end.minute):
-                guards[current_guard][m] += 1
+            sleep_end = log_entries[idx].split(']')[0][1:]
+            sleep_end = datetime.strptime(sleep_end, date_format)
+
+            # Mark each minute asleep
+            for minute in range(sleep_start.minute, sleep_end.minute):
+                guard_sleep_minutes[current_guard][minute] += 1
 
         idx += 1
 
-    guard_slept = [(x,sum(y.values())) for x,y in guards.items()]
-    guard_slept.sort(key = lambda x: x[1], reverse=True)
-
-    sleepiest = guard_slept[0][0]
-    sleepiest_minute = max(guards[sleepiest], key=guards[sleepiest].get)
-
-    printSolution(sleepiest * sleepiest_minute)
-    
-    
+    return guard_sleep_minutes
 
 
-if __name__ == "__main__":
-    main()
+def solve_part1():
+    """
+    Find the sleepiest guard and their most common sleep minute.
+
+    Returns:
+        int: Guard ID × most frequent sleep minute
+    """
+    log_entries = sorted(AoCInput.read_lines(INPUT_FILE))
+    guard_sleep_minutes = parse_guard_sleep_patterns(log_entries)
+
+    # Find the guard who slept the most total minutes
+    guard_total_sleep = [(guard_id, sum(minutes.values()))
+                         for guard_id, minutes in guard_sleep_minutes.items()]
+    guard_total_sleep.sort(key=lambda x: x[1], reverse=True)
+    sleepiest_guard = guard_total_sleep[0][0]
+
+    # Find which minute that guard was asleep most often
+    sleepiest_minute = max(guard_sleep_minutes[sleepiest_guard],
+                          key=guard_sleep_minutes[sleepiest_guard].get)
+
+    return sleepiest_guard * sleepiest_minute
+
+
+# Compute and print the answer for part 1
+answer = solve_part1()
+AoCUtils.print_solution(1, answer)

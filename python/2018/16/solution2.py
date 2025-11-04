@@ -1,13 +1,26 @@
+"""
+Advent of Code 2018 - Day 16: Chronal Classification (Part 2)
+https://adventofcode.com/2018/day/16
+
+This puzzle involves understanding how a device with four registers and 16 opcodes works.
+After analyzing instruction samples to determine opcode mappings, this solution executes
+a test program and returns the final value in register 0.
+"""
+import os
+import sys
 import copy
 import ast
 from collections import defaultdict
 
-
-def printSolution(x):
-    print(f"The solution is {x}")
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2018/16/input')
+sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
+from aoc_helpers import AoCUtils
 
 
 class WristCalc:
+    """Simulates a device with 4 registers and 16 opcodes."""
+
     def __init__(self):
         self.registers = [0] * 4
         self.commands = {}
@@ -18,6 +31,7 @@ class WristCalc:
             'gtri', 'gtir', 'gtrr',
             'eqri', 'eqir', 'eqrr'
         ]
+        # Map command indices to their functions
         for idx, c in enumerate(self.command_names):
             func = getattr(self, c)
             self.commands[idx] = func
@@ -148,11 +162,15 @@ class WristCalc:
 
 
 def main():
-    file = open('input.txt', 'r')
+    """
+    Parse input samples to determine opcode mappings, then execute the test program.
+    """
+    file = open(INPUT_FILE, 'r')
     calc = WristCalc()
     tests = []
     test = {}
     empty = 0
+    # Parse test samples from first part of input
     for line in file.readlines():
         data = line.strip()
         if not data:
@@ -177,7 +195,8 @@ def main():
             empty = 0
 
     file.close()
-    file = open('input.txt', 'r')
+    # Parse the actual program from second part of input
+    file = open(INPUT_FILE, 'r')
     instructions = []
     empty = 0
     seeking = True
@@ -193,49 +212,52 @@ def main():
             continue
         instructions.append([int(x) for x in line.strip('\n').split()])
 
-    # iterate through the tests. If there's a test with
-    # only one possible command, add it to new_command
-    # and stop testing for it. This should iteratively
-    # filter the tested commands down to zero.
-
+    # Iteratively determine opcode mappings
+    # If a test has only one possible command, map that opcode to that command
+    # Continue until all opcodes are mapped
     new_command = defaultdict(str)
     hunting = True
     while hunting:
         match2 = defaultdict(list)
         mappings = defaultdict(set)
 
+        # Test each sample against all possible opcodes
         for idx_t, test in enumerate(tests):
             for f in range(16):
                 if test['input'][0] in new_command.keys():
                     continue
                 calc.setRegisters(test['before'])
                 calc.commands[f](*test['input'][1:])
+                # If output matches and command not yet mapped, record it
                 if calc.getRegisters() == test['after'] and calc.command_names[f] not in new_command.values():
                     match2[idx_t].append(calc.command_names[f])
                 calc.reset()
 
+        # Find commands that only match one opcode
         for k, v in match2.items():
             if len(v) == 1:
                 mappings[v[0]].add(tests[k]['input'][0])
 
+        # Map opcodes that are uniquely identified
         for k, v in mappings.items():
             if len(v) == 1:
                 new_command[v.pop()] = k
 
+        # Stop when all opcodes are mapped
         if len(new_command.keys()) == len(calc.command_names):
             hunting = False
 
-    # load new commands into calc
+    # Load the determined command mappings into the calculator
     for idx, c in new_command.items():
         func = getattr(calc, c)
         calc.commands[idx] = func
 
-    # run instructions and get result
+    # Execute the test program
     calc.reset()
     for i in instructions:
         calc.run(*i)
 
-    printSolution(calc.registers[0])
+    AoCUtils.print_solution(2, calc.registers[0])
 
 
 if __name__ == "__main__":
