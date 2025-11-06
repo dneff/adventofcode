@@ -1,11 +1,15 @@
 import os
 import sys
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2015/11/input')
-sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
-
-from aoc_helpers import AoCInput, AoCUtils
 import string
+
+# Path setup
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(SCRIPT_DIR, '../../'))
+
+from aoc_helpers import AoCInput, AoCUtils  # noqa: E402
+
+# Input file path
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2015/11/input')
 
 
 class PasswordManager:
