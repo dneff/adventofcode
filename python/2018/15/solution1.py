@@ -10,7 +10,7 @@ and attacking mechanics.
 """
 import os
 import sys
-from collections import defaultdict
+from collections import defaultdict, deque
 from functools import lru_cache
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -18,6 +18,15 @@ INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2018/15/input')
 sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
 from aoc_helpers import AoCUtils
 
+
+def clear_screen():
+    """Clear the console screen for better readability during simulation."""
+    # For Windows
+    if os.name == 'nt':
+        os.system('cls')
+    # For macOS and Linux
+    else:
+        os.system('clear')
 
 def createGameboard(filename):
     """Parse the input file and create the game board with initial unit positions."""
@@ -51,52 +60,65 @@ def getTargets(positions, game):
                 possible.add(target)
     return tuple(possible)
 
-@lru_cache(maxsize=None)
-def BFSTarget(position, targets, game, distance=0, seen=list()):
+def BFSTarget(position, targets, game):
     """
-    Breadth-first search to find the shortest path to a target position.
-    Returns the distance and list of paths found.
+    Iterative breadth-first search to find the shortest path to a target position.
+    Returns the first step to take towards the nearest target.
     """
     board, players = game
     occupied = set(players[0]) | set(players[1])
-    distance += 1
-    found = list()
-    next_paths = set()
-
-    # Limit search depth for performance
-    if distance > 8:
-        return 10**10, set()
 
     if position in targets:
-        found.append(seen[:] + [position])
-        return distance, found
+        return None  # Already at target
 
-    for offset in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
-        new_path = (position[0] + offset[0], position[1] + offset[1])
-        if new_path in seen:
+    # BFS using a queue: (current_pos, first_step)
+    queue = deque()
+    visited = {position}
+
+    # Initialize queue with adjacent positions
+    for offset in [(0, -1), (-1, 0), (1, 0), (0, 1)]:  # Reading order
+        next_pos = (position[0] + offset[0], position[1] + offset[1])
+        if next_pos in board and next_pos not in occupied:
+            queue.append((next_pos, next_pos))
+            visited.add(next_pos)
+
+    # Track targets found at the current distance
+    found_targets = []
+    current_level_size = len(queue)
+
+    while queue:
+        current_pos, first_step = queue.popleft()
+        current_level_size -= 1
+
+        # Check if we reached a target
+        if current_pos in targets:
+            found_targets.append((current_pos, first_step))
+            # Continue processing this level to find all equidistant targets
+            if current_level_size == 0 and found_targets:
+                break
             continue
-        elif new_path in targets and new_path not in occupied:
-            found_path = list(seen)[:] + [new_path]
-            found.append(found_path)
-        elif new_path in board and new_path not in occupied:
-            next_paths.add(new_path)
 
-    if len(found) > 0:
-        return distance, found
+        # If we finished this level and found targets, stop
+        if current_level_size == 0 and found_targets:
+            break
 
-    if len(next_paths) == 0:
-        return 10**10, set()
+        # Explore neighbors in reading order
+        for offset in [(0, -1), (-1, 0), (1, 0), (0, 1)]:
+            next_pos = (current_pos[0] + offset[0], current_pos[1] + offset[1])
+            if next_pos not in visited and next_pos in board and next_pos not in occupied:
+                visited.add(next_pos)
+                queue.append((next_pos, first_step))
 
-    results = defaultdict(list)
-    for path in next_paths:
-        new_seen = list(seen)[:] + [path]
-        k, v = BFSTarget(path, targets, (board, players), distance, tuple(new_seen))
-        results[k].extend(v)
+        # Mark end of current level
+        if current_level_size == 0:
+            current_level_size = len(queue)
 
-    if len(results.keys()) > 0:
-        return min(results.keys()), results[min(results.keys())]
-    else:
-        return 10**10, set()
+    if not found_targets:
+        return None
+
+    # Sort targets by reading order (y, then x), then by first step
+    found_targets.sort(key=lambda x: (x[0][1], x[0][0], x[1][1], x[1][0]))
+    return found_targets[0][1]
 
 @lru_cache(maxsize=None)
 def findPath(position, game):
@@ -110,14 +132,13 @@ def findPath(position, game):
         enemy = players[1]
     else:
         enemy = players[0]
-    _, paths = BFSTarget(position, getTargets(enemy, game), game)
-    if len(paths) > 0:
-        # Sort targets in reading order (top-to-bottom, left-to-right)
-        targets = [x[0] for x in paths]
-        targets.sort(key=lambda x: (x[1], x[0]))
-        for path in paths:
-            if targets[0] in path:
-                return path[0]
+
+    targets = getTargets(enemy, game)
+    if not targets:
+        return None
+
+    next_step = BFSTarget(position, targets, game)
+    return next_step if next_step else position
 
 
 def printGameboard(game):
@@ -208,6 +229,7 @@ def main():
 
             game = (board, (elves, goblins))
 
+        clear_screen()
         print(f"After {round} rounds - E: {sum(elves.values())} G: {sum(goblins.values())}")
         printGameboard(game)
         # Check if combat is over (one side eliminated)
