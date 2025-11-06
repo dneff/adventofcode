@@ -1,10 +1,14 @@
 import os
 import sys
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2015/25/input')
-sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
 
-from aoc_helpers import AoCInput, AoCUtils
+# Path setup
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(SCRIPT_DIR, '../../'))
+
+from aoc_helpers import AoCUtils  # noqa: E402
+
+# Input file path
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2015/25/input')
 
 
 def nextCode(x):
@@ -29,6 +33,7 @@ def solve_part1():
         code = nextCode(code)
 
     return code
+
 
 answer = solve_part1()
 AoCUtils.print_solution(1, answer)

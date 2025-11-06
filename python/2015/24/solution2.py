@@ -1,12 +1,16 @@
 import os
 import sys
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2015/24/input')
-sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
 
-from aoc_helpers import AoCInput, AoCUtils
-from itertools import combinations
-from functools import reduce
+# Path setup
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(SCRIPT_DIR, '../../'))
+
+from aoc_helpers import AoCInput, AoCUtils  # noqa: E402
+from itertools import combinations  # noqa: E402
+from functools import reduce  # noqa: E402
+
+# Input file path
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2015/24/input')
 
 
 def solve_part2():
@@ -62,6 +66,7 @@ def solve_part2():
 
     # Should never reach here with valid input
     return None
+
 
 answer = solve_part2()
 AoCUtils.print_solution(2, answer)

@@ -1,11 +1,15 @@
 import os
 import sys
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2015/21/input')
-sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
 
-from aoc_helpers import AoCInput, AoCUtils
-from collections import defaultdict
+# Path setup
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(SCRIPT_DIR, '../../'))
+
+from aoc_helpers import AoCUtils  # noqa: E402
+from collections import defaultdict  # noqa: E402
+
+# Input file path
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2015/21/input')
 
 
 item_shop = {}
@@ -111,6 +115,7 @@ def solve_part2():
     while player.fight(boss):
         player.equip(*next(outfits))
     return player.cost
+
 
 answer = solve_part2()
 AoCUtils.print_solution(2, answer)

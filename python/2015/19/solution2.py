@@ -1,10 +1,14 @@
 import os
 import sys
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2015/19/input')
-sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
 
-from aoc_helpers import AoCInput, AoCUtils
+# Path setup
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(SCRIPT_DIR, '../../'))
+
+from aoc_helpers import AoCInput, AoCUtils  # noqa: E402
+
+# Input file path
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2015/19/input')
 
 
 def solve_part2():
@@ -59,6 +63,7 @@ def solve_part2():
     fabrication_steps = num_atoms - num_rn - num_ar - (2 * num_y) - 1
 
     return fabrication_steps
+
 
 answer = solve_part2()
 AoCUtils.print_solution(2, answer)

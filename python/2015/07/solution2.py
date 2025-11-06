@@ -11,11 +11,15 @@ Goal: Determine what signal is ultimately provided to wire 'a'.
 
 import os
 import sys
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2015/7/input')
-sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
 
-from aoc_helpers import AoCInput, AoCUtils
+# Path setup
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(SCRIPT_DIR, '../../'))
+
+from aoc_helpers import AoCInput, AoCUtils  # noqa: E402
+
+# Input file path
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2015/7/input')
 
 
 class Circuit:
@@ -43,7 +47,8 @@ class Circuit:
         """
         for input_value in wire_or_values:
             # Check if input is not a literal int, not numeric, and not a wire with a known signal
-            if type(input_value) != int and not input_value.isnumeric() and input_value not in self.wire_signals:
+            if (not isinstance(input_value, int) and not input_value.isnumeric() and
+                    input_value not in self.wire_signals):
                 return False
         return True
 
@@ -64,7 +69,7 @@ class Circuit:
         if self.has_signal(left_input, right_input):
             operands = []
             for input_value in [left_input, right_input]:
-                if type(input_value) == int or input_value.isnumeric():
+                if isinstance(input_value, int) or input_value.isnumeric():
                     operands.append(int(input_value))
                 else:
                     operands.append(self.wire_signals[input_value])
@@ -165,6 +170,31 @@ class Circuit:
         else:
             raise ValueError("no signal for wire")
 
+    def _process_direct_assignment(self, source_part, dest_wire):
+        """Helper method to process direct assignment instructions."""
+        if not self.has_signal(source_part):
+            return False
+        if source_part.isnumeric():
+            self.wire_signals[dest_wire] = int(source_part)
+        else:
+            self.wire_signals[dest_wire] = self.wire_signals[source_part]
+        return True
+
+    def _process_not_operation(self, source_wire, dest_wire):
+        """Helper method to process NOT operation instructions."""
+        if not self.has_signal(source_wire):
+            return False
+        self.wire_signals[dest_wire] = self.NOT(self.wire_signals[source_wire])
+        return True
+
+    def _process_binary_operation(self, left_input, operation, right_input, dest_wire):
+        """Helper method to process binary operation instructions."""
+        if not self.has_signal(left_input, right_input):
+            return False
+        # Dynamically call the appropriate gate method
+        self.wire_signals[dest_wire] = getattr(self, operation)(left_input, right_input)
+        return True
+
     def process_instruction(self, instruction):
         """
         Process a single wire instruction and update the circuit state.
@@ -184,42 +214,22 @@ class Circuit:
         source_expr, dest_wire = instruction.split(" -> ")
         source_parts = source_expr.split()
 
-        # Case 1: Direct assignment (numeric value or wire copy)
-        if len(source_parts) == 1:
-            try:
-                if self.has_signal(source_parts[0]):
-                    if source_parts[0].isnumeric():
-                        self.wire_signals[dest_wire] = int(source_parts[0])
-                    else:
-                        self.wire_signals[dest_wire] = self.wire_signals[source_parts[0]]
-                else:
-                    return False
-            except ValueError:
-                return False
+        try:
+            # Case 1: Direct assignment (numeric value or wire copy)
+            if len(source_parts) == 1:
+                return self._process_direct_assignment(source_parts[0], dest_wire)
 
-        # Case 2: Unary NOT operation
-        elif len(source_parts) == 2:
-            try:
-                if self.has_signal(source_parts[1]):
-                    self.wire_signals[dest_wire] = self.NOT(self.wire_signals[source_parts[1]])
-                else:
-                    return False
-            except ValueError:
-                return False
+            # Case 2: Unary NOT operation
+            elif len(source_parts) == 2:
+                return self._process_not_operation(source_parts[1], dest_wire)
 
-        # Case 3: Binary operations (AND, OR, LSHIFT, RSHIFT)
-        else:
-            left_input, gate_operation, right_input = source_parts
-            try:
-                if self.has_signal(left_input, right_input):
-                    # Dynamically call the appropriate gate method
-                    self.wire_signals[dest_wire] = getattr(self, gate_operation)(left_input, right_input)
-                else:
-                    return False
-            except ValueError:
-                return False
+            # Case 3: Binary operations (AND, OR, LSHIFT, RSHIFT)
+            else:
+                left_input, gate_operation, right_input = source_parts
+                return self._process_binary_operation(left_input, gate_operation, right_input, dest_wire)
 
-        return True
+        except ValueError:
+            return False
 
 
 def solve_part2():

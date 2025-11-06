@@ -17,13 +17,18 @@ Performance: Optimized version using fast_copy() instead of copy.deepcopy()
 - Original runtime: ~9.5 seconds
 - Optimized runtime: ~0.87 seconds (11x faster)
 """
+
 import os
 import sys
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2015/22/input')
-sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
 
-from aoc_helpers import AoCInput, AoCUtils
+# Path setup
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(SCRIPT_DIR, '../../'))
+
+from aoc_helpers import AoCUtils  # noqa: E402
+
+# Input file path
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2015/22/input')
 
 # Define all available spells with their properties
 spells = {}
@@ -80,6 +85,99 @@ class Wizard():
         return new_wizard
 
 
+def _apply_effects(player, boss):
+    """
+    Apply all active effects and handle expiration.
+
+    Effects include:
+    - Poison: Damage to boss
+    - Recharge: Mana restoration to player
+    - Shield: Armor bonus to player
+
+    Args:
+        player: Wizard object representing the player
+        boss: Wizard object representing the boss
+
+    Returns:
+        bool: True if boss is defeated (hp < 0), False otherwise
+    """
+    player.armor = 0  # Reset armor (reapplied by shield effect)
+
+    # Apply all active effects
+    ending = []  # Track effects that expire this turn
+    for idx, spell in enumerate(player.effects):
+        boss.hp -= spell['attack']  # Poison damage
+        player.mana += spell['mana']  # Recharge mana
+        player.armor += spell['armor']  # Shield armor
+        player.effects[idx]['turns'] -= 1
+
+        if player.effects[idx]['turns'] == 0:
+            ending.append(idx)
+
+    # Remove expired effects (in reverse order to preserve indices)
+    ending.sort(reverse=True)
+    for i in ending:
+        player.effects.pop(i)
+
+    # Return True if boss is defeated
+    return boss.hp < 0
+
+
+def _process_boss_attack(player, boss, current_minimum):
+    """
+    Process the boss attacking the player.
+
+    Args:
+        player: Wizard object representing the player
+        boss: Wizard object representing the boss
+        current_minimum: Current minimum mana cost found
+
+    Returns:
+        int or None: Returns current_minimum if player is defeated, None if player survives
+    """
+    # Boss attacks player (damage is at least 1, even with high armor)
+    player.hp -= max(1, boss.attack - player.armor)
+
+    # Check if player is defeated
+    if player.hp <= 0:
+        return current_minimum
+
+    return None
+
+
+def _try_next_spells(player, boss, current_minimum):
+    """
+    Try all valid spells recursively and return the minimum mana cost.
+
+    Args:
+        player: Wizard object representing the player
+        boss: Wizard object representing the boss
+        current_minimum: Current minimum mana cost found
+
+    Returns:
+        int: Minimum mana cost to win from this state
+    """
+    global minimum_mana
+
+    # Cannot cast a spell if its effect is already active
+    invalid_spells = [spell['name'] for spell in player.effects]
+    costs = [current_minimum]
+
+    for spell in spells.values():
+        # Skip if effect is already active
+        if spell['name'] in invalid_spells:
+            continue
+        # Skip if we can't afford the spell
+        if spell['cost'] <= player.mana:
+            result = resolveTurn(player.fast_copy(), boss.fast_copy(), spell)
+            if isinstance(result, int):
+                costs.append(result)
+
+    # Update global minimum and return best result from this branch
+    minimum_mana = min(costs)
+    return minimum_mana
+
+
 def resolveTurn(player, boss, spell):
     """
     Simulates one complete round of combat starting with the player casting a spell.
@@ -101,8 +199,6 @@ def resolveTurn(player, boss, spell):
     Returns:
         int: Minimum mana cost to win from this state, or minimum_mana if this path loses
     """
-    global minimum_mana, spells
-
     # Prune: If we've already spent more mana than the best solution, abandon this path
     if player.mana_used > minimum_mana:
         return player.mana_used
@@ -124,69 +220,22 @@ def resolveTurn(player, boss, spell):
         return player.mana_used
 
     # === BOSS TURN ===
-    player.armor = 0  # Reset armor (reapplied by effects)
-
-    # Apply all active effects at start of boss turn
-    ending = []  # Track effects that expire this turn
-    for idx, spell in enumerate(player.effects):
-        boss.hp -= spell['attack']  # Poison damage
-        player.mana += spell['mana']  # Recharge mana
-        player.armor += spell['armor']  # Shield armor
-        player.effects[idx]['turns'] -= 1
-
-        if player.effects[idx]['turns'] == 0:
-            ending.append(idx)
-
-    # Remove expired effects (in reverse order to preserve indices)
-    ending.sort(reverse=True)
-    for i in ending:
-        player.effects.pop(i)
-
-    # Check if boss is defeated after effects
-    if boss.hp < 0:
+    # Apply effects and check if boss is defeated
+    if _apply_effects(player, boss):
         return player.mana_used
 
-    # Boss attacks player (damage is at least 1, even with high armor)
-    player.hp -= max(1, boss.attack - player.armor)
-
-    # Check if player is defeated
-    if player.hp <= 0:
-        return minimum_mana
+    # Boss attacks player
+    result = _process_boss_attack(player, boss, minimum_mana)
+    if result is not None:
+        return result
 
     # === NEXT PLAYER TURN ===
-
-    # Apply all active effects at start of player turn
-    for idx, spell in enumerate(player.effects):
-        boss.hp -= spell['attack']  # Poison damage
-        player.mana += spell['mana']  # Recharge mana
-        player.armor += spell['armor']  # Shield armor
-        player.effects[idx]['turns'] -= 1
-
-        if player.effects[idx]['turns'] == 0:
-            player.effects.pop(idx)
-
-    # Check if boss is defeated after effects
-    if boss.hp < 0:
+    # Apply effects and check if boss is defeated
+    if _apply_effects(player, boss):
         return player.mana_used
 
     # Try all valid spells recursively
-    # Cannot cast a spell if its effect is already active
-    invalid_spells = [spell['name'] for spell in player.effects]
-    costs = [minimum_mana]
-
-    for spell in spells.values():
-        # Skip if effect is already active
-        if spell['name'] in invalid_spells:
-            continue
-        # Skip if we can't afford the spell
-        if spell['cost'] <= player.mana:
-            result = resolveTurn(player.fast_copy(), boss.fast_copy(), spell)
-            if type(result) == int:
-                costs.append(result)
-
-    # Update global minimum and return best result from this branch
-    minimum_mana = min(costs)
-    return min(costs)
+    return _try_next_spells(player, boss, minimum_mana)
 
 
 def solve_part1():
@@ -215,10 +264,11 @@ def solve_part1():
     # Try each spell as the first move and recursively explore all possibilities
     for spell in spells.values():
         result = resolveTurn(player.fast_copy(), boss.fast_copy(), spell)
-        if type(result) == int:
+        if isinstance(result, int):
             minimum_mana = min(minimum_mana, result)
 
     return minimum_mana
+
 
 answer = solve_part1()
 AoCUtils.print_solution(1, answer)
