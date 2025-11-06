@@ -15,8 +15,8 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2017/12/input')
 sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
 
-from aoc_helpers import AoCInput, AoCUtils
-import networkx as nx
+from aoc_helpers import AoCInput, AoCUtils  # noqa: E402
+import networkx as nx  # noqa: E402
 
 
 def build_communication_network(lines):

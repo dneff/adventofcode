@@ -16,9 +16,9 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2017/18/input')
 sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
 
-from aoc_helpers import AoCInput, AoCUtils
-from collections import defaultdict
-from string import ascii_lowercase as letters
+from aoc_helpers import AoCInput, AoCUtils  # noqa: E402
+from collections import defaultdict  # noqa: E402
+from string import ascii_lowercase as letters  # noqa: E402
 
 
 class DuetProgram():
@@ -47,7 +47,7 @@ class DuetProgram():
             if instruction[0] != 'jgz':
                 self.pointer += 1
             # If blocked on receive, return control to allow partner to run
-            if self.waiting == True:
+            if self.waiting:
                 return
         # Program terminated (pointer out of range)
         self.waiting = True

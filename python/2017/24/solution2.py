@@ -14,7 +14,7 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2017/24/input')
 sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
 
-from aoc_helpers import AoCInput, AoCUtils
+from aoc_helpers import AoCInput, AoCUtils  # noqa: E402
 
 
 def build_longest_bridge(available_components, current_length, current_strength, connector_port):

@@ -13,7 +13,7 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2017/19/input')
 sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
 
-from aoc_helpers import AoCInput, AoCUtils
+from aoc_helpers import AoCInput, AoCUtils  # noqa: E402
 
 
 def main():
@@ -50,7 +50,7 @@ def main():
             new_path_char = expected_turn_char[heading]
             # Next position is either left or right of current heading
             left = (heading - 1) % 4
-            left_x, left_y  = position[0] + directions[left][0], position[1] + directions[left][1]
+            left_x, left_y = position[0] + directions[left][0], position[1] + directions[left][1]
             right = (heading + 1) % 4
 
             # Turn toward whichever side has the expected path character

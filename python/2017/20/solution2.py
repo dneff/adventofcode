@@ -14,16 +14,16 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2017/20/input')
 sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
 
-from aoc_helpers import AoCInput, AoCUtils
-from collections import defaultdict
+from aoc_helpers import AoCInput, AoCUtils  # noqa: E402
+from collections import defaultdict  # noqa: E402
 
 
 class Particle():
     """Represents a particle with position, velocity, and acceleration in 3D space."""
     def __init__(self):
-        self.acceleration = (0,0,0)
-        self.velocity = (0,0,0)
-        self.position = (0,0,0)
+        self.acceleration = (0, 0, 0)
+        self.velocity = (0, 0, 0)
+        self.position = (0, 0, 0)
 
     def move_old(self):
         """Legacy move method (unused)."""
@@ -36,7 +36,7 @@ class Particle():
 
     def move(self):
         """Update velocity by acceleration, then update position by velocity."""
-        a,v,p = list(self.acceleration), list(self.velocity), list(self.position)
+        a, v, p = list(self.acceleration), list(self.velocity), list(self.position)
         for i in range(3):
             v[i] += a[i]
             p[i] += v[i]
@@ -52,7 +52,7 @@ def main():
 
     # Parse particle data
     for idx, line in enumerate(lines):
-        p,v,a = [x.split('<')[1][:-1] for x in line.strip().split(', ')]
+        p, v, a = [x.split('<')[1][:-1] for x in line.strip().split(', ')]
         particle = Particle()
         particle.acceleration = tuple([int(x) for x in a.split(',')])
         particle.velocity = tuple([int(x) for x in v.split(',')])

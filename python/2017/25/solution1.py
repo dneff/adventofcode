@@ -8,7 +8,7 @@ A Turing machine has:
 - A cursor that reads/writes values and moves left or right
 - Multiple states with rules defining behavior based on current tape values
 
-After running the machine for a specified number of steps (12,425,180 for this input),
+After running the machine for a specified number of steps (12, 425, 180 for this input),
 count how many 1s appear on the tape. This count is the diagnostic checksum.
 
 Note: The state machine logic is hardcoded based on the puzzle input blueprints.
@@ -19,8 +19,8 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2017/25/input')
 sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
 
-from aoc_helpers import AoCInput, AoCUtils
-from collections import defaultdict
+from aoc_helpers import AoCUtils  # noqa: E402
+from collections import defaultdict  # noqa: E402
 
 
 class TuringMachine():

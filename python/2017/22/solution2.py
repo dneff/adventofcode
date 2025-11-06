@@ -13,7 +13,7 @@ The carrier's behavior changes each burst:
 3. Infected node: turn right, become flagged
 4. Flagged node: reverse direction, become clean
 
-After 10,000,000 bursts, count how many times a node becomes infected.
+After 10, 000, 000 bursts, count how many times a node becomes infected.
 """
 import os
 import sys
@@ -21,7 +21,7 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2017/22/input')
 sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
 
-from aoc_helpers import AoCInput, AoCUtils
+from aoc_helpers import AoCInput, AoCUtils  # noqa: E402
 
 
 class EvolvedVirusCarrier():
@@ -88,7 +88,7 @@ class EvolvedVirusCarrier():
 
 
 def main():
-    """Simulate evolved virus spread for 10,000,000 bursts and count infections."""
+    """Simulate evolved virus spread for 10, 000, 000 bursts and count infections."""
     lines = AoCInput.read_lines(INPUT_FILE)
 
     # Parse the initial grid - infected nodes start at state 2

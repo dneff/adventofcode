@@ -11,10 +11,10 @@ Distance calculation: The hex distance is the maximum absolute value of the thre
 cube coordinates divided by 2 (or equivalently, sum of absolute values / 2).
 
 Examples:
-    ne,ne,ne = 3 steps away
-    ne,ne,sw,sw = 0 steps away (back at start)
-    ne,ne,s,s = 2 steps away (equivalent to se,se)
-    se,sw,se,sw,sw = 3 steps away (equivalent to s,s,sw)
+    ne, ne, ne = 3 steps away
+    ne, ne, sw, sw = 0 steps away (back at start)
+    ne, ne, s, s = 2 steps away (equivalent to se, se)
+    se, sw, se, sw, sw = 3 steps away (equivalent to s, s, sw)
 """
 
 import os
@@ -23,7 +23,7 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2017/11/input')
 sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
 
-from aoc_helpers import AoCInput, AoCUtils
+from aoc_helpers import AoCInput, AoCUtils  # noqa: E402
 
 
 class HexGrid():

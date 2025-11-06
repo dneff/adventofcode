@@ -20,9 +20,9 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2017/18/input')
 sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
 
-from aoc_helpers import AoCInput, AoCUtils
-from collections import defaultdict
-from string import ascii_lowercase as letters
+from aoc_helpers import AoCInput, AoCUtils  # noqa: E402
+from collections import defaultdict  # noqa: E402
+from string import ascii_lowercase as letters  # noqa: E402
 
 
 class DuetProgram():

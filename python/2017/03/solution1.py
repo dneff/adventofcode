@@ -18,7 +18,7 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2017/3/input')
 sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
 
-from aoc_helpers import AoCInput, AoCUtils
+from aoc_helpers import AoCUtils  # noqa: E402
 
 
 def build_spiral_to_target(target_square):
@@ -74,6 +74,7 @@ def main():
     # Calculate Manhattan distance (subtract 1 for moves, not locations)
     manhattan_distance = abs(x) + abs(y) - 1
     AoCUtils.print_solution(1, manhattan_distance)
+
 
 if __name__ == "__main__":
     main()
