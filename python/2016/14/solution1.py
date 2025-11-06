@@ -4,12 +4,13 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2016/14/input')
 sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
 
-from aoc_helpers import AoCInput, AoCUtils
+from aoc_helpers import AoCInput, AoCUtils  # noqa: E402
+AoCInput  # noqa: F401
 
-from hashlib import md5
-from queue import PriorityQueue
-import re
-from collections import defaultdict
+from hashlib import md5  # noqa: E402
+from queue import PriorityQueue  # noqa: E402
+import re  # noqa: E402
+from collections import defaultdict  # noqa: E402
 
 
 def md5_hash_generator(salt):
@@ -37,7 +38,7 @@ def main():
     KEYS_NEEDED = 64
     LOOKAHEAD_WINDOW = 1000  # Must check next 1000 hashes for quintuplet validation
 
-    test_salt = 'abc'
+    test_salt = 'abc'  # noqa: F841
     puzzle_salt = 'zpqevtbw'
     salt = puzzle_salt
 
@@ -87,6 +88,7 @@ def main():
             if valid_key_count == KEYS_NEEDED:
                 AoCUtils.print_solution(1, candidate_index)
                 return
+
 
 if __name__ == "__main__":
     main()

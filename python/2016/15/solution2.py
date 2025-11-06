@@ -16,7 +16,7 @@ INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2016/15/input')
 
 sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
 
-from aoc_helpers import AoCInput, AoCUtils, MathUtils
+from aoc_helpers import AoCInput, AoCUtils, MathUtils  # noqa: E402
 
 
 def get_disc_position(num_positions, start_position, time):
@@ -74,6 +74,7 @@ def main():
             button_time += step_size
 
     AoCUtils.print_solution(2, button_time)
+
 
 if __name__ == "__main__":
     main()

@@ -6,13 +6,14 @@ INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2016/20/input')
 
 sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
 
-from aoc_helpers import AoCInput, AoCUtils
+from aoc_helpers import AoCInput, AoCUtils  # noqa: E402
+
 
 def main():
     # Day 20: Firewall Rules - Part 1
     # Problem: Find the lowest-valued IP address that is not blocked by the firewall
     # The firewall maintains a blacklist of IP ranges (both endpoints inclusive)
-    # IP addresses are 32-bit integers (0 to 4,294,967,295)
+    # IP addresses are 32-bit integers (0 to 4, 294, 967, 295)
     # Example: Ranges "5-8", "0-2", "4-7" would allow IPs 3 and 9, so lowest is 3
 
     # Parse the blacklist of blocked IP ranges
@@ -42,6 +43,7 @@ def main():
 
     # The lowest_allowed_ip is now the first IP not blocked by any range
     AoCUtils.print_solution(1, lowest_allowed_ip)
+
 
 if __name__ == "__main__":
     main()

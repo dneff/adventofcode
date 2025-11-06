@@ -24,10 +24,10 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2016/24/input')
 sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
 
-from aoc_helpers import AoCInput, AoCUtils
+from aoc_helpers import AoCInput, AoCUtils  # noqa: E402
 
-from queue import PriorityQueue
-from itertools import permutations
+from queue import PriorityQueue  # noqa: E402
+from itertools import permutations  # noqa: E402
 
 
 class AirDuctMap():
@@ -132,7 +132,7 @@ class AirDuctMap():
         return None  # No path found
 
 
-def main():
+def main():  # noqa: C901
     """
     Main solution for Part 1:
     1. Parse the air duct map

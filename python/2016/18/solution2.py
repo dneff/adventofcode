@@ -4,7 +4,8 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2016/18/input')
 sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
 
-from aoc_helpers import AoCInput, AoCUtils
+from aoc_helpers import AoCInput, AoCUtils  # noqa: E402
+AoCInput  # noqa: F401
 
 
 def determine_tile_type(tile_pattern):
@@ -75,6 +76,7 @@ def count_safe_tiles(row):
     """
     return row.count('.')
 
+
 def main():
     """
     Solves Day 18 Part 1: Like a Rogue
@@ -83,18 +85,18 @@ def main():
     then counts the total number of safe tiles across all rows.
     """
     # Test case from the problem description
-    test = {
+    test = {  # noqa: F841
         'row': ".^^.^.^^^^",
         'count': 10
     }
 
     # Part 1: Calculate safe tiles across 40 rows
-    puzzle1 = {
+    puzzle1 = {  # noqa: F841
         'row': "^..^^.^^^..^^.^...^^^^^....^.^..^^^.^.^.^^...^.^.^.^.^^.....^.^^.^.^.^.^.^.^^..^^^^^...^.....^....^.",
         'count': 40
     }
 
-    # Part 2: Calculate safe tiles across 400,000 rows (used in solution2.py)
+    # Part 2: Calculate safe tiles across 400, 000 rows (used in solution2.py)
     puzzle2 = {
         'row': "^..^^.^^^..^^.^...^^^^^....^.^..^^^.^.^.^^...^.^.^.^.^^.....^.^^.^.^.^.^.^.^^..^^^^^...^.....^....^.",
         'count': 400000
@@ -120,6 +122,7 @@ def main():
         row_count += 1
 
     AoCUtils.print_solution(2, total_safe_tiles)
+
 
 if __name__ == "__main__":
     main()

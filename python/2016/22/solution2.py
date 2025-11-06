@@ -1,16 +1,16 @@
 """
 Advent of Code 2016 - Day 22: Grid Computing (Part 2)
 
-Problem: Move the goal data from the top-right node to the accessing node at (0,0).
+Problem: Move the goal data from the top-right node to the accessing node at (0, 0).
 
-The goal data starts at position (max_x, 0) and needs to reach position (0,0).
+The goal data starts at position (max_x, 0) and needs to reach position (0, 0).
 Data can only be moved between adjacent nodes (up/down/left/right) and only if
 the destination node has enough available space.
 
 This is essentially a sliding puzzle problem where:
 - One node is empty (the "gap" that allows movement)
 - Wall nodes (used > 100T) cannot participate in data movement
-- You must maneuver the empty node to shuffle the goal data to position (0,0)
+- You must maneuver the empty node to shuffle the goal data to position (0, 0)
 
 Strategy:
 1. Move the empty node to position (max_x - 1, 0) [just left of goal data]
@@ -35,7 +35,7 @@ INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2016/22/input')
 
 sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
 
-from aoc_helpers import AoCInput, AoCUtils
+from aoc_helpers import AoCInput, AoCUtils  # noqa: E402
 
 # Node data indices
 SIZE_INDEX = 0
@@ -46,7 +46,7 @@ USAGE_PCT_INDEX = 3
 
 def main():
     """
-    Visualize the storage grid and calculate steps to move goal data to (0,0).
+    Visualize the storage grid and calculate steps to move goal data to (0, 0).
 
     This solution visualizes the grid to enable manual/visual solving of the
     sliding puzzle problem.

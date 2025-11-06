@@ -4,9 +4,10 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2016/5/input')
 sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
 
-from aoc_helpers import AoCInput, AoCUtils
-import hashlib
-from multiprocessing import Pool, cpu_count
+from aoc_helpers import AoCInput, AoCUtils  # noqa: E402
+import hashlib  # noqa: E402
+from multiprocessing import Pool, cpu_count  # noqa: E402
+
 
 def find_hashes_in_range(args):
     """
@@ -29,6 +30,7 @@ def find_hashes_in_range(args):
                 results.append((index, position, char))
 
     return results
+
 
 def main():
     """
@@ -82,7 +84,9 @@ def main():
 
     # Join all password characters to form the final 8-character password
     password = ''.join(password_chars)
+
     AoCUtils.print_solution(2, password)
+
 
 if __name__ == "__main__":
     main()

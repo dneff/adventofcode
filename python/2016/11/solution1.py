@@ -19,11 +19,11 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2016/11/input')
 sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
 
-from aoc_helpers import AoCInput, AoCUtils
-import copy
-from queue import PriorityQueue
-from collections import defaultdict
-from itertools import combinations
+from aoc_helpers import AoCInput, AoCUtils  # noqa: E402
+import copy  # noqa: E402
+from queue import PriorityQueue  # noqa: E402
+from collections import defaultdict  # noqa: E402
+from itertools import combinations  # noqa: E402
 
 
 def parse_floor_items(floor_description):
@@ -41,6 +41,7 @@ def parse_floor_items(floor_description):
             item = element + "." + word
             items.append(item)
     return items
+
 
 def parse_initial_state(filename):
     """
@@ -77,6 +78,7 @@ def parse_initial_state(filename):
 
     return items, num_floors, elevator_floor
 
+
 def is_safe_configuration(items):
     """
     Check if the current configuration is safe (no microchips will be fried).
@@ -104,6 +106,7 @@ def is_safe_configuration(items):
 
     return True
 
+
 def calculate_heuristic(items, num_floors):
     """
     Calculate heuristic for A* search: distance to goal state.
@@ -126,6 +129,7 @@ def calculate_heuristic(items, num_floors):
     # This is equivalent to: (top_floor * num_items) - sum(all_floors)
     distance = num_floors * len(all_floors) - sum(all_floors)
     return distance
+
 
 def calculate_a_star_score(state, num_floors):
     """
@@ -153,7 +157,8 @@ def calculate_a_star_score(state, num_floors):
     score = moves_taken + estimated_moves_remaining
     return score
 
-def find_next_possible_states(state, num_floors):
+
+def find_next_possible_states(state, num_floors):  # noqa: C901
     """
     Generate all valid next states from the current state.
 
@@ -214,7 +219,6 @@ def find_next_possible_states(state, num_floors):
                 next_states.append((new_items, elevator_floor - 1, num_moves + 1))
 
     return next_states
-
 
 
 def main():

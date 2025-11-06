@@ -18,7 +18,7 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2016/22/input')
 sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
 
-from aoc_helpers import AoCInput, AoCUtils
+from aoc_helpers import AoCInput, AoCUtils  # noqa: E402
 
 # Node data indices
 SIZE_INDEX = 0
@@ -73,6 +73,7 @@ def main():
                 viable_pairs += 1
 
     AoCUtils.print_solution(1, viable_pairs)
+
 
 if __name__ == "__main__":
     main()

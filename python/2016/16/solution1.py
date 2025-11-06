@@ -4,7 +4,8 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2016/16/input')
 sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
 
-from aoc_helpers import AoCInput, AoCUtils
+from aoc_helpers import AoCInput, AoCUtils  # noqa: E402
+AoCInput  # noqa: F401
 
 
 def generate_dragon_curve_data(initial_state, disk_length):
@@ -67,6 +68,7 @@ def calculate_checksum(data):
 
     return ''.join(result)
 
+
 def main():
     """
     Solve Day 16: Dragon Checksum
@@ -75,7 +77,7 @@ def main():
     then compute a checksum to update a security system.
     """
     # Test case from problem description
-    test_case = {
+    test_case = {  # noqa: F841
         'init': "10000",
         'length': 20
     }
@@ -87,11 +89,10 @@ def main():
     }
 
     # Part 2: Fill a much larger disk
-    part_2 = {
+    part_2 = {  # noqa: F841
         'init': "11011110011011101",
         'length': 35651584
     }
-
 
     # Select which puzzle to solve
     active_puzzle = part_1
@@ -102,6 +103,7 @@ def main():
     checksum = calculate_checksum(disk_data)
 
     AoCUtils.print_solution(1, checksum)
+
 
 if __name__ == "__main__":
     main()

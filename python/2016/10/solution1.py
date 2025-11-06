@@ -15,8 +15,9 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2016/10/input')
 sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
 
-from aoc_helpers import AoCInput, AoCUtils
-from collections import defaultdict
+from aoc_helpers import AoCInput, AoCUtils  # noqa: E402
+from collections import defaultdict  # noqa: E402
+
 
 def main():
     # Store instructions for each bot: [(low_dest_type, low_dest_id), (high_dest_type, high_dest_id)]
@@ -85,6 +86,7 @@ def main():
         # If this bot now has 2 chips, process it
         if len(bot_chips[bot_id]) == 2:
             process_bot(bot_id)
+
 
 if __name__ == "__main__":
     main()
