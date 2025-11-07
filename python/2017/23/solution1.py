@@ -19,9 +19,9 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2017/23/input')
 sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
 
-from aoc_helpers import AoCInput, AoCUtils
-from collections import defaultdict
-from string import ascii_lowercase as letters
+from aoc_helpers import AoCInput, AoCUtils  # noqa: E402
+from collections import defaultdict  # noqa: E402
+from string import ascii_lowercase as letters  # noqa: E402
 
 
 class Coprocessor():
@@ -49,7 +49,7 @@ class Coprocessor():
             method(*instruction[1:],)
             if instruction[0] != 'jnz':
                 self.pointer += 1
-            if self.halted == True:
+            if self.halted:
                 return
         self.halted = True
         return

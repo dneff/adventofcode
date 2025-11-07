@@ -11,8 +11,8 @@ Implement the full Knot Hash algorithm with these modifications from Part 1:
 Examples:
     Empty string "" = a2582a3a0e66e6e86e3812dcb672a272
     "AoC 2017" = 33efeb34ea91902bb2f59c9920caa6cd
-    "1,2,3" = 3efbe78a8d82f29979031a4aa0b16a9d
-    "1,2,4" = 63960835bcdc130f0b66d7ff4f6a5a8e
+    "1, 2, 3" = 3efbe78a8d82f29979031a4aa0b16a9d
+    "1, 2, 4" = 63960835bcdc130f0b66d7ff4f6a5a8e
 """
 
 import os
@@ -21,8 +21,8 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2017/10/input')
 sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
 
-from aoc_helpers import AoCInput, AoCUtils
-from collections import deque
+from aoc_helpers import AoCInput, AoCUtils  # noqa: E402
+from collections import deque  # noqa: E402
 
 
 def compute_knot_hash(input_string):

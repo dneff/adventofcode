@@ -7,7 +7,7 @@ The carrier follows these rules in each burst:
 2. Toggle the node's state (clean->infected, infected->clean)
 3. Move forward one node in the current direction
 
-Starting at the grid's center facing up, after 10,000 bursts of activity,
+Starting at the grid's center facing up, after 10, 000 bursts of activity,
 count how many bursts cause a node to become infected.
 """
 import os
@@ -16,8 +16,8 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2017/22/input')
 sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
 
-from aoc_helpers import AoCInput, AoCUtils
-from collections import defaultdict
+from aoc_helpers import AoCInput, AoCUtils  # noqa: E402
+from collections import defaultdict  # noqa: E402
 
 
 class VirusCarrier():
@@ -65,7 +65,7 @@ class VirusCarrier():
 
 
 def main():
-    """Simulate virus spread for 10,000 bursts and count infections."""
+    """Simulate virus spread for 10, 000 bursts and count infections."""
     lines = AoCInput.read_lines(INPUT_FILE)
 
     # Parse the initial grid of infected nodes

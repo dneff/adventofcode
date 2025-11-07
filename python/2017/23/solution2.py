@@ -16,10 +16,10 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2017/23/input')
 sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
 
-from aoc_helpers import AoCInput, AoCUtils
-from collections import defaultdict
-from string import ascii_lowercase as letters
-from sympy import isprime
+from aoc_helpers import AoCInput, AoCUtils  # noqa: E402
+from collections import defaultdict  # noqa: E402
+from string import ascii_lowercase as letters  # noqa: E402
+from sympy import isprime  # noqa: E402
 
 
 class Coprocessor():
@@ -43,12 +43,13 @@ class Coprocessor():
         while -1 < self.pointer < len(self.program):
             instruction = self.program[self.pointer]
             # Uncomment for debugging:
-            # print(f"pc{self.id}:{self.pointer} - {instruction[0]} - {instruction[1]} ({self.get(instruction[1])}) - {instruction[2]} - ({self.get(instruction[2])})")
+            # print(f"pc{self.id}:{self.pointer} - {instruction[0]} - {instruction[1]} "
+            #       f"({self.get(instruction[1])}) - {instruction[2]} - ({self.get(instruction[2])})")
             method = getattr(self, instruction[0])
             method(*instruction[1:],)
             if instruction[0] != 'jnz':
                 self.pointer += 1
-            if self.halted == True:
+            if self.halted:
                 return
             # Uncomment for debugging:
             # print(f"register b, d, e: {self.registers['b']} {self.registers['d']} {self.registers['e']}")

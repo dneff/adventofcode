@@ -13,8 +13,8 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2017/21/input')
 sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
 
-from aoc_helpers import AoCInput, AoCUtils
-from math import isqrt
+from aoc_helpers import AoCInput, AoCUtils  # noqa: E402
+from math import isqrt  # noqa: E402
 
 
 def rotate_patterns(pattern):

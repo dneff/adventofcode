@@ -12,7 +12,7 @@ Strategy:
 1. Perform the dance repeatedly
 2. Track when we return to the starting configuration
 3. Calculate the cycle length
-4. Use modulo arithmetic to find the state at iteration 1,000,000,000
+4. Use modulo arithmetic to find the state at iteration 1, 000, 000, 000
 """
 
 import os
@@ -21,7 +21,7 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2017/16/input')
 sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
 
-from aoc_helpers import AoCInput, AoCUtils
+from aoc_helpers import AoCInput, AoCUtils  # noqa: E402
 
 
 class DanceSimulator():
