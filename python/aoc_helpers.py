@@ -292,6 +292,16 @@ class MathUtils:
     """Mathematical utilities."""
     
     @staticmethod
+    def divisors(n: int) -> List[int]:
+        """Return all divisors of n."""
+        divs = set()
+        for i in range(1, int(n**0.5) + 1):
+            if n % i == 0:
+                divs.add(i)
+                divs.add(n // i)
+        return sorted(divs)
+    
+    @staticmethod
     def gcd_multiple(*args: int) -> int:
         """GCD of multiple numbers."""
         return reduce(gcd, args)

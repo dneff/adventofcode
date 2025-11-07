@@ -214,16 +214,15 @@ def main():
         calc.instructions.append([command] + args)
 
     # Set initial state as per problem statement
-    # Part 1: register 0 = 0
-    calc.registers[0] = 0
-    
-    # run the program for a limited number of steps to get the target number
+    # Part 2: register 0 = 1
+    calc.registers[0] = 1
     calc.run(1000)
+    
     target = calc.registers[4]
     
     # Calculate sum of divisors of target
     total = sum(MathUtils.divisors(target))
-    AoCUtils.print_solution(1, total)
+    AoCUtils.print_solution(2, total)
 
 
 if __name__ == "__main__":
