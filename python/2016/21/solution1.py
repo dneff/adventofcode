@@ -14,7 +14,7 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2016/21/input')
 sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
 
-from aoc_helpers import AoCInput, AoCUtils
+from aoc_helpers import AoCInput, AoCUtils  # noqa: E402
 
 
 class Scrambler():
@@ -37,12 +37,11 @@ class Scrambler():
 
     def swap_position(self, a, b):
         """Swap characters at positions a and b (0-indexed)."""
-        x = min(a,b)
-        y = max(a,b)
+        x = min(a, b)
+        y = max(a, b)
         x_letter = self.password[x]
         y_letter = self.password[y]
         self.password = self.password[:x] + y_letter + self.password[x+1:y] + x_letter + self.password[y+1:]
-
 
     def swap_letter(self, x, y):
         """Swap all occurrences of letter x with letter y."""
@@ -51,18 +50,15 @@ class Scrambler():
         self.password = self.password.replace('_1_', y)
         self.password = self.password.replace('_2_', x)
 
-
     def rotate_left(self, x):
         """Rotate the password left by x steps."""
         x = x % len(self.password)
         self.password = self.password[x:] + self.password[:x]
 
-
     def rotate_right(self, x):
         """Rotate the password right by x steps."""
         x = x % len(self.password)
         self.password = self.password[-x:] + self.password[:-x]
-
 
     def rotate_position(self, x):
         """
@@ -75,22 +71,20 @@ class Scrambler():
         idx = self.password.find(x)
         if idx >= 4:
             idx += 1
-        idx +=1
+        idx += 1
         self.rotate_right(idx)
-        
 
     def reverse(self, a, b):
         """Reverse the substring from position a through position b (inclusive)."""
         x, y = min(a, b), max(a, b)
         self.password = self.password[:x] + ''.join(list(reversed(self.password[x:y+1]))) + self.password[y+1:]
 
-
     def move(self, x, y):
         """Remove the character at position x and insert it at position y."""
         letter_x = self.password[x]
         self.password = self.password[:x] + self.password[x+1:]
         self.password = self.password[:y] + letter_x + self.password[y:]
-    
+
 
 def main():
     """
@@ -100,7 +94,7 @@ def main():
     in sequence to produce the final scrambled password.
     """
     # Test configuration for the example in the problem
-    test = {
+    test = {  # noqa: F841
         'pwd': 'abcde',
         'file': 'test.txt'
     }
@@ -145,7 +139,6 @@ def main():
         operation(*args)
 
     AoCUtils.print_solution(1, scrambler.password)
-    
 
 
 if __name__ == "__main__":

@@ -4,7 +4,9 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2016/19/input')
 sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
 
-from aoc_helpers import AoCInput, AoCUtils
+from aoc_helpers import AoCInput, AoCUtils  # noqa: E402
+AoCInput  # noqa: F401
+
 
 def traverse_circle(starting_elf, elf_circle, num_steps):
     """
@@ -75,8 +77,7 @@ def main():
 
     # The last remaining elf is the winner who gets all the presents
     AoCUtils.print_solution(2, current_elf)
-    
-    
+
 
 if __name__ == "__main__":
     main()

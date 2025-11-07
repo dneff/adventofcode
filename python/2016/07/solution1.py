@@ -4,8 +4,8 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2016/7/input')
 sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
 
-from aoc_helpers import AoCInput, AoCUtils
-import re
+from aoc_helpers import AoCInput, AoCUtils  # noqa: E402
+import re  # noqa: E402
 
 
 def hasABBA(s):
@@ -23,15 +23,15 @@ def main():
 
     for line in lines:
         hypernet = []
-        for s in re.findall("(\[\w*\])", line):
+        for s in re.findall(r"(\[\w*\])", line):
             if s[0] == '[':
                 hypernet.append(s.strip('[]'))
-        
+
         if any([hasABBA(s) for s in hypernet]):
             continue
 
         ip = []
-        for s in re.split("\[|\]", line.strip()):
+        for s in re.split(r"\[|\]", line.strip()):
             if s not in hypernet:
                 ip.append(s)
         if any([hasABBA(s) for s in ip]):

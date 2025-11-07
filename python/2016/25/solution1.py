@@ -14,7 +14,8 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2016/25/input')
 sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
 
-from aoc_helpers import AoCInput, AoCUtils
+from aoc_helpers import AoCInput, AoCUtils  # noqa: E402
+
 
 class BunnyPC():
     """
@@ -23,8 +24,9 @@ class BunnyPC():
     This interpreter extends the standard assembunny instruction set with an 'out' instruction
     that transmits values to create the clock signal pattern needed by the antenna.
     """
+
     def __init__(self):
-        self.register = {"a":0, "b":0, "c":0, "d":0}  # Four registers for the assembunny computer
+        self.register = {"a": 0, "b": 0, "c": 0, "d": 0}  # Four registers for the assembunny computer
         self.code = []  # Assembunny program instructions
         self.signal = []  # Clock signal output values (produced by 'out' instruction)
         self.instruction_pointer = 0  # Current position in the program
@@ -37,7 +39,7 @@ class BunnyPC():
 
     def clear(self):
         """Reset the computer state for testing a new initial value."""
-        self.register = {"a":0, "b":0, "c":0, "d":0}
+        self.register = {"a": 0, "b": 0, "c": 0, "d": 0}
         self.instruction_pointer = 0
         self.signal.clear()  # Clear previous clock signal output
 
@@ -68,21 +70,25 @@ class BunnyPC():
         self.instruction_pointer += 1
 
     def jnz(self, x, y):
-        #jnz x y jumps to an instruction y away 
+        # jnz x y jumps to an instruction y away
         # (positive means forward; negative means backward)
         # but only if x is not zero.
         if self.resolveX(x) != 0:
             self.instruction_pointer += self.resolveX(y)
         else:
             self.instruction_pointer += 1
-    
+
     def tgl(self, x):
-        # For one-argument instructions, inc becomes dec, and all other one-argument instructions become inc.
-        # For two-argument instructions, jnz becomes cpy, and all other two-instructions become jnz.
+        # For one-argument instructions, inc becomes dec, and all other one-argument
+        # instructions become inc. For two-argument instructions, jnz becomes cpy,
+        # and all other two-instructions become jnz.
         # The arguments of a toggled instruction are not affected.
-        # If an attempt is made to toggle an instruction outside the program, nothing happens.
-        # If toggling produces an invalid instruction (like cpy 1 2) and an attempt is later made to execute that instruction, skip it instead.
-        # If tgl toggles itself (for example, if a is 0, tgl a would target itself and become inc a), the resulting instruction is not executed until the next time it is reached.
+        # If an attempt is made to toggle an instruction outside the program,
+        # nothing happens. If toggling produces an invalid instruction (like cpy 1 2)
+        # and an attempt is later made to execute that instruction, skip it instead.
+        # If tgl toggles itself (for example, if a is 0, tgl a would target itself
+        # and become inc a), the resulting instruction is not executed until the next
+        # time it is reached.
         toggle_pointer = self.instruction_pointer + self.register[x]
         if toggle_pointer < 0 or toggle_pointer > (len(self.code) - 1):
             self.instruction_pointer += 1
@@ -99,9 +105,8 @@ class BunnyPC():
             else:
                 toggle_inst[0] = 'jnz'
         self.code[toggle_pointer] = ' '.join(toggle_inst)
-        #print(self.code[toggle_pointer], toggle_inst)
-        self.instruction_pointer += 1           
-
+        # print(self.code[toggle_pointer], toggle_inst)
+        self.instruction_pointer += 1
 
     def run(self):
         while self.instruction_pointer < len(self.code):
@@ -125,6 +130,7 @@ class BunnyPC():
         self.signal.append(self.resolveX(x))
         self.instruction_pointer += 1
 
+
 def main():
     """
     Find the lowest positive integer that produces a valid clock signal.
@@ -132,12 +138,12 @@ def main():
     Strategy:
     1. Test each initial value for register 'a' starting from 0
     2. Run the assembunny program and capture the clock signal output
-    3. Check if the output matches the expected alternating pattern: 0,1,0,1,0,1...
+    3. Check if the output matches the expected alternating pattern: 0, 1,0, 1,0, 1...
     4. Return the first value that produces the correct pattern
     """
 
     initial_a_value = 0  # Initial value to test in register 'a'
-    expected_clock_signal = [0,1] * 5  # Expected alternating clock signal pattern (checking first 10 outputs)
+    expected_clock_signal = [0, 1] * 5  # Expected alternating clock signal pattern (checking first 10 outputs)
 
     # Initialize the assembunny computer (antenna's signal generator)
     antenna_computer = BunnyPC()
@@ -162,9 +168,6 @@ def main():
             antenna_computer.register['a'] = initial_a_value  # Set new test value
 
     AoCUtils.print_solution(1, initial_a_value)
-
-
-    
 
 
 if __name__ == "__main__":

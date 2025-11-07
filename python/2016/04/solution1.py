@@ -4,9 +4,9 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2016/4/input')
 sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
 
-from aoc_helpers import AoCInput, AoCUtils
-import re
-from collections import defaultdict
+from aoc_helpers import AoCInput, AoCUtils  # noqa: E402
+import re  # noqa: E402
+from collections import defaultdict  # noqa: E402
 
 
 def isRealRoom(name, checksum):
@@ -34,8 +34,8 @@ def main():
 
     sector_ids = []
     for line in lines:
-        sector = re.search("(\d+)", line)[0]
-        checksum = re.search("\[(.*)\]", line).group(1)
+        sector = re.search(r"(\d+)", line)[0]
+        checksum = re.search(r"\[(.*)\]", line).group(1)
         name = line.split(sector)[0]
         if isRealRoom(name, checksum):
             sector_ids.append(int(sector))

@@ -17,9 +17,9 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 INPUT_FILE = os.path.join(SCRIPT_DIR, "../../../../aoc-data/2016/21/input")
 sys.path.append(os.path.join(SCRIPT_DIR, "../../"))
 
-from aoc_helpers import AoCInput, AoCUtils
+from aoc_helpers import AoCInput, AoCUtils  # noqa: E402
 
-from itertools import permutations
+from itertools import permutations  # noqa: E402
 
 
 class Scrambler:
@@ -77,9 +77,9 @@ class Scrambler:
         self.password = (
             self.password[:x]
             + y_letter
-            + self.password[x + 1 : y]
+            + self.password[x + 1:y]
             + x_letter
-            + self.password[y + 1 :]
+            + self.password[y + 1:]
         )
 
     def swap_letter(self, x, y):
@@ -118,14 +118,14 @@ class Scrambler:
         x, y = min(a, b), max(a, b)
         self.password = (
             self.password[:x]
-            + "".join(list(reversed(self.password[x : y + 1])))
-            + self.password[y + 1 :]
+            + "".join(list(reversed(self.password[x:y + 1])))
+            + self.password[y + 1:]
         )
 
     def move(self, x, y):
         """Remove the character at position x and insert it at position y."""
         letter_x = self.password[x]
-        self.password = self.password[:x] + self.password[x + 1 :]
+        self.password = self.password[:x] + self.password[x + 1:]
         self.password = self.password[:y] + letter_x + self.password[y:]
 
 
@@ -140,7 +140,7 @@ def main():
     This is a brute-force approach that works for passwords of reasonable length.
     """
     # Test configuration (unused in actual puzzle)
-    test = {"pwd": "abcde", "file": "test.txt"}
+    test = {"pwd": "abcde", "file": "test.txt"}  # noqa: F841
 
     # Puzzle configuration
     puzzle = {"pwd": "abcdefgh", "file": INPUT_FILE}

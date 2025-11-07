@@ -2,7 +2,7 @@
 Advent of Code 2016 - Day 17: Two Steps Forward (Part 1)
 
 Navigate through a 4x4 grid vault with doors controlled by MD5 hashing.
-Goal: Find the SHORTEST path from top-left (1,1) to vault at bottom-right (4,4).
+Goal: Find the SHORTEST path from top-left (1, 1) to vault at bottom-right (4, 4).
 
 Door mechanics:
 - MD5 hash of (passcode + path) determines which doors are open
@@ -17,11 +17,12 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2016/17/input')
 sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
 
-from aoc_helpers import AoCInput, AoCUtils
+from aoc_helpers import AoCInput, AoCUtils  # noqa: E402
+AoCInput  # noqa: F401
 
-import copy
-from hashlib import md5
-from queue import PriorityQueue
+import copy  # noqa: E402
+from hashlib import md5  # noqa: E402
+from queue import PriorityQueue  # noqa: E402
 
 
 def get_md5_hash(passcode_with_path):
@@ -90,9 +91,9 @@ def main():
     movement = {'U': (0, -1), 'D': (0, 1), 'L': (-1, 0), 'R': (1, 0)}
 
     # Test passcodes from problem examples
-    test1 = 'ihgpwlah'  # shortest: DDRRRD, longest: 370
-    test2 = 'kglvqrro'  # shortest: DDUDRLRRUDRD, longest: 492
-    test3 = 'ulqzkmiv'  # shortest: DRURDRUDDLLDLUURRDULRLDUUDDDRR, longest: 830
+    test1 = 'ihgpwlah'  # shortest: DDRRRD, longest: 370  # noqa: F841
+    test2 = 'kglvqrro'  # shortest: DDUDRLRRUDRD, longest: 492  # noqa: F841
+    test3 = 'ulqzkmiv'  # shortest: DRURDRUDDLLDLUURRDULRLDUUDDDRR, longest: 830  # noqa: F841
 
     # The actual puzzle input passcode
     puzzle = 'ioramepc'
@@ -136,10 +137,6 @@ def main():
             # If valid room, add to queue for exploration
             if is_valid_room(new_room, grid_dimensions):
                 path_queue.put((len(new_path), [new_path, copy.copy(new_room)]))
-
-
-
-
 
 
 if __name__ == "__main__":

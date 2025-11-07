@@ -4,7 +4,9 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2016/19/input')
 sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
 
-from aoc_helpers import AoCInput, AoCUtils
+from aoc_helpers import AoCInput, AoCUtils  # noqa: E402
+AoCInput  # noqa: F401
+
 
 def main():
     # Day 19: An Elephant Named Joseph
@@ -36,6 +38,7 @@ def main():
 
     # The remaining elf is the winner who gets all the presents
     AoCUtils.print_solution(1, elves_in_circle[0])
+
 
 if __name__ == "__main__":
     main()

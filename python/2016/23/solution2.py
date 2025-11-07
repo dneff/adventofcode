@@ -30,7 +30,7 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2016/23/input')
 sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
 
-from aoc_helpers import AoCInput, AoCUtils
+from aoc_helpers import AoCInput, AoCUtils  # noqa: E402
 
 
 class BunnyPC():
@@ -164,7 +164,7 @@ class BunnyPC():
             len(inst[2]) == 2 and inst[2][0] == 'dec' and
             len(inst[3]) == 3 and inst[3][0] == 'jnz' and inst[3][2] == '-2' and
             len(inst[4]) == 2 and inst[4][0] == 'dec' and
-            len(inst[5]) == 3 and inst[5][0] == 'jnz' and inst[5][2] == '-5'):
+            len(inst[5]) == 3 and inst[5][0] == 'jnz' and inst[5][2] == '-5'):  # noqa: E129
 
             # Verify the pattern matches: cpy X Y / inc A / dec Y / jnz Y -2 / dec Z / jnz Z -5
             src_reg = inst[0][1]  # b
@@ -173,7 +173,7 @@ class BunnyPC():
             loop_reg = inst[4][1]  # d
 
             if (inst[2][1] == temp_reg and inst[3][1] == temp_reg and
-                inst[5][1] == loop_reg):
+                inst[5][1] == loop_reg):  # noqa: E129
                 # Execute the multiplication directly
                 self.register[dest_reg] += self.resolveX(src_reg) * self.resolveX(loop_reg)
                 self.register[temp_reg] = 0

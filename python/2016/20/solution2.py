@@ -4,14 +4,15 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2016/20/input')
 sys.path.append(os.path.join(SCRIPT_DIR, '../../'))
 
-from aoc_helpers import AoCInput, AoCUtils
+from aoc_helpers import AoCInput, AoCUtils  # noqa: E402
+
 
 def main():
     # Day 20: Firewall Rules - Part 2
     # Problem: Count the total number of IP addresses that are allowed (not blocked)
     # The firewall maintains a blacklist of IP ranges (both endpoints inclusive)
     # We need to find all the gaps between blocked ranges and count the allowed IPs
-    # IP addresses are 32-bit integers (0 to 4,294,967,295)
+    # IP addresses are 32-bit integers (0 to 4, 294, 967, 295)
 
     # Parse the blacklist of blocked IP ranges
     # Key: start of blocked range, Value: end of blocked range (inclusive)
@@ -46,6 +47,7 @@ def main():
 
     # Count the total number of allowed IP addresses
     AoCUtils.print_solution(2, len(allowed_ips))
+
 
 if __name__ == "__main__":
     main()

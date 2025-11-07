@@ -5,10 +5,11 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 INPUT_FILE = os.path.join(SCRIPT_DIR, "../../../../aoc-data/2016/14/input")
 sys.path.append(os.path.join(SCRIPT_DIR, "../../"))
 
-from aoc_helpers import AoCInput, AoCUtils
+from aoc_helpers import AoCInput, AoCUtils  # noqa: E402
+AoCInput  # noqa: F401
 
-from hashlib import md5
-from multiprocessing import Pool
+from hashlib import md5  # noqa: E402
+from multiprocessing import Pool  # noqa: E402
 
 
 def compute_stretched_hash(args):
@@ -73,7 +74,7 @@ def main():
     KEYS_NEEDED = 64
     LOOKAHEAD_WINDOW = 1000  # Must check next 1000 hashes for quintuplet validation
 
-    test_salt = "abc"
+    test_salt = "abc"  # noqa: F841
     puzzle_salt = "zpqevtbw"
     salt = puzzle_salt
 
