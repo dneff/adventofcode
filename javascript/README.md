@@ -48,6 +48,45 @@ node 2015/01/solution1.js
 node 2015/01/solution2.js
 ```
 
+## Helper Library
+
+This project includes a comprehensive helper library (`aoc-helpers.js`) with utilities for common AoC tasks:
+
+- **AoCInput**: File reading and parsing (lines, grids, numbers, sections)
+- **Point2D**: 2D coordinates with vector operations and adjacency
+- **Grid2D**: Efficient Map-based 2D grid with iteration and search
+- **Directions**: Cardinal/diagonal direction constants and rotations
+- **MathUtils**: GCD, LCM, Manhattan distance, and more
+- **AoCUtils**: General utilities (chunking, binary conversion, etc.)
+
+See [HELPER_LIBRARY.md](./HELPER_LIBRARY.md) for full documentation and examples.
+
+### Quick Example
+
+```javascript
+import { AoCInput, Grid2D, Point2D, Directions } from './aoc-helpers.js';
+
+// Read input into a grid
+const lines = AoCInput.readLines('input.txt');
+const grid = new Grid2D(lines);
+
+// Find starting position
+const start = Point2D.fromString(grid.findPositions('S')[0]);
+
+// Navigate the grid
+let pos = start;
+let dir = Directions.NORTH;
+
+for (let i = 0; i < 10; i++) {
+  const next = pos.add(new Point2D(...dir));
+  if (grid.has(next) && grid.get(next) !== '#') {
+    pos = next;
+  } else {
+    dir = Directions.turnRight(dir);
+  }
+}
+```
+
 ## Development
 
 ### Available Scripts
