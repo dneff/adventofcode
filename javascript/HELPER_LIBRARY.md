@@ -11,6 +11,8 @@ Comprehensive helper classes for Advent of Code solutions in JavaScript.
   - [Point2D](#point2d)
   - [Grid2D](#grid2d)
   - [Directions](#directions)
+  - [Pathfinding](#pathfinding)
+  - [Counter2D](#counter2d)
   - [MathUtils](#mathutils)
   - [AoCUtils](#aocutils)
 - [Usage Examples](#usage-examples)
@@ -23,6 +25,8 @@ The JavaScript helper library provides utilities for common Advent of Code tasks
 - 2D coordinate and vector operations
 - Grid-based data structures with efficient Map storage
 - Direction constants and rotation utilities
+- Graph traversal algorithms (BFS, Dijkstra)
+- Coordinate counting and frequency analysis
 - Mathematical functions (GCD, LCM, Manhattan distance)
 - General utility functions
 
@@ -308,6 +312,232 @@ current = current.add(new Point2D(...facing));
 facing = Directions.turnRight(facing);
 ```
 
+### Pathfinding
+
+Graph traversal algorithms for pathfinding and distance calculations.
+
+#### Methods
+
+**`Pathfinding.bfs(start, goal, getNeighbors)`** (static)
+- Breadth-first search returning the complete path
+- Parameters:
+  - `start`: Starting position (any type)
+  - `goal`: Goal position (any type)
+  - `getNeighbors`: Function that takes a position and returns array of neighbor positions
+- Returns: `Array | null` - Path from start to goal (inclusive), or null if no path exists
+
+**`Pathfinding.bfsDistance(start, goal, getNeighbors)`** (static)
+- BFS returning only the distance to goal
+- Parameters: Same as `bfs()`
+- Returns: `number` - Distance from start to goal, or -1 if no path exists
+
+**`Pathfinding.bfsAll(start, getNeighbors)`** (static)
+- BFS returning distances to all reachable positions
+- Parameters:
+  - `start`: Starting position (any type)
+  - `getNeighbors`: Function that takes a position and returns array of neighbor positions
+- Returns: `Map<string, number>` - Map of JSON-stringified positions to their distances from start
+
+**`Pathfinding.dijkstra(start, goal, getNeighbors)`** (static)
+- Dijkstra's algorithm for weighted graphs
+- Parameters:
+  - `start`: Starting position (any type)
+  - `goal`: Goal position (any type)
+  - `getNeighbors`: Function that takes a position and returns array of [neighbor, cost] tuples
+- Returns: `number | null` - Shortest distance to goal, or null if no path exists
+
+**`Pathfinding.dijkstraAll(start, getNeighbors)`** (static)
+- Dijkstra's algorithm returning distances to all reachable positions
+- Parameters:
+  - `start`: Starting position (any type)
+  - `getNeighbors`: Function that takes a position and returns array of [neighbor, cost] tuples
+- Returns: `Map<string, number>` - Map of JSON-stringified positions to their distances from start
+
+#### Example: BFS on Grid
+
+```javascript
+import { Pathfinding, Grid2D, Point2D } from './aoc-helpers.js';
+
+const grid = new Grid2D(['S..', '.#.', '..E']);
+
+// Define neighbor function for grid traversal
+const getNeighbors = (pos) => {
+  const [x, y] = pos;
+  const neighbors = [];
+  const directions = [[0, 1], [1, 0], [0, -1], [-1, 0]];
+
+  for (const [dx, dy] of directions) {
+    const next = [x + dx, y + dy];
+    const key = `${next[0]},${next[1]}`;
+    if (grid.has(key) && grid.get(key) !== '#') {
+      neighbors.push(next);
+    }
+  }
+  return neighbors;
+};
+
+// Find path from start to end
+const path = Pathfinding.bfs([0, 0], [2, 2], getNeighbors);
+console.log(path); // [[0,0], [1,0], [2,0], [2,1], [2,2]]
+
+// Or just get the distance
+const distance = Pathfinding.bfsDistance([0, 0], [2, 2], getNeighbors);
+console.log(distance); // 4
+
+// Get distances to all reachable positions
+const distances = Pathfinding.bfsAll([0, 0], getNeighbors);
+console.log(distances.get(JSON.stringify([2, 2]))); // 4
+```
+
+#### Example: Dijkstra with Weighted Graph
+
+```javascript
+import { Pathfinding } from './aoc-helpers.js';
+
+// Graph with weighted edges
+const graph = {
+  'A': [['B', 1], ['C', 4]],
+  'B': [['C', 2], ['D', 5]],
+  'C': [['D', 1]],
+  'D': []
+};
+
+const getNeighbors = (node) => graph[node] || [];
+
+// Find shortest weighted path
+const distance = Pathfinding.dijkstra('A', 'D', getNeighbors);
+console.log(distance); // 4 (A -> B -> C -> D)
+
+// Get all distances from start
+const distances = Pathfinding.dijkstraAll('A', getNeighbors);
+console.log(distances.get(JSON.stringify('B'))); // 1
+console.log(distances.get(JSON.stringify('C'))); // 3
+console.log(distances.get(JSON.stringify('D'))); // 4
+```
+
+### Counter2D
+
+2D coordinate counter for frequency analysis and hotspot detection.
+
+#### Constructor
+
+```javascript
+const counter = new Counter2D();
+```
+
+#### Properties
+
+- `size`: Number of unique positions tracked
+
+#### Methods
+
+**`add(position, count = 1)`**
+- Add count to a position
+- Parameters:
+  - `position`: Position as `[x, y]`, `Point2D`, or `"x,y"` string
+  - `count`: Count to add (default: 1)
+
+**`get(position)`**
+- Get count at position
+- Parameters:
+  - `position`: Position in any supported format
+- Returns: `number` - Count at position (0 if not found)
+
+**`positionsAboveThreshold(threshold)`**
+- Get all positions with count >= threshold
+- Parameters:
+  - `threshold`: Minimum count (inclusive)
+- Returns: `string[]` - Array of position keys "x,y"
+
+**`getMaxCount()`**
+- Get the maximum count value
+- Returns: `number` - Maximum count, or 0 if empty
+
+**`getMaxPositions()`**
+- Get all positions with the maximum count
+- Returns: `string[]` - Array of position keys "x,y"
+
+**`forEach(callback)`**
+- Execute function for each position-count pair
+- Parameters:
+  - `callback`: Function receiving (count, position)
+
+**Iteration:**
+- Counter2D is iterable with `for...of`, yielding `[position, count]` pairs
+
+#### Example: Track Visited Positions
+
+```javascript
+import { Counter2D, Point2D } from './aoc-helpers.js';
+
+const counter = new Counter2D();
+
+// Track visited positions
+const path = [[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]];
+for (const pos of path) {
+  counter.add(pos);
+}
+
+console.log(counter.get([0, 0])); // 2 (visited twice)
+console.log(counter.get([1, 0])); // 1
+console.log(counter.size); // 4 (unique positions)
+
+// Find hotspots (positions visited multiple times)
+const hotspots = counter.positionsAboveThreshold(2);
+console.log(hotspots); // ['0,0']
+
+// Find most visited position
+const maxCount = counter.getMaxCount(); // 2
+const maxPositions = counter.getMaxPositions(); // ['0,0']
+```
+
+#### Example: Overlapping Lines
+
+```javascript
+import { Counter2D } from './aoc-helpers.js';
+
+const counter = new Counter2D();
+
+// Line from (0,0) to (3,0)
+for (let x = 0; x <= 3; x++) {
+  counter.add([x, 0]);
+}
+
+// Line from (1,0) to (1,3)
+for (let y = 0; y <= 3; y++) {
+  counter.add([1, y]);
+}
+
+// Find intersections (positions with count >= 2)
+const intersections = counter.positionsAboveThreshold(2);
+console.log(intersections); // ['1,0'] (where lines cross)
+
+// Iterate over all counted positions
+for (const [pos, count] of counter) {
+  console.log(`${pos}: ${count} lines`);
+}
+```
+
+#### Example: Working with Point2D
+
+```javascript
+import { Counter2D, Point2D } from './aoc-helpers.js';
+
+const counter = new Counter2D();
+const center = new Point2D(5, 5);
+
+// Add center and all adjacent positions
+counter.add(center);
+for (const adj of center.adjacentPositions()) {
+  counter.add(adj);
+}
+
+// All formats work interchangeably
+console.log(counter.get([5, 5])); // 1
+console.log(counter.get('5,5')); // 1
+console.log(counter.get(center)); // 1
+```
+
 ### MathUtils
 
 Mathematical utility functions.
@@ -438,9 +668,21 @@ The library is optimized for AoC-scale problems:
 - **String keys** ("x,y") provide fast Map lookups
 
 Benchmarks on typical hardware:
-- 1000×1000 grid construction: ~1.5s
-- 10,000 random lookups: ~20ms
-- 10,000 grid iterations: ~15ms
-- Point2D operations: <1ms for 1000 operations
+- **Grid2D:**
+  - 1000×1000 grid construction: ~1.5s
+  - 10,000 random lookups: ~15ms
+  - 10,000 grid iterations: ~2ms
+- **Point2D:**
+  - 3000 vector operations: <1ms
+  - 10,000 string conversions: ~12ms
+- **Pathfinding:**
+  - BFS on 10,000-node graph: ~30ms
+  - BFS-all on 2,500-node graph: ~9ms
+  - Dijkstra on 1,000-node graph: ~9ms
+  - Dijkstra-all on 900-node graph: ~5ms
+- **Counter2D:**
+  - 100,000 coordinate updates: ~70ms
+  - 50,000 updates to 100 positions: ~30ms
+  - Iterate 10,000 entries: ~3ms
 
 See `test/performance.test.js` for detailed benchmarks.
