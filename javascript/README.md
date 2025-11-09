@@ -56,6 +56,8 @@ This project includes a comprehensive helper library (`aoc-helpers.js`) with uti
 - **Point2D**: 2D coordinates with vector operations and adjacency
 - **Grid2D**: Efficient Map-based 2D grid with iteration and search
 - **Directions**: Cardinal/diagonal direction constants and rotations
+- **Pathfinding**: BFS and Dijkstra algorithms for graph traversal
+- **Counter2D**: Coordinate counting utilities for frequency analysis
 - **MathUtils**: GCD, LCM, Manhattan distance, and more
 - **AoCUtils**: General utilities (chunking, binary conversion, etc.)
 

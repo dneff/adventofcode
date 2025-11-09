@@ -761,4 +761,447 @@ class Grid2D {
   }
 }
 
-export { AoCInput, MathUtils, AoCUtils, Point2D, Directions, Grid2D };
+/**
+ * Priority queue implementation using binary min-heap.
+ * Used internally for Dijkstra's algorithm.
+ * @private
+ */
+class MinHeap {
+  constructor() {
+    this._heap = [];
+  }
+
+  /**
+   * Add element to heap.
+   *
+   * @param {number} priority - Priority value (lower is higher priority)
+   * @param {*} value - Value to store
+   */
+  push(priority, value) {
+    this._heap.push({ priority, value });
+    this._bubbleUp(this._heap.length - 1);
+  }
+
+  /**
+   * Remove and return element with lowest priority.
+   *
+   * @returns {{priority: number, value: *}|null} Element with lowest priority or null if empty
+   */
+  pop() {
+    if (this._heap.length === 0) return null;
+    if (this._heap.length === 1) return this._heap.pop();
+
+    const min = this._heap[0];
+    this._heap[0] = this._heap.pop();
+    this._bubbleDown(0);
+    return min;
+  }
+
+  /**
+   * Get size of heap.
+   *
+   * @returns {number} Number of elements
+   */
+  get size() {
+    return this._heap.length;
+  }
+
+  /**
+   * Bubble element up to maintain heap property.
+   * @private
+   */
+  _bubbleUp(index) {
+    while (index > 0) {
+      const parentIndex = Math.floor((index - 1) / 2);
+      if (this._heap[index].priority >= this._heap[parentIndex].priority) break;
+
+      [this._heap[index], this._heap[parentIndex]] = [this._heap[parentIndex], this._heap[index]];
+      index = parentIndex;
+    }
+  }
+
+  /**
+   * Bubble element down to maintain heap property.
+   * @private
+   */
+  _bubbleDown(index) {
+    while (true) {
+      const leftChild = 2 * index + 1;
+      const rightChild = 2 * index + 2;
+      let smallest = index;
+
+      if (
+        leftChild < this._heap.length &&
+        this._heap[leftChild].priority < this._heap[smallest].priority
+      ) {
+        smallest = leftChild;
+      }
+
+      if (
+        rightChild < this._heap.length &&
+        this._heap[rightChild].priority < this._heap[smallest].priority
+      ) {
+        smallest = rightChild;
+      }
+
+      if (smallest === index) break;
+
+      [this._heap[index], this._heap[smallest]] = [this._heap[smallest], this._heap[index]];
+      index = smallest;
+    }
+  }
+}
+
+/**
+ * Pathfinding algorithms for graph traversal.
+ */
+class Pathfinding {
+  /**
+   * Breadth-first search returning the complete path from start to goal.
+   *
+   * @param {*} start - Starting position
+   * @param {*} goal - Goal position
+   * @param {Function} getNeighbors - Function that takes a position and returns array of neighbors
+   * @returns {Array|null} Path from start to goal (inclusive) or null if no path exists
+   *
+   * @example
+   * const path = Pathfinding.bfs(
+   *   [0, 0],
+   *   [3, 3],
+   *   (pos) => getValidNeighbors(pos)
+   * );
+   */
+  static bfs(start, goal, getNeighbors) {
+    const queue = [[start, [start]]];
+    const visited = new Set();
+    visited.add(JSON.stringify(start));
+
+    while (queue.length > 0) {
+      const [current, path] = queue.shift();
+
+      if (JSON.stringify(current) === JSON.stringify(goal)) {
+        return path;
+      }
+
+      for (const neighbor of getNeighbors(current)) {
+        const neighborKey = JSON.stringify(neighbor);
+        if (!visited.has(neighborKey)) {
+          visited.add(neighborKey);
+          queue.push([neighbor, [...path, neighbor]]);
+        }
+      }
+    }
+
+    return null;
+  }
+
+  /**
+   * Breadth-first search returning only the distance to the goal.
+   *
+   * @param {*} start - Starting position
+   * @param {*} goal - Goal position
+   * @param {Function} getNeighbors - Function that takes a position and returns array of neighbors
+   * @returns {number} Distance from start to goal, or -1 if no path exists
+   *
+   * @example
+   * const distance = Pathfinding.bfsDistance(
+   *   [0, 0],
+   *   [3, 3],
+   *   (pos) => getValidNeighbors(pos)
+   * );
+   */
+  static bfsDistance(start, goal, getNeighbors) {
+    const queue = [[start, 0]];
+    const visited = new Set();
+    visited.add(JSON.stringify(start));
+
+    while (queue.length > 0) {
+      const [current, distance] = queue.shift();
+
+      if (JSON.stringify(current) === JSON.stringify(goal)) {
+        return distance;
+      }
+
+      for (const neighbor of getNeighbors(current)) {
+        const neighborKey = JSON.stringify(neighbor);
+        if (!visited.has(neighborKey)) {
+          visited.add(neighborKey);
+          queue.push([neighbor, distance + 1]);
+        }
+      }
+    }
+
+    return -1;
+  }
+
+  /**
+   * Breadth-first search returning distances to all reachable positions.
+   *
+   * @param {*} start - Starting position
+   * @param {Function} getNeighbors - Function that takes a position and returns array of neighbors
+   * @returns {Map<string, number>} Map of JSON-stringified positions to their distances from start
+   *
+   * @example
+   * const distances = Pathfinding.bfsAll(
+   *   [0, 0],
+   *   (pos) => getValidNeighbors(pos)
+   * );
+   * console.log(distances.get(JSON.stringify([2, 3]))); // Distance to [2, 3]
+   */
+  static bfsAll(start, getNeighbors) {
+    const queue = [[start, 0]];
+    const distances = new Map();
+    distances.set(JSON.stringify(start), 0);
+
+    while (queue.length > 0) {
+      const [current, distance] = queue.shift();
+
+      for (const neighbor of getNeighbors(current)) {
+        const neighborKey = JSON.stringify(neighbor);
+        if (!distances.has(neighborKey)) {
+          distances.set(neighborKey, distance + 1);
+          queue.push([neighbor, distance + 1]);
+        }
+      }
+    }
+
+    return distances;
+  }
+
+  /**
+   * Dijkstra's algorithm for weighted graphs, returning shortest distance to goal.
+   *
+   * @param {*} start - Starting position
+   * @param {*} goal - Goal position
+   * @param {Function} getNeighbors - Function that takes a position and returns array of [neighbor, cost] tuples
+   * @returns {number|null} Shortest distance to goal, or null if no path exists
+   *
+   * @example
+   * const distance = Pathfinding.dijkstra(
+   *   [0, 0],
+   *   [3, 3],
+   *   (pos) => getNeighborsWithCosts(pos) // Returns [[neighbor1, cost1], [neighbor2, cost2], ...]
+   * );
+   */
+  static dijkstra(start, goal, getNeighbors) {
+    const heap = new MinHeap();
+    heap.push(0, start);
+    const distances = new Map();
+    distances.set(JSON.stringify(start), 0);
+
+    while (heap.size > 0) {
+      const { priority: currentCost, value: current } = heap.pop();
+      const currentKey = JSON.stringify(current);
+
+      if (currentKey === JSON.stringify(goal)) {
+        return currentCost;
+      }
+
+      // Skip if we've found a better path already
+      if (currentCost > (distances.get(currentKey) ?? Infinity)) {
+        continue;
+      }
+
+      for (const [neighbor, cost] of getNeighbors(current)) {
+        const newCost = currentCost + cost;
+        const neighborKey = JSON.stringify(neighbor);
+
+        if (newCost < (distances.get(neighborKey) ?? Infinity)) {
+          distances.set(neighborKey, newCost);
+          heap.push(newCost, neighbor);
+        }
+      }
+    }
+
+    return null;
+  }
+
+  /**
+   * Dijkstra's algorithm returning distances to all reachable positions.
+   *
+   * @param {*} start - Starting position
+   * @param {Function} getNeighbors - Function that takes a position and returns array of [neighbor, cost] tuples
+   * @returns {Map<string, number>} Map of JSON-stringified positions to their distances from start
+   *
+   * @example
+   * const distances = Pathfinding.dijkstraAll(
+   *   [0, 0],
+   *   (pos) => getNeighborsWithCosts(pos)
+   * );
+   * console.log(distances.get(JSON.stringify([2, 3]))); // Shortest distance to [2, 3]
+   */
+  static dijkstraAll(start, getNeighbors) {
+    const heap = new MinHeap();
+    heap.push(0, start);
+    const distances = new Map();
+    distances.set(JSON.stringify(start), 0);
+
+    while (heap.size > 0) {
+      const { priority: currentCost, value: current } = heap.pop();
+      const currentKey = JSON.stringify(current);
+
+      // Skip if we've found a better path already
+      if (currentCost > (distances.get(currentKey) ?? Infinity)) {
+        continue;
+      }
+
+      for (const [neighbor, cost] of getNeighbors(current)) {
+        const newCost = currentCost + cost;
+        const neighborKey = JSON.stringify(neighbor);
+
+        if (newCost < (distances.get(neighborKey) ?? Infinity)) {
+          distances.set(neighborKey, newCost);
+          heap.push(newCost, neighbor);
+        }
+      }
+    }
+
+    return distances;
+  }
+}
+
+/**
+ * 2D coordinate counter for frequency analysis.
+ */
+class Counter2D {
+  /**
+   * Create a new Counter2D.
+   */
+  constructor() {
+    this._counts = new Map();
+  }
+
+  /**
+   * Add count to a position.
+   *
+   * @param {[number, number]|Point2D|string} position - Position as [x, y], Point2D, or "x,y" string
+   * @param {number} [count=1] - Count to add (default: 1)
+   *
+   * @example
+   * const counter = new Counter2D();
+   * counter.add([3, 4]);
+   * counter.add([3, 4], 5);
+   */
+  add(position, count = 1) {
+    const key = this._toKey(position);
+    this._counts.set(key, (this._counts.get(key) ?? 0) + count);
+  }
+
+  /**
+   * Get count at a position.
+   *
+   * @param {[number, number]|Point2D|string} position - Position as [x, y], Point2D, or "x,y" string
+   * @returns {number} Count at position (0 if position not found)
+   *
+   * @example
+   * const count = counter.get([3, 4]);
+   */
+  get(position) {
+    const key = this._toKey(position);
+    return this._counts.get(key) ?? 0;
+  }
+
+  /**
+   * Get all positions with count above threshold.
+   *
+   * @param {number} threshold - Minimum count (inclusive)
+   * @returns {string[]} Array of position keys "x,y" with count >= threshold
+   *
+   * @example
+   * const hotspots = counter.positionsAboveThreshold(10);
+   */
+  positionsAboveThreshold(threshold) {
+    const positions = [];
+    for (const [key, count] of this._counts) {
+      if (count >= threshold) {
+        positions.push(key);
+      }
+    }
+    return positions;
+  }
+
+  /**
+   * Get the maximum count value.
+   *
+   * @returns {number} Maximum count, or 0 if counter is empty
+   *
+   * @example
+   * const max = counter.getMaxCount();
+   */
+  getMaxCount() {
+    if (this._counts.size === 0) return 0;
+    return Math.max(...this._counts.values());
+  }
+
+  /**
+   * Get all positions with the maximum count.
+   *
+   * @returns {string[]} Array of position keys "x,y" with maximum count
+   *
+   * @example
+   * const maxPositions = counter.getMaxPositions();
+   */
+  getMaxPositions() {
+    const maxCount = this.getMaxCount();
+    if (maxCount === 0) return [];
+
+    const positions = [];
+    for (const [key, count] of this._counts) {
+      if (count === maxCount) {
+        positions.push(key);
+      }
+    }
+    return positions;
+  }
+
+  /**
+   * Convert position to string key.
+   * @private
+   * @param {[number, number]|Point2D|string} position - Position in any supported format
+   * @returns {string} Key string "x,y"
+   */
+  _toKey(position) {
+    if (typeof position === 'string') {
+      return position;
+    } else if (position instanceof Point2D) {
+      return position.toString();
+    } else if (Array.isArray(position)) {
+      return `${position[0]},${position[1]}`;
+    }
+    throw new Error('Invalid position format');
+  }
+
+  /**
+   * Iterate over all position-count pairs.
+   *
+   * @returns {Iterator<[string, number]>} Iterator of [position, count] pairs
+   *
+   * @example
+   * for (const [pos, count] of counter) {
+   *   console.log(`${pos}: ${count}`);
+   * }
+   */
+  *[Symbol.iterator]() {
+    yield* this._counts.entries();
+  }
+
+  /**
+   * Get number of unique positions.
+   *
+   * @returns {number} Number of positions tracked
+   */
+  get size() {
+    return this._counts.size;
+  }
+
+  /**
+   * Execute a function for each position-count pair.
+   *
+   * @param {Function} callback - Function to execute for each entry (count, position)
+   */
+  forEach(callback) {
+    this._counts.forEach((count, position) => callback(count, position));
+  }
+}
+
+export { AoCInput, MathUtils, AoCUtils, Point2D, Directions, Grid2D, Pathfinding, Counter2D };
