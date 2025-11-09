@@ -209,10 +209,18 @@ describe('Performance Benchmarks', () => {
       const getNeighbors = (pos) => {
         const [x, y] = pos;
         const neighbors = [];
-        if (x > 0) neighbors.push([x - 1, y]);
-        if (x < size - 1) neighbors.push([x + 1, y]);
-        if (y > 0) neighbors.push([x, y - 1]);
-        if (y < size - 1) neighbors.push([x, y + 1]);
+        if (x > 0) {
+          neighbors.push([x - 1, y]);
+        }
+        if (x < size - 1) {
+          neighbors.push([x + 1, y]);
+        }
+        if (y > 0) {
+          neighbors.push([x, y - 1]);
+        }
+        if (y < size - 1) {
+          neighbors.push([x, y + 1]);
+        }
         return neighbors;
       };
 
@@ -232,10 +240,18 @@ describe('Performance Benchmarks', () => {
       const getNeighbors = (pos) => {
         const [x, y] = pos;
         const neighbors = [];
-        if (x > 0) neighbors.push([x - 1, y]);
-        if (x < size - 1) neighbors.push([x + 1, y]);
-        if (y > 0) neighbors.push([x, y - 1]);
-        if (y < size - 1) neighbors.push([x, y + 1]);
+        if (x > 0) {
+          neighbors.push([x - 1, y]);
+        }
+        if (x < size - 1) {
+          neighbors.push([x + 1, y]);
+        }
+        if (y > 0) {
+          neighbors.push([x, y - 1]);
+        }
+        if (y < size - 1) {
+          neighbors.push([x, y + 1]);
+        }
         return neighbors;
       };
 
@@ -255,13 +271,25 @@ describe('Performance Benchmarks', () => {
       const getNeighbors = (pos) => {
         const [x, y] = pos;
         const neighbors = [];
-        if (x > 0) neighbors.push([[x - 1, y], 1]);
-        if (x < size - 1) neighbors.push([[x + 1, y], 1]);
-        if (y > 0) neighbors.push([[x, y - 1], 1]);
-        if (y < size - 1) neighbors.push([[x, y + 1], 1]);
+        if (x > 0) {
+          neighbors.push([[x - 1, y], 1]);
+        }
+        if (x < size - 1) {
+          neighbors.push([[x + 1, y], 1]);
+        }
+        if (y > 0) {
+          neighbors.push([[x, y - 1], 1]);
+        }
+        if (y < size - 1) {
+          neighbors.push([[x, y + 1], 1]);
+        }
         // Add diagonal moves with higher cost
-        if (x > 0 && y > 0) neighbors.push([[x - 1, y - 1], 2]);
-        if (x < size - 1 && y < size - 1) neighbors.push([[x + 1, y + 1], 2]);
+        if (x > 0 && y > 0) {
+          neighbors.push([[x - 1, y - 1], 2]);
+        }
+        if (x < size - 1 && y < size - 1) {
+          neighbors.push([[x + 1, y + 1], 2]);
+        }
         return neighbors;
       };
 
@@ -281,10 +309,18 @@ describe('Performance Benchmarks', () => {
       const getNeighbors = (pos) => {
         const [x, y] = pos;
         const neighbors = [];
-        if (x > 0) neighbors.push([[x - 1, y], 1 + (x % 3)]);
-        if (x < size - 1) neighbors.push([[x + 1, y], 1 + (x % 3)]);
-        if (y > 0) neighbors.push([[x, y - 1], 1 + (y % 3)]);
-        if (y < size - 1) neighbors.push([[x, y + 1], 1 + (y % 3)]);
+        if (x > 0) {
+          neighbors.push([[x - 1, y], 1 + (x % 3)]);
+        }
+        if (x < size - 1) {
+          neighbors.push([[x + 1, y], 1 + (x % 3)]);
+        }
+        if (y > 0) {
+          neighbors.push([[x, y - 1], 1 + (y % 3)]);
+        }
+        if (y < size - 1) {
+          neighbors.push([[x, y + 1], 1 + (y % 3)]);
+        }
         return neighbors;
       };
 

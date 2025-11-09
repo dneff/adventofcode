@@ -13,8 +13,12 @@ describe('Pathfinding', () => {
         const [x, y] = pos;
         const neighbors = [];
         // 3x3 grid, only right and down allowed
-        if (x < 2) neighbors.push([x + 1, y]);
-        if (y < 2) neighbors.push([x, y + 1]);
+        if (x < 2) {
+          neighbors.push([x + 1, y]);
+        }
+        if (y < 2) {
+          neighbors.push([x, y + 1]);
+        }
         return neighbors;
       };
 
@@ -66,8 +70,12 @@ describe('Pathfinding', () => {
       const goal = { x: 1, y: 1 };
       const getNeighbors = (pos) => {
         const neighbors = [];
-        if (pos.x < 2) neighbors.push({ x: pos.x + 1, y: pos.y });
-        if (pos.y < 2) neighbors.push({ x: pos.x, y: pos.y + 1 });
+        if (pos.x < 2) {
+          neighbors.push({ x: pos.x + 1, y: pos.y });
+        }
+        if (pos.y < 2) {
+          neighbors.push({ x: pos.x, y: pos.y + 1 });
+        }
         return neighbors;
       };
 
@@ -85,10 +93,18 @@ describe('Pathfinding', () => {
         const [x, y] = pos;
         const neighbors = [];
         // 4x4 grid with 4-directional movement
-        if (x > 0) neighbors.push([x - 1, y]);
-        if (x < 3) neighbors.push([x + 1, y]);
-        if (y > 0) neighbors.push([x, y - 1]);
-        if (y < 3) neighbors.push([x, y + 1]);
+        if (x > 0) {
+          neighbors.push([x - 1, y]);
+        }
+        if (x < 3) {
+          neighbors.push([x + 1, y]);
+        }
+        if (y > 0) {
+          neighbors.push([x, y - 1]);
+        }
+        if (y < 3) {
+          neighbors.push([x, y + 1]);
+        }
         return neighbors;
       };
 
@@ -130,7 +146,7 @@ describe('Pathfinding', () => {
           [x, y + 1],
         ];
         return candidates.filter(
-          ([nx, ny]) => nx >= 0 && nx < 4 && ny >= 0 && ny < 4 && !blocked.has(`${nx},${ny}`)
+          ([nx, ny]) => nx >= 0 && nx < 4 && ny >= 0 && ny < 4 && !blocked.has(`${nx},${ny}`),
         );
       };
 
@@ -146,10 +162,18 @@ describe('Pathfinding', () => {
         const [x, y] = pos;
         const neighbors = [];
         // 3x3 grid
-        if (x > 0) neighbors.push([x - 1, y]);
-        if (x < 2) neighbors.push([x + 1, y]);
-        if (y > 0) neighbors.push([x, y - 1]);
-        if (y < 2) neighbors.push([x, y + 1]);
+        if (x > 0) {
+          neighbors.push([x - 1, y]);
+        }
+        if (x < 2) {
+          neighbors.push([x + 1, y]);
+        }
+        if (y > 0) {
+          neighbors.push([x, y - 1]);
+        }
+        if (y < 2) {
+          neighbors.push([x, y + 1]);
+        }
         return neighbors;
       };
 
@@ -269,8 +293,12 @@ describe('Pathfinding', () => {
       const getNeighbors = (pos) => {
         const [x, y] = pos;
         const neighbors = [];
-        if (x < 2) neighbors.push([[x + 1, y], 1]);
-        if (y < 2) neighbors.push([[x, y + 1], 1]);
+        if (x < 2) {
+          neighbors.push([[x + 1, y], 1]);
+        }
+        if (y < 2) {
+          neighbors.push([[x, y + 1], 1]);
+        }
         return neighbors;
       };
 
@@ -310,7 +338,9 @@ describe('Pathfinding', () => {
       const start = [0, 0];
       const getNeighbors = (pos) => {
         const [x, y] = pos;
-        if (x < 2) return [[[x + 1, y], x + 1]]; // Increasing costs
+        if (x < 2) {
+          return [[[x + 1, y], x + 1]];
+        } // Increasing costs
         return [];
       };
 
@@ -352,10 +382,18 @@ describe('Pathfinding', () => {
       const getNeighbors = (pos) => {
         const [x, y] = pos;
         const neighbors = [];
-        if (x > 0) neighbors.push([x - 1, y]);
-        if (x < 99) neighbors.push([x + 1, y]);
-        if (y > 0) neighbors.push([x, y - 1]);
-        if (y < 99) neighbors.push([x, y + 1]);
+        if (x > 0) {
+          neighbors.push([x - 1, y]);
+        }
+        if (x < 99) {
+          neighbors.push([x + 1, y]);
+        }
+        if (y > 0) {
+          neighbors.push([x, y - 1]);
+        }
+        if (y < 99) {
+          neighbors.push([x, y + 1]);
+        }
         return neighbors;
       };
 
@@ -373,8 +411,12 @@ describe('Pathfinding', () => {
       const getNeighbors = (pos) => {
         const [x, y] = pos;
         const neighbors = [];
-        if (x < 5) neighbors.push([x + 1, y]);
-        if (y < 5) neighbors.push([x, y + 1]);
+        if (x < 5) {
+          neighbors.push([x + 1, y]);
+        }
+        if (y < 5) {
+          neighbors.push([x, y + 1]);
+        }
         return neighbors;
       };
 

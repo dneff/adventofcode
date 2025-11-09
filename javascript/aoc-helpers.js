@@ -335,7 +335,7 @@ class Point2D {
         new Point2D(this.x + 1, this.y - 1), // NE
         new Point2D(this.x + 1, this.y + 1), // SE
         new Point2D(this.x - 1, this.y + 1), // SW
-        new Point2D(this.x - 1, this.y - 1) // NW
+        new Point2D(this.x - 1, this.y - 1), // NW
       );
     }
 
@@ -788,8 +788,12 @@ class MinHeap {
    * @returns {{priority: number, value: *}|null} Element with lowest priority or null if empty
    */
   pop() {
-    if (this._heap.length === 0) return null;
-    if (this._heap.length === 1) return this._heap.pop();
+    if (this._heap.length === 0) {
+      return null;
+    }
+    if (this._heap.length === 1) {
+      return this._heap.pop();
+    }
 
     const min = this._heap[0];
     this._heap[0] = this._heap.pop();
@@ -813,7 +817,9 @@ class MinHeap {
   _bubbleUp(index) {
     while (index > 0) {
       const parentIndex = Math.floor((index - 1) / 2);
-      if (this._heap[index].priority >= this._heap[parentIndex].priority) break;
+      if (this._heap[index].priority >= this._heap[parentIndex].priority) {
+        break;
+      }
 
       [this._heap[index], this._heap[parentIndex]] = [this._heap[parentIndex], this._heap[index]];
       index = parentIndex;
@@ -844,7 +850,9 @@ class MinHeap {
         smallest = rightChild;
       }
 
-      if (smallest === index) break;
+      if (smallest === index) {
+        break;
+      }
 
       [this._heap[index], this._heap[smallest]] = [this._heap[smallest], this._heap[index]];
       index = smallest;
@@ -1129,7 +1137,9 @@ class Counter2D {
    * const max = counter.getMaxCount();
    */
   getMaxCount() {
-    if (this._counts.size === 0) return 0;
+    if (this._counts.size === 0) {
+      return 0;
+    }
     return Math.max(...this._counts.values());
   }
 
@@ -1143,7 +1153,9 @@ class Counter2D {
    */
   getMaxPositions() {
     const maxCount = this.getMaxCount();
-    if (maxCount === 0) return [];
+    if (maxCount === 0) {
+      return [];
+    }
 
     const positions = [];
     for (const [key, count] of this._counts) {
