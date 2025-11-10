@@ -1,18 +1,29 @@
-from Point import Point
+import os
+import sys
+
+# Path setup
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(SCRIPT_DIR, '../../'))
+
+from aoc_helpers import AoCInput, AoCUtils  # noqa: E402
+
+# Input file path
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2019/12/input')
+
+from Point import Point  # noqa: E402
+
 
 def lcm(x, y):
     from math import gcd
     return x * y // gcd(x, y)
 
-x = Point(0,0,0)
 
-def main():
-
+def solve_part1():
     initial_objects = []
-    with open('input1.txt', 'r') as file:
-        for data in file.readlines():
-            pos = [int(x.split('=')[-1]) for x in data.strip().replace('<','').replace('>','').split(', ')]
-            initial_objects.append(Point(*pos))
+    lines = AoCInput.read_lines(INPUT_FILE)
+    for data in lines:
+        pos = [int(x.split('=')[-1]) for x in data.strip().replace('<', '').replace('>', '').split(', ')]
+        initial_objects.append(Point(*pos))
 
     objects = initial_objects[:]
 
@@ -27,14 +38,19 @@ def main():
             o.updatePosition()
 
     solution = sum([x.getEnergy() for x in objects])
+    return solution, steps
 
-    print(f"Solution 1: The total system energy after {steps} steps is: {solution}")
 
+def solve_part2():
+    initial_objects = []
+    lines = AoCInput.read_lines(INPUT_FILE)
+    for data in lines:
+        pos = [int(x.split('=')[-1]) for x in data.strip().replace('<', '').replace('>', '').split(', ')]
+        initial_objects.append(Point(*pos))
 
-# -=-=-=- Part 2
-    x_steps = 0 
-    y_steps = 0 
-    z_steps = 0 
+    x_steps = 0
+    y_steps = 0
+    z_steps = 0
     total_steps = 0
 
     objects = initial_objects[:]
@@ -73,11 +89,13 @@ def main():
             latest_z.sort()
 
             if init_z == latest_z:
-                z_steps = total_steps               
-        
+                z_steps = total_steps
 
-    print(f"Solution 2: The universe repeats after {lcm(x_steps, lcm(y_steps, z_steps))}")
+    return lcm(x_steps, lcm(y_steps, z_steps))
 
 
-if __name__ == "__main__":
-    main()
+answer1, steps = solve_part1()
+AoCUtils.print_solution(1, f"The total system energy after {steps} steps is: {answer1}")
+
+answer2 = solve_part2()
+AoCUtils.print_solution(2, f"The universe repeats after {answer2}")

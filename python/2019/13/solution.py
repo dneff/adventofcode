@@ -1,9 +1,20 @@
-from IntCode import IntCode, OutputInterrupt, InputInterrupt
+import os
+import sys
+
+# Path setup
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(SCRIPT_DIR, '../../'))
+
+from aoc_helpers import AoCInput, AoCUtils  # noqa: E402
+
+# Input file path
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2019/13/input')
+
+from IntCode import IntCode, OutputInterrupt, InputInterrupt  # noqa: E402
 
 
-def main():
-    with open('input1.txt', 'r') as file:
-        program = file.read().strip()
+def solve_part1():
+    program = AoCInput.read_file(INPUT_FILE).strip()
 
     comp1 = IntCode(program)
 
@@ -19,11 +30,12 @@ def main():
 
                 comp1.output.clear()
 
-    block_count = len([x for x in screen.values() if x == 2])        
+    block_count = len([x for x in screen.values() if x == 2])
+    return block_count
 
-    print(f"Solution 1: The block count on exit is: {block_count}")
 
-#-=-=-- Part 2
+def solve_part2():
+    program = AoCInput.read_file(INPUT_FILE).strip()
 
     def joystickTilt(ball, paddle):
         j_tilt = 0
@@ -32,7 +44,7 @@ def main():
         elif ball[0] > paddle[0]:
             j_tilt += 1
         return j_tilt
-    
+
     ball = (0, 0)
     paddle = (0, 0)
     score = 0
@@ -62,8 +74,11 @@ def main():
 
                 comp2.output.clear()
 
+    return score
 
-    print(f"Solution 2: The final score is {score}") 
 
-if __name__ == "__main__":
-    main()
+answer1 = solve_part1()
+AoCUtils.print_solution(1, f"The block count on exit is: {answer1}")
+
+answer2 = solve_part2()
+AoCUtils.print_solution(2, f"The final score is {answer2}")

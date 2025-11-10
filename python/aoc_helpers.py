@@ -51,12 +51,25 @@ class AoCInput:
             return [int(line.strip()) for line in f.readlines()]
     
     @staticmethod
+    def read_file(filename: str) -> str:
+        """Read entire file as a single string.
+
+        Args:
+            filename: Path to the file to read
+
+        Returns:
+            File contents as a string
+        """
+        with open(filename, "r", encoding="utf-8") as f:
+            return f.read()
+
+    @staticmethod
     def read_sections(filename: str) -> List[List[str]]:
         """Read file split by empty lines into sections."""
         with open(filename, "r", encoding="utf-8") as f:
             content = f.read().strip()
         return [section.split('\n') for section in content.split('\n\n')]
-    
+
     @staticmethod
     def parse_numbers(text: str) -> List[int]:
         """Extract all integers from a string."""

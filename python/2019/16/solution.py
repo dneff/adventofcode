@@ -1,9 +1,20 @@
+import os
+import sys
+
+# Path setup
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(SCRIPT_DIR, '../../'))
+
+from aoc_helpers import AoCInput, AoCUtils  # noqa: E402
+
+# Input file path
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2019/16/input')
 
 
 def processData(data, phases=1):
-    
+
     base = [0, 1, 0, -1]
-    
+
     result = []
     p_data = [int(x) for x in data]
 
@@ -13,9 +24,7 @@ def processData(data, phases=1):
             digit = 0
             for i, d in enumerate(p_data):
                 base_pos = ((i + 1)//rounds) % len(base)
-                digit +=  d * base[base_pos]
-                #print(f"{d} * {base[base_pos]} = {d * base[base_pos]}")
-            #print(f"digit: {digit} -> {abs(digit) % 10}")
+                digit += d * base[base_pos]
             result.append(abs(digit) % 10)
         p_data = result[:]
 
@@ -36,27 +45,24 @@ def processDataP2(data, phases=100):
         for idx in range(len(p_data) - 2, -1, -1):
             result[idx] = (p_data[idx] + result[idx+1]) % 10
         p_data = result[:]
-    
+
     return "".join([str(x) for x in result])
 
 
-def main():
-    with open('input1.txt', 'r') as file:
-        data = file.read().strip()
+def solve_part1():
+    data = AoCInput.read_file(INPUT_FILE).strip()
+    result = processData(data, 100)[:8]
+    return result
 
-    #print(f"test: {processData('12345678', 4)} -> 01029498")
-    #print(f"test: {processData('80871224585914546619083218645595', 100)[:8]} -> 24176176")
-    #print(f"test: {processData('19617804207202209144916044189917', 100)[:8]} -> 73745418")
-    #print(f"test: {processData('69317163492948606335995924319873', 100)[:8]} -> 52432133")
-    print(f"Solution 1: The first eight digits of the final output list after 100 FFT phases is {processData(data, 100)[:8]}")
 
-#Part 2 -=-=-
+def solve_part2():
+    data = AoCInput.read_file(INPUT_FILE).strip()
+    result = processDataP2(data, 100)[:8]
+    return result
 
-    # find 8 digits to transform
-    # find base offset for those 8 digits
-    # -=-=- key insight: final transform is 0....0, 1, penultimate is 0...1, 1, etc. work it backwards
 
-    print(f"Solution 2: The eight-digit message is {processDataP2(data, 100)[:8]}")
+answer1 = solve_part1()
+AoCUtils.print_solution(1, f"The first eight digits of the final output list after 100 FFT phases is {answer1}")
 
-if __name__ == "__main__":
-    main()
+answer2 = solve_part2()
+AoCUtils.print_solution(2, f"The eight-digit message is {answer2}")

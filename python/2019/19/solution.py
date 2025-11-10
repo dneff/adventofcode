@@ -1,11 +1,25 @@
-from IntCode import IntCode, InputInterrupt, OutputInterrupt
-import math
+import os
+import sys
+
+# Path setup
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(SCRIPT_DIR, '../../'))
+
+from aoc_helpers import AoCInput, AoCUtils  # noqa: E402
+
+# Input file path
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2019/19/input')
+
+from IntCode import IntCode, InputInterrupt, OutputInterrupt  # noqa: E402
+import math  # noqa: E402
+
 
 def getAngle(point):
-    x,y = point
+    x, y = point
     theta = (math.degrees(math.atan2(y, x)) + 90) % 360
 
     return round(theta, 3)
+
 
 def inBeam(program, point):
     comp1 = IntCode(program)
@@ -18,11 +32,10 @@ def inBeam(program, point):
         o = comp1.pop()
     return o == 1
 
-def main():
-    with open('input1.txt', 'r') as file:
-        program = file.read().strip()
 
-    
+def solve_part1():
+    program = AoCInput.read_file(INPUT_FILE).strip()
+
     affected = []
     for y in range(50):
         lead_edge = 0
@@ -38,20 +51,22 @@ def main():
             except OutputInterrupt:
                 o = comp1.pop()
                 if o == 1:
-                    affected.append((x,y))
-                    if edge_found == False:
+                    affected.append((x, y))
+                    if edge_found is False:
                         edge_found = True
                         lead_edge = x
-                elif o == 0 and lead_edge == True:
+                elif o == 0 and lead_edge is True:
                     break
 
-    print(f"Solution 1: There are {len(affected)} points affected by the tractor beam.")
+    return len(affected), affected
 
-# Part 2 -=-=-
+
+def solve_part2(affected):
+    program = AoCInput.read_file(INPUT_FILE).strip()
 
     # compute angular edges of tractor beam to approximate edge locations further out
-    top = (0,0)
-    bottom = (0,0)
+    top = (0, 0)
+    bottom = (0, 0)
     for p in affected:
         if p[0] > top[0]:
             top = p
@@ -72,11 +87,11 @@ def main():
         r_edge = 0
         while r_edge == 0:
             x += 1
-            if getAngle((x,y)) > max_angle:
+            if getAngle((x, y)) > max_angle:
                 continue
-            if getAngle((x,y)) <= max_angle and l_edge == 0:
+            if getAngle((x, y)) <= max_angle and l_edge == 0:
                 l_edge = x
-            elif getAngle((x,y)) < min_angle:
+            elif getAngle((x, y)) < min_angle:
                 r_edge = x
         if r_edge - l_edge > 100:
             start_x = r_edge
@@ -93,9 +108,12 @@ def main():
             break
         else:
             start_y += 1
-        
 
-    print(f"Solution 2: The coded point closest to the tractor beam is {result}")
+    return result
 
-if __name__ == "__main__":
-    main()
+
+answer1, affected = solve_part1()
+AoCUtils.print_solution(1, f"There are {answer1} points affected by the tractor beam")
+
+answer2 = solve_part2(affected)
+AoCUtils.print_solution(2, f"The coded point closest to the tractor beam is {answer2}")

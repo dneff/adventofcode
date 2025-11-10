@@ -1,5 +1,17 @@
-from IntCode import IntCode, InputInterrupt, OutputInterrupt
-from collections import deque
+import os
+import sys
+
+# Path setup
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(SCRIPT_DIR, '../../'))
+
+from aoc_helpers import AoCInput, AoCUtils  # noqa: E402
+
+# Input file path
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2019/17/input')
+
+from IntCode import IntCode, InputInterrupt, OutputInterrupt  # noqa: E402
+from collections import deque  # noqa: E402
 
 
 def isIntersection(grid, x, y):
@@ -7,13 +19,11 @@ def isIntersection(grid, x, y):
     return all([x == '#' for x in check])
 
 
-def main():
-    with open('input1.txt', 'r') as file:
-        program = file.read().strip()
+def solve_part1():
+    program = AoCInput.read_file(INPUT_FILE).strip()
 
     comp1 = IntCode(program)
     comp1.complete = False
-
 
     view = []
     while not comp1.complete:
@@ -33,11 +43,13 @@ def main():
             if grid[y][x] == '#' and isIntersection(grid, x, y):
                 intersections.append((x, y))
 
-    print(f"Solution 1: The sum of the alignment parameters is: {sum([x*y for x, y in intersections])}")
+    result = sum([x*y for x, y in intersections])
+    return result
 
-# Part 2 -=-=-=-=-
 
-    #print(f"{''.join(view)}")
+def solve_part2():
+    program = AoCInput.read_file(INPUT_FILE).strip()
+
     # solved this one by hand from printing out the above
     move_routine = "A,B,A,B,A,C,B,C,A,C\n"
     A = "L,6,R,12,L,6\n"
@@ -45,13 +57,11 @@ def main():
     C = "L,10,L,10,L,4,L,6\n"
     video = "n\n"
 
-    #print(f"{','.join([str(ord(x)) for x in A])}")
-    
     comp2 = IntCode(program)
     comp2.complete = False
     comp2.memory[0] = 2
 
-    for s in [move_routine, A, B, C, video]: 
+    for s in [move_routine, A, B, C, video]:
         for c in s:
             comp2.push(ord(c))
 
@@ -63,7 +73,12 @@ def main():
             p = chr(int(comp2.pop()))
             display.append(p)
 
-    print(f"Solution 2: The vacuum robot collected {ord(display[-1])} units of space dust.")
+    result = ord(display[-1])
+    return result
 
-if __name__ == "__main__":
-    main()
+
+answer1 = solve_part1()
+AoCUtils.print_solution(1, f"The sum of the alignment parameters is: {answer1}")
+
+answer2 = solve_part2()
+AoCUtils.print_solution(2, f"The vacuum robot collected {answer2} units of space dust")

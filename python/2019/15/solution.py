@@ -1,5 +1,17 @@
-from IntCode import IntCode, InputInterrupt, OutputInterrupt
-from collections import deque
+import os
+import sys
+
+# Path setup
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(SCRIPT_DIR, '../../'))
+
+from aoc_helpers import AoCInput, AoCUtils  # noqa: E402
+
+# Input file path
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2019/15/input')
+
+from IntCode import IntCode, InputInterrupt, OutputInterrupt  # noqa: E402
+from collections import deque  # noqa: E402
 
 
 def newPosition(pos, dir):
@@ -11,6 +23,7 @@ def newPosition(pos, dir):
     }
 
     return (pos[0] + delta[dir][0], pos[1] + delta[dir][1])
+
 
 def findPathBFS(locations, start, end):
     queue = deque([("", start)])
@@ -35,11 +48,10 @@ def findLongestPath(locations, start):
             continue
         path_lengths.append(len(findPathBFS(locations, start, loc)))
     return max(path_lengths)
-        
 
-def main():
-    with open('input1.txt', 'r') as file:
-        program = file.read().strip()
+
+def solve_parts():
+    program = AoCInput.read_file(INPUT_FILE).strip()
 
     comp1 = IntCode(program)
     comp1.complete = False
@@ -47,10 +59,10 @@ def main():
     direction = [1, 4, 2, 3]
     heading = 0
 
-    x, y = 0,0
-    positions=[]
-    walls=[]
-    oxygen=[]
+    x, y = 0, 0
+    positions = []
+    walls = []
+    oxygen = []
 
     positions.append((x, y))
 
@@ -77,20 +89,19 @@ def main():
         if (x, y) == (0, 0) and len(oxygen) > 0:
             break
 
-    locs = {p:[] for p in set(positions)}
+    locs = {p: [] for p in set(positions)}
     for loc in locs.keys():
         for d in direction:
             t = newPosition(loc, d)
             if t in locs.keys():
                 locs[loc].append((str(d), t))
 
-    result = findPathBFS(locs, oxygen[0], (0, 0))
-    print(f"The shortest number of moves from start to oxygen sensor is {len(result)}")
+    result1 = findPathBFS(locs, oxygen[0], (0, 0))
+    result2 = findLongestPath(locs, oxygen[0])
 
-# Part 2 -=-=-=-
+    return len(result1), result2
 
-    result = findLongestPath(locs, oxygen[0])
-    print(f"It will take {result} minutes to flood the space with oxygen.")
 
-if __name__ == "__main__":
-    main()
+answer1, answer2 = solve_parts()
+AoCUtils.print_solution(1, f"The shortest number of moves from start to oxygen sensor is {answer1}")
+AoCUtils.print_solution(2, f"It will take {answer2} minutes to flood the space with oxygen")

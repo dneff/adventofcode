@@ -1,13 +1,22 @@
+import os
+import sys
 from itertools import permutations
-from IntCode import IntCode, InputInterrupt, OutputInterrupt
+
+# Path setup
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(SCRIPT_DIR, '../../'))
+
+from IntCode import IntCode, InputInterrupt, OutputInterrupt  # noqa: E402
+from aoc_helpers import AoCInput, AoCUtils  # noqa: E402
+
+# Input file path
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2019/9/input')
 
 
-def main():
-    with open('input1.txt', 'r') as file:
-        program = file.read().strip()
+def solve_part1():
+    program = AoCInput.read_file(INPUT_FILE).strip()
 
     comp = IntCode(program)
-    #comp = IntCode("109, 1, 3, 3, 204, 2, 99") # equals input
     comp.push(1)
 
     while not comp.complete:
@@ -16,10 +25,13 @@ def main():
         except(OutputInterrupt):
             pass
 
-    print(f"Solution 1: The final output is {comp.pop()}")
+    return comp.pop()
+
+
+def solve_part2():
+    program = AoCInput.read_file(INPUT_FILE).strip()
 
     comp2 = IntCode(program)
-    #comp2.debugging = True
     comp2.push(2)
 
     while not comp2.complete:
@@ -27,10 +39,12 @@ def main():
             comp2.run()
         except(OutputInterrupt):
             pass
-    #print(f"reader is {comp2.reader}")
-    print(f"Solution 2: The final output is {comp2.output[-1]}")
-    
-    
 
-if __name__ == "__main__":
-    main()
+    return comp2.output[-1]
+
+
+answer1 = solve_part1()
+AoCUtils.print_solution(1, answer1)
+
+answer2 = solve_part2()
+AoCUtils.print_solution(2, answer2)
