@@ -389,3 +389,196 @@ class AoCUtils:
         elif 'A' <= char <= 'Z':
             return ord(char) - ord('A') + 27
         return 0
+
+    @staticmethod
+    def ocr_screen_4x6(screen):
+        """
+        OCR for 6-row tall capital letters (4 pixels wide with 1 pixel spacing).
+        Returns the recognized text string.
+
+        Args:
+            screen: Either a list of strings, a list of lists of characters,
+                   or a multi-line string. Should contain 6 rows of characters.
+        """
+        # Letter patterns (6 rows x 4 columns, using # for lit pixels, . for off)
+        patterns = {
+            'A': [
+                '.##.',
+                '#..#',
+                '#..#',
+                '####',
+                '#..#',
+                '#..#'
+            ],
+            'B': [
+                '###.',
+                '#..#',
+                '###.',
+                '#..#',
+                '#..#',
+                '###.'
+            ],
+            'C': [
+                '.##.',
+                '#..#',
+                '#...',
+                '#...',
+                '#..#',
+                '.##.'
+            ],
+            'E': [
+                '####',
+                '#...',
+                '###.',
+                '#...',
+                '#...',
+                '####'
+            ],
+            'F': [
+                '####',
+                '#...',
+                '###.',
+                '#...',
+                '#...',
+                '#...'
+            ],
+            'G': [
+                '.##.',
+                '#..#',
+                '#...',
+                '#.##',
+                '#..#',
+                '.###'
+            ],
+            'H': [
+                '#..#',
+                '#..#',
+                '####',
+                '#..#',
+                '#..#',
+                '#..#'
+            ],
+            'J': [
+                '..##',
+                '...#',
+                '...#',
+                '...#',
+                '#..#',
+                '.##.'
+            ],
+            'K': [
+                '#..#',
+                '#.#.',
+                '##..',
+                '#.#.',
+                '#.#.',
+                '#..#'
+            ],
+            'L': [
+                '#...',
+                '#...',
+                '#...',
+                '#...',
+                '#...',
+                '####'
+            ],
+            'P': [
+                '###.',
+                '#..#',
+                '#..#',
+                '###.',
+                '#...',
+                '#...'
+            ],
+            'R': [
+                '###.',
+                '#..#',
+                '#..#',
+                '###.',
+                '#.#.',
+                '#..#'
+            ],
+            'S': [
+                '.###',
+                '#...',
+                '#...',
+                '.##.',
+                '...#',
+                '###.'
+            ],
+            'U': [
+                '#..#',
+                '#..#',
+                '#..#',
+                '#..#',
+                '#..#',
+                '.##.'
+            ],
+            'Z': [
+                '####',
+                '...#',
+                '..#.',
+                '.#..',
+                '#...',
+                '####'
+            ]
+        }
+
+        # Normalize input to list of strings
+        if isinstance(screen, str):
+            # Multi-line string - split by newlines and filter out empty/label lines
+            lines = screen.split('\n')
+            screen_str = []
+            for line in lines:
+                # Skip lines that don't look like image data (e.g., "The image is:")
+                if line and any(c in line for c in ['#', '.', ' ']):
+                    # Check if this line has enough content to be an image row
+                    if '#' in line or line.count('.') > 3 or line.count(' ') > 3:
+                        screen_str.append(line)
+        elif isinstance(screen, list):
+            if len(screen) > 0 and isinstance(screen[0], list):
+                # List of lists - join each row
+                screen_str = [''.join(row) for row in screen]
+            else:
+                # List of strings - use as is
+                screen_str = list(screen)
+        else:
+            raise ValueError("Screen must be a string, list of strings, or list of lists")
+
+        # Ensure we have exactly 6 rows
+        if len(screen_str) != 6:
+            raise ValueError(f"Expected 6 rows for OCR, got {len(screen_str)}")
+
+        # Normalize all rows to use '.' for off pixels instead of spaces
+        screen_str = [row.replace(' ', '.') for row in screen_str]
+
+        result = ''
+        x = 0
+        while x < len(screen_str[0]):
+            # Extract 4-column slice for this letter
+            letter_slice = []
+            for row in screen_str:
+                if x + 3 < len(row):
+                    letter_slice.append(row[x:x+4])
+                else:
+                    letter_slice.append(row[x:].ljust(4, '.'))
+
+            # Match against patterns
+            found = False
+            for letter, pattern in patterns.items():
+                match = True
+                for i in range(6):
+                    if letter_slice[i] != pattern[i]:
+                        match = False
+                        break
+                if match:
+                    result += letter
+                    found = True
+                    break
+
+            if not found and any('#' in row for row in letter_slice):
+                result += '?'
+
+            x += 5  # Move to next letter (4 pixels + 1 space)
+
+        return result

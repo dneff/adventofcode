@@ -67,7 +67,7 @@ def composite_layers(layers):
                 if pixel_value == '0':
                     composited_pixels.append(' ')  # Black = space
                 else:
-                    composited_pixels.append('*')  # White = asterisk
+                    composited_pixels.append('#')  # White = asterisk
                 break
 
     return ''.join(composited_pixels)
@@ -106,4 +106,7 @@ def solve_part2():
 
 
 answer = solve_part2()
-print(answer)
+# Print the solution using OCR for better readability
+solution = AoCUtils.ocr_screen_4x6(answer)
+
+AoCUtils.print_solution(2, solution)
