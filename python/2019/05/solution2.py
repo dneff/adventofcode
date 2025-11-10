@@ -1,10 +1,13 @@
 """
-Advent of Code 2019 - Day 5: Sunny with a Chance of Asteroids - Part 1
+Advent of Code 2019 - Day 5: Sunny with a Chance of Asteroids - Part 2
 
-Run the TEST diagnostic program on the Intcode computer with input value 1.
-The program outputs diagnostic codes; the final non-zero output is the answer.
-This part requires implementing opcodes 3 (input) and 4 (output), and supporting
-parameter modes (position mode 0 and immediate mode 1).
+Run the TEST diagnostic program on the Intcode computer with input value 5
+(for thermal radiator controller system). This part adds new comparison and jump
+instructions (opcodes 5-8) to handle more complex control flow:
+- Opcode 5: jump-if-true
+- Opcode 6: jump-if-false
+- Opcode 7: less than
+- Opcode 8: equals
 """
 import os
 import sys
@@ -74,13 +77,51 @@ def execute_output(address, memory):
     return memory[address]
 
 
+def execute_jump_if_true(parameters, instruction_pointer):
+    """
+    Jump to address if first parameter is non-zero.
+    Returns new instruction pointer.
+    """
+    if parameters[0] != 0:
+        return parameters[1]
+    else:
+        return advance_instruction_pointer(instruction_pointer, 3)
+
+
+def execute_jump_if_false(parameters, instruction_pointer):
+    """
+    Jump to address if first parameter is zero.
+    Returns new instruction pointer.
+    """
+    if parameters[0] == 0:
+        return parameters[1]
+    else:
+        return advance_instruction_pointer(instruction_pointer, 3)
+
+
+def execute_less_than(parameters, memory):
+    """Store 1 if first parameter < second parameter, else 0."""
+    if parameters[0] < parameters[1]:
+        memory[parameters[2]] = 1
+    else:
+        memory[parameters[2]] = 0
+
+
+def execute_equals(parameters, memory):
+    """Store 1 if first parameter == second parameter, else 0."""
+    if parameters[0] == parameters[1]:
+        memory[parameters[2]] = 1
+    else:
+        memory[parameters[2]] = 0
+
+
 def run_diagnostic_program(memory, system_id):
     """
     Run the TEST diagnostic program with the given system ID.
 
     Args:
         memory: The Intcode program as a list of integers
-        system_id: The system ID to provide as input (1 for air conditioner unit)
+        system_id: The system ID to provide as input (5 for thermal radiator controller)
 
     Returns:
         The final diagnostic code (last output value)
@@ -121,17 +162,51 @@ def run_diagnostic_program(memory, system_id):
             # Output
             diagnostic_outputs.append(execute_output(memory[instruction_pointer + 1], memory))
             instruction_pointer = advance_instruction_pointer(instruction_pointer, 2)
+        elif opcode == 5:
+            # Jump-if-true
+            params = resolve_parameters(
+                memory[instruction_pointer + 1: instruction_pointer + 3],
+                parameter_modes,
+                memory
+            )
+            instruction_pointer = execute_jump_if_true(params, instruction_pointer)
+        elif opcode == 6:
+            # Jump-if-false
+            params = resolve_parameters(
+                memory[instruction_pointer + 1: instruction_pointer + 3],
+                parameter_modes,
+                memory
+            )
+            instruction_pointer = execute_jump_if_false(params, instruction_pointer)
+        elif opcode == 7:
+            # Less than
+            params = resolve_parameters(
+                memory[instruction_pointer + 1: instruction_pointer + 4],
+                parameter_modes,
+                memory
+            )
+            execute_less_than(params, memory)
+            instruction_pointer = advance_instruction_pointer(instruction_pointer, 4)
+        elif opcode == 8:
+            # Equals
+            params = resolve_parameters(
+                memory[instruction_pointer + 1: instruction_pointer + 4],
+                parameter_modes,
+                memory
+            )
+            execute_equals(params, memory)
+            instruction_pointer = advance_instruction_pointer(instruction_pointer, 4)
 
     return diagnostic_outputs[-1] if diagnostic_outputs else memory[0]
 
 
-def solve_part1():
-    """Run TEST diagnostic program for air conditioner unit (system ID 1)."""
+def solve_part2():
+    """Run TEST diagnostic program for thermal radiator controller (system ID 5)."""
     content = AoCInput.read_file(INPUT_FILE)
     diagnostic_program = [int(x) for x in content.strip().split(',')]
 
-    return run_diagnostic_program(diagnostic_program, 1)
+    return run_diagnostic_program(diagnostic_program, 5)
 
 
-answer = solve_part1()
-AoCUtils.print_solution(1, answer)
+answer = solve_part2()
+AoCUtils.print_solution(2, answer)

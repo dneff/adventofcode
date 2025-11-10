@@ -1,11 +1,10 @@
 """
 Advent of Code 2019 - Day 3: Crossed Wires
-Part 1: Find the closest intersection to the central port.
+Part 2: Find the intersection with the fewest combined steps.
 
-Two wires extend from a central port on a grid. Each wire's path is defined
-by a series of directional moves (R, U, L, D) with distances. The wires
-sometimes cross. Find the intersection point closest to the central port using
-Manhattan distance (sum of absolute x and y coordinates).
+Instead of distance, calculate the total number of steps each wire takes to
+reach each intersection. Find the intersection where the sum of both wires'
+steps is minimized.
 """
 import os
 import sys
@@ -50,35 +49,41 @@ def trace_wire_path(path_instructions):
             yield tuple(position)
 
 
-def manhattan_distance(point):
-    """Calculate Manhattan distance from origin to point."""
-    x, y = point
-    return abs(x) + abs(y)
-
-
-def solve_part1():
+def solve_part2():
     """
-    Find the intersection closest to the central port by Manhattan distance.
+    Find the intersection with the fewest combined steps from both wires.
+
+    For each intersection, count:
+    - Steps for wire 1 to reach the intersection
+    - Steps for wire 2 to reach the intersection
+    - Sum these to get total combined steps
 
     Returns:
-        The Manhattan distance to the closest intersection
+        The minimum combined steps to any intersection
     """
     lines = AoCInput.read_lines(INPUT_FILE)
     wire1_path = lines[0].strip().split(',')
     wire2_path = lines[1].strip().split(',')
 
-    # Get all positions each wire visits
+    # Get all positions each wire visits (in order)
     wire1_positions = list(trace_wire_path(wire1_path))
     wire2_positions = list(trace_wire_path(wire2_path))
 
     # Find intersections (points both wires visit)
     intersections = set(wire1_positions) & set(wire2_positions)
 
-    # Find the intersection with minimum Manhattan distance from origin
-    closest_distance = min(manhattan_distance(point) for point in intersections)
+    # For each intersection, calculate combined steps
+    combined_steps = []
+    for intersection in intersections:
+        # Find the first occurrence index (step count) in each wire's path
+        # Add 1 to each because list indices start at 0 but steps start at 1
+        wire1_steps = wire1_positions.index(intersection) + 1
+        wire2_steps = wire2_positions.index(intersection) + 1
 
-    return closest_distance
+        combined_steps.append(wire1_steps + wire2_steps)
+
+    return min(combined_steps)
 
 
-answer = solve_part1()
-AoCUtils.print_solution(1, answer)
+answer = solve_part2()
+AoCUtils.print_solution(2, answer)

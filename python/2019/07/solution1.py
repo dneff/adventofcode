@@ -1,3 +1,11 @@
+"""
+Advent of Code 2019 - Day 7: Amplification Circuit - Part 1
+
+Find the maximum thruster signal by connecting five amplifiers in series.
+Each amplifier runs the Intcode program with a unique phase setting (0-4)
+and a signal input. Test all permutations of phase settings to find the
+configuration that produces the highest output signal to the thrusters.
+"""
 import os
 import sys
 from itertools import permutations
@@ -12,123 +20,171 @@ from aoc_helpers import AoCInput, AoCUtils  # noqa: E402
 INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2019/7/input')
 
 
-def advanceReader(x, size):
-    return x + size
+def advance_instruction_pointer(pointer, size):
+    """Advance the instruction pointer by the specified size."""
+    return pointer + size
 
 
-def setModes(x):
+def get_parameter_modes(mode_value):
+    """
+    Convert mode value into parameter modes for up to 2 parameters.
+    Mode 0 = position mode, Mode 1 = immediate mode
+    """
     modes = {
         0: [0, 0],
         1: [1, 0],
         10: [0, 1],
         11: [1, 1]
     }
-    return modes[x]
+    return modes[mode_value]
 
 
-def resolveParameters(args, params, prog):
-    resolved = args[:]
-    for idx, val in enumerate(params):
-        if val == 0:
-            resolved[idx] = prog[args[idx]]
-        elif val == 1:
-            resolved[idx] = args[idx]
+def resolve_parameters(parameters, modes, memory):
+    """Resolve parameters based on their modes (position or immediate)."""
+    resolved = parameters[:]
+    for idx, mode in enumerate(modes):
+        if mode == 0:
+            resolved[idx] = memory[parameters[idx]]
+        elif mode == 1:
+            resolved[idx] = parameters[idx]
     return resolved
 
 
-def add(args, prog):
-    prog[args[2]] = args[0] + args[1]
+def execute_add(parameters, memory):
+    """Add two values and store in third parameter address."""
+    memory[parameters[2]] = parameters[0] + parameters[1]
 
 
-def multiply(args, prog):
-    prog[args[2]] = args[0] * args[1]
+def execute_multiply(parameters, memory):
+    """Multiply two values and store in third parameter address."""
+    memory[parameters[2]] = parameters[0] * parameters[1]
 
 
-def input_fn(inst, prog_input, prog):
-    prog[inst] = prog_input
+def execute_input(address, input_value, memory):
+    """Store input value at the specified address."""
+    memory[address] = input_value
 
 
-def output_fn(inst, prog):
-    return prog[inst]
+def execute_output(address, memory):
+    """Return the value at the specified address."""
+    return memory[address]
 
 
-def processProgram(prog, *args):
-    reader = 0
-    prog_input = list(args[::-1])
-    prog_output = []
+def run_amplifier(memory, *inputs):
+    """
+    Run an amplifier program with the given inputs.
+
+    Args:
+        memory: The Intcode program
+        *inputs: Variable number of inputs (phase setting, then signal)
+
+    Returns:
+        The output signal from the amplifier
+    """
+    instruction_pointer = 0
+    input_values = list(reversed(inputs))  # Reverse for easier pop()
+    outputs = []
 
     while True:
-        modes, instruction = divmod(prog[reader], 100)
-        params = setModes(modes)
+        modes, opcode = divmod(memory[instruction_pointer], 100)
+        parameter_modes = get_parameter_modes(modes)
 
-        if instruction == 99:
-            # end
+        if opcode == 99:
+            # Halt
             break
-        elif instruction == 1:
-            # add
-            args = resolveParameters(prog[reader + 1: reader + 4], params, prog)
-            add(args, prog)
-            reader = advanceReader(reader, len(args) + 1)
-        elif instruction == 2:
-            # multiply
-            args = resolveParameters(prog[reader + 1: reader + 4], params, prog)
-            multiply(args, prog)
-            reader = advanceReader(reader, len(args) + 1)
-        elif instruction == 3:
-            # input
-            input_fn(prog[reader + 1], prog_input.pop(), prog)
-            reader = advanceReader(reader, 2)
-        elif instruction == 4:
-            # output
-            prog_output.append(output_fn(prog[reader + 1], prog))
-            reader = advanceReader(reader, 2)
-        elif instruction == 5:
-            # jump-if-true
-            args = resolveParameters(prog[reader + 1: reader + 3], params, prog)
-            if args[0] != 0:
-                reader = args[1]
+        elif opcode == 1:
+            # Add
+            params = resolve_parameters(
+                memory[instruction_pointer + 1: instruction_pointer + 4],
+                parameter_modes,
+                memory
+            )
+            execute_add(params, memory)
+            instruction_pointer = advance_instruction_pointer(instruction_pointer, 4)
+        elif opcode == 2:
+            # Multiply
+            params = resolve_parameters(
+                memory[instruction_pointer + 1: instruction_pointer + 4],
+                parameter_modes,
+                memory
+            )
+            execute_multiply(params, memory)
+            instruction_pointer = advance_instruction_pointer(instruction_pointer, 4)
+        elif opcode == 3:
+            # Input
+            execute_input(memory[instruction_pointer + 1], input_values.pop(), memory)
+            instruction_pointer = advance_instruction_pointer(instruction_pointer, 2)
+        elif opcode == 4:
+            # Output
+            outputs.append(execute_output(memory[instruction_pointer + 1], memory))
+            instruction_pointer = advance_instruction_pointer(instruction_pointer, 2)
+        elif opcode == 5:
+            # Jump-if-true
+            params = resolve_parameters(
+                memory[instruction_pointer + 1: instruction_pointer + 3],
+                parameter_modes,
+                memory
+            )
+            if params[0] != 0:
+                instruction_pointer = params[1]
             else:
-                reader = advanceReader(reader, 3)
-        elif instruction == 6:
-            # jump-if-false
-            args = resolveParameters(prog[reader + 1: reader + 3], params, prog)
-            if args[0] == 0:
-                reader = args[1]
+                instruction_pointer = advance_instruction_pointer(instruction_pointer, 3)
+        elif opcode == 6:
+            # Jump-if-false
+            params = resolve_parameters(
+                memory[instruction_pointer + 1: instruction_pointer + 3],
+                parameter_modes,
+                memory
+            )
+            if params[0] == 0:
+                instruction_pointer = params[1]
             else:
-                reader = advanceReader(reader, 3)
-        elif instruction == 7:
-            # less than
-            args = resolveParameters(prog[reader + 1: reader + 4], params, prog)
-            if args[0] < args[1]:
-                prog[args[2]] = 1
+                instruction_pointer = advance_instruction_pointer(instruction_pointer, 3)
+        elif opcode == 7:
+            # Less than
+            params = resolve_parameters(
+                memory[instruction_pointer + 1: instruction_pointer + 4],
+                parameter_modes,
+                memory
+            )
+            if params[0] < params[1]:
+                memory[params[2]] = 1
             else:
-                prog[args[2]] = 0
-            reader = advanceReader(reader, 4)
-        elif instruction == 8:
-            # equals
-            args = resolveParameters(prog[reader + 1: reader + 4], params, prog)
-            if args[0] == args[1]:
-                prog[args[2]] = 1
+                memory[params[2]] = 0
+            instruction_pointer = advance_instruction_pointer(instruction_pointer, 4)
+        elif opcode == 8:
+            # Equals
+            params = resolve_parameters(
+                memory[instruction_pointer + 1: instruction_pointer + 4],
+                parameter_modes,
+                memory
+            )
+            if params[0] == params[1]:
+                memory[params[2]] = 1
             else:
-                prog[args[2]] = 0
-            reader = advanceReader(reader, 4)
+                memory[params[2]] = 0
+            instruction_pointer = advance_instruction_pointer(instruction_pointer, 4)
 
-    return prog_output.pop()
+    return outputs.pop()
 
 
 def solve_part1():
+    """Find maximum thruster signal from all phase setting permutations."""
     content = AoCInput.read_file(INPUT_FILE)
-    initial_prog = [int(x) for x in content.strip().split(',')]
+    amplifier_program = [int(x) for x in content.strip().split(',')]
 
-    max_thrust = 0
-    phases = [x for x in range(5)]
-    for phase_order in list(permutations(phases, len(phases))):
-        thrust = 0
-        for phase in phase_order:
-            thrust = processProgram(initial_prog[:], phase, thrust)
-        max_thrust = max(max_thrust, thrust)
+    max_thruster_signal = 0
+    phase_settings = [0, 1, 2, 3, 4]
 
-    return max_thrust
+    # Try all permutations of phase settings
+    for phase_sequence in permutations(phase_settings):
+        signal = 0
+        # Run signal through amplifiers A->B->C->D->E
+        for phase in phase_sequence:
+            signal = run_amplifier(amplifier_program[:], phase, signal)
+        max_thruster_signal = max(max_thruster_signal, signal)
+
+    return max_thruster_signal
 
 
 answer = solve_part1()

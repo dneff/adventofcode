@@ -1,10 +1,9 @@
 """
-Advent of Code 2019 - Day 6: Universal Orbit Map - Part 1
+Advent of Code 2019 - Day 6: Universal Orbit Map - Part 2
 
-Calculate the total number of direct and indirect orbits in a map of the solar system.
-Each object orbits exactly one other object (except COM, the center of mass). Count
-all direct orbits (A)B means B directly orbits A) and indirect orbits (if B orbits A
-and C orbits B, then C indirectly orbits A).
+Find the minimum number of orbital transfers required to move from the object YOU
+are orbiting to the object Santa (SAN) is orbiting. Count the number of orbital
+transfers (not the number of objects visited).
 """
 import os
 import sys
@@ -56,19 +55,33 @@ def build_orbit_map(lines):
     return orbit_map
 
 
-def solve_part1():
-    """Calculate total number of direct and indirect orbits."""
+def solve_part2():
+    """
+    Find minimum orbital transfers from YOU's orbit to SAN's orbit.
+
+    This works by finding the paths from YOU and SAN to COM, then removing
+    the common suffix (the shared ancestor chain). The remaining path segments
+    represent the transfers needed.
+    """
     lines = AoCInput.read_lines(INPUT_FILE)
     orbit_map = build_orbit_map(lines)
 
-    total_orbits = 0
-    for orbiting_object in orbit_map.keys():
-        # Count orbits by finding chain length to COM (minus 1 to not count the object itself)
-        orbit_count = len(get_orbit_chain(orbit_map, orbiting_object, 'COM')) - 1
-        total_orbits += orbit_count
+    # Get paths from YOU and SAN to COM
+    you_path = get_orbit_chain(orbit_map, 'YOU', 'COM')
+    santa_path = get_orbit_chain(orbit_map, 'SAN', 'COM')
 
-    return total_orbits
+    # Remove common ancestors from both paths
+    # We check [-2] because we want to find the last common ancestor before divergence
+    while len(you_path) >= 2 and len(santa_path) >= 2 and you_path[-2] == santa_path[-2]:
+        you_path.pop()
+        santa_path.pop()
+
+    # Total transfers = path lengths - YOU - SAN - 2 (we count edges, not nodes)
+    # -2 accounts for YOU and SAN themselves, -2 more for the two endpoints
+    total_transfers = len(you_path) + len(santa_path) - 4
+
+    return total_transfers
 
 
-answer = solve_part1()
-AoCUtils.print_solution(1, answer)
+answer = solve_part2()
+AoCUtils.print_solution(2, answer)
