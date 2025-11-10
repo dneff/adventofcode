@@ -1,0 +1,22 @@
+# CPAN dependencies for Advent of Code Perl solutions
+# Install with: cpanm --installdeps .
+
+# Core modules that might not be in minimal Perl installations
+requires 'File::Spec';
+requires 'File::Basename';
+requires 'Cwd';
+requires 'List::Util', '>= 1.45';  # Modern List::Util with all, none, etc.
+requires 'Scalar::Util';
+
+# Useful CPAN modules for AoC
+requires 'Algorithm::Combinatorics';  # For permutations, combinations
+requires 'Math::BigInt';              # For large number operations
+requires 'Memoize';                   # For function memoization
+requires 'Digest::MD5';               # For MD5 hashing (used in several puzzles)
+
+# Development and testing
+on 'develop' => sub {
+    requires 'Perl::Critic';          # Code quality
+    requires 'Perl::Tidy';            # Code formatting
+    requires 'Test::More';            # Testing framework
+};

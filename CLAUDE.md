@@ -18,10 +18,15 @@ adventofcode/
 │   └── 2022/
 │       ├── helpers/ # Helper functions
 │       └── DAY/     # solution1.go, solution2.go
-└── scheme/          # Racket/Scheme solutions (2015)
-    ├── helpers/     # Helper library modules
+├── scheme/          # Racket/Scheme solutions (2015)
+│   ├── helpers/     # Helper library modules
+│   └── 2015/        # Year-organized solutions
+│       └── DAY/     # solution1.rkt, solution2.rkt
+└── perl/            # Perl solutions (2015)
+    ├── lib/AoC/     # Helper modules
+    ├── verify_solutions.pl  # Verification script
     └── 2015/        # Year-organized solutions
-        └── DAY/     # solution1.rkt, solution2.rkt
+        └── DAY/     # solution1.pl, solution2.pl
 ```
 
 **Design Principle**: The root directory contains only documentation and configuration files (*.md, *.txt, *.yaml, etc.). All language-specific code, including utility scripts and tooling, resides within language-specific subdirectories (e.g., `python/`, `go/`). This keeps the repository root clean and makes the multi-language structure immediately apparent.
@@ -106,12 +111,45 @@ Most solutions should leverage the helper library for common operations:
 - Mathematical utilities: `gcd`, `lcm`, `primes-up-to`, `factorial`, `combinations`
 - Functional utilities: `count-if`, `frequencies`, `group-by`, `memoize`
 
+## Perl Development
+
+### Key Files
+- `perl/lib/AoC/Input.pm`: File I/O and parsing utilities
+- `perl/lib/AoC/Point.pm`: 2D point class with operator overloading
+- `perl/lib/AoC/Grid.pm`: 2D grid operations
+- `perl/lib/AoC/Math.pm`: Mathematical utilities (GCD, LCM, primes, etc.)
+- `perl/lib/AoC/Utils.pm`: Common utility functions
+- `perl/verify_solutions.pl`: Verification script to test solutions against known answers
+- `perl/README.md`: Comprehensive usage guide for the helper library
+
+### Running Solutions
+```bash
+# Run from repository root
+perl perl/YEAR/DAY/solution1.pl
+perl perl/YEAR/DAY/solution2.pl
+```
+
+### Code Style
+- Perl 5.40+ with modern features (subroutine signatures, postfix dereferencing)
+- Use `perltidy` for consistent formatting (see `perl/.perltidyrc`)
+- Use `perlcritic` for code quality (severity level 3)
+- Comprehensive POD documentation in modules
+
+### Helper Library Usage
+Most solutions should leverage the helper library for common operations:
+- Input reading: `read_lines('input')`, `read_text('input')`, `parse_numbers($text)`
+- Point operations: `point($x, $y)`, operator overloading for +/-/*, direction constants (NORTH, SOUTH, EAST, WEST)
+- Grid operations: `make_grid(\@rows)`, `grid_get($grid, $point)`, `grid_neighbors4($grid, $point)`
+- Mathematical utilities: `gcd($a, $b)`, `lcm($a, $b)`, `primes_up_to($n)`, `factorial($n)`
+- Utility functions: `count_if { } @list`, `frequencies(@list)`, `sum(@numbers)`, `product(@numbers)`
+
 ## Input Files
 
 Input files are typically stored in:
 - Python: `python/YEAR/input/DAY.txt` or referenced with relative paths in solutions
 - Go: `input/DAY.txt` (relative to solution directory)
 - Scheme: `../../../aoc-data/YEAR/DAY/input` (relative to solution directory)
+- Perl: `../../../aoc-data/YEAR/DAY/input` (relative to solution directory)
 
 ## Solution Patterns
 
@@ -168,6 +206,32 @@ func main() {
 (print-solution 1 (solve-part1))
 ```
 
+### Perl Pattern
+```perl
+#!/usr/bin/env perl
+use v5.40;
+use strict;
+use warnings;
+
+# Advent of Code YEAR - Day X: Title
+# https://adventofcode.com/YEAR/day/X
+
+use lib '../../lib';
+use AoC::Input qw(read_lines);
+use AoC::Utils qw(print_solution);
+
+sub solve_part1
+{
+    my @lines = read_lines('input');
+    # Solution logic
+    my $answer = 0;
+    return $answer;
+}
+
+my $answer = solve_part1();
+print_solution(1, $answer);
+```
+
 ## Utility Scripts
 
 ### Verify Python Solutions
@@ -188,6 +252,16 @@ racket scheme/verify_solutions.rkt              # Verify all years
 racket scheme/verify_solutions.rkt 2015         # Verify specific year
 racket scheme/verify_solutions.rkt 2015 20      # Verify specific day
 racket scheme/verify_solutions.rkt --year 2015 --day 20 --write-missing
+```
+
+### Verify Perl Solutions
+Verify Perl solutions against known correct answers:
+```bash
+# From repository root
+perl perl/verify_solutions.pl                   # Verify all years
+perl perl/verify_solutions.pl 2015              # Verify specific year
+perl perl/verify_solutions.pl 2015 20           # Verify specific day
+perl perl/verify_solutions.pl --year 2015 --day 20 --write-missing
 ```
 
 ### Refactor Solutions

@@ -1,0 +1,34 @@
+# Perl::Tidy configuration for Advent of Code solutions
+# Run with: perltidy -b script.pl
+
+# Indentation
+--indent-columns=4
+--continuation-indentation=2
+--maximum-line-length=100
+
+# Whitespace
+--paren-tightness=1
+--square-bracket-tightness=1
+--brace-tightness=1
+--block-brace-tightness=0
+
+# Blank lines
+--blank-lines-before-packages=0
+--blank-lines-before-subs=1
+--blank-lines-after-opening-block=0
+
+# Comments
+--indent-block-comments
+--minimum-space-to-comment=2
+--hanging-side-comments
+
+# Code style
+--cuddled-else
+--opening-brace-on-new-line
+--opening-sub-brace-on-new-line
+--vertical-tightness=1
+--vertical-tightness-closing=1
+
+# Breaking
+--break-at-old-comma-breakpoints
+--comma-arrow-breakpoints=3
