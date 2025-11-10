@@ -6,7 +6,7 @@ This script runs each solution file for a specified year and compares the output
 against the answer files stored in aoc-data.
 
 Usage:
-    python verify_solutions.py [YEAR] [DAY] [OPTIONS]
+    python python/verify_solutions.py [YEAR] [DAY] [OPTIONS]
 
 Positional Arguments:
     YEAR                      The year to verify (e.g., 2015, 2016, 2017)
@@ -18,10 +18,10 @@ Options:
     --write-missing, -w       Write solution output to missing answer files
 
 Examples:
-    python verify_solutions.py              # Verify all years
-    python verify_solutions.py 2015         # Verify year 2015
-    python verify_solutions.py 2015 20      # Verify year 2015, day 20
-    python verify_solutions.py --year 2015 --day 20 --write-missing
+    python python/verify_solutions.py              # Verify all years
+    python python/verify_solutions.py 2015         # Verify year 2015
+    python python/verify_solutions.py 2015 20      # Verify year 2015, day 20
+    python python/verify_solutions.py --year 2015 --day 20 --write-missing
 
 If no year is specified, all years will be verified.
 If no day is specified, all days will be verified.
@@ -77,8 +77,8 @@ def get_expected_answer(day: int, part: int, year: int, base_dir: Path) -> str |
     Returns:
         Expected answer as string, or None if file doesn't exist or is empty
     """
-    # Path from repo root to aoc-data is ../aoc-data
-    answer_file = base_dir.parent / "aoc-data" / str(year) / str(day) / f"solution-{part}"
+    # Path from python/ dir to aoc-data is ../../aoc-data
+    answer_file = base_dir.parent.parent / "aoc-data" / str(year) / str(day) / f"solution-{part}"
 
     if not answer_file.exists():
         return None
@@ -107,8 +107,8 @@ def write_answer(day: int, part: int, year: int, answer: str, base_dir: Path) ->
     Returns:
         True if successfully written, False otherwise
     """
-    # Path from repo root to aoc-data is ../aoc-data
-    answer_dir = base_dir.parent / "aoc-data" / str(year) / str(day)
+    # Path from python/ dir to aoc-data is ../../aoc-data
+    answer_dir = base_dir.parent.parent / "aoc-data" / str(year) / str(day)
     answer_file = answer_dir / f"solution-{part}"
 
     try:
@@ -123,7 +123,7 @@ def write_answer(day: int, part: int, year: int, answer: str, base_dir: Path) ->
         return False
 
 
-def run_solution(day: int, part: int, year: int) -> tuple[str | None, bool, float, bool]:
+def run_solution(day: int, part: int, year: int, base_dir: Path) -> tuple[str | None, bool, float, bool]:
     """
     Run a solution file and extract the answer.
 
@@ -131,6 +131,7 @@ def run_solution(day: int, part: int, year: int) -> tuple[str | None, bool, floa
         day: Day number (1-25)
         part: Part number (1 or 2)
         year: Year (e.g., 2015, 2016, 2017)
+        base_dir: Base directory of the python solutions
 
     Returns:
         Tuple of (answer, success, elapsed_time, file_exists) where:
@@ -139,7 +140,7 @@ def run_solution(day: int, part: int, year: int) -> tuple[str | None, bool, floa
         - elapsed_time is the execution time in seconds
         - file_exists is True if the solution file exists
     """
-    solution_file = Path(f"python/{year}/{day:02d}/solution{part}.py")
+    solution_file = base_dir / str(year) / f"{day:02d}" / f"solution{part}.py"
 
     if not solution_file.exists():
         return None, False, 0.0, False
@@ -184,13 +185,12 @@ def get_years_to_verify(base_dir: Path, year: int | None) -> list[int]:
     if year is not None:
         return [year]
 
-    # Find all years with python solutions
-    python_dir = base_dir / "python"
-    if not python_dir.exists():
+    # Find all years with python solutions (base_dir is already python/)
+    if not base_dir.exists():
         return []
 
     years = []
-    for item in python_dir.iterdir():
+    for item in base_dir.iterdir():
         if item.is_dir() and item.name.isdigit():
             years.append(int(item.name))
 
@@ -263,8 +263,8 @@ def main():
     all_total_failed = 0
 
     for year in years_to_verify:
-        python_year_dir = base_dir / "python" / str(year)
-        aoc_data_dir = base_dir.parent / "aoc-data" / str(year)
+        python_year_dir = base_dir / str(year)
+        aoc_data_dir = base_dir.parent.parent / "aoc-data" / str(year)
 
         if not python_year_dir.exists():
             print(f"{RED}Error: Python solutions directory not found for year {year}{RESET}")
@@ -295,7 +295,7 @@ def main():
                 expected = get_expected_answer(day, part, year, base_dir)
 
                 # Run the solution
-                actual, success, elapsed_time, file_exists = run_solution(day, part, year)
+                actual, success, elapsed_time, file_exists = run_solution(day, part, year, base_dir)
 
                 # Case 1: Solution file doesn't exist and answer file doesn't exist
                 # -> Skip entirely, no output, no counting

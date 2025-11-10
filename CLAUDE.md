@@ -11,6 +11,8 @@ adventofcode/
 ├── python/           # Python solutions (2015-2024)
 │   ├── YEAR/DAY/    # solution1.py, solution2.py
 │   ├── aoc_helpers.py   # Comprehensive helper library
+│   ├── verify_solutions.py    # Verification script
+│   ├── refactor_solutions.py  # Refactoring utility
 │   └── input/       # Input files (some years)
 └── go/              # Go solutions (2022)
     └── 2022/
@@ -18,11 +20,15 @@ adventofcode/
         └── DAY/     # solution1.go, solution2.go
 ```
 
+**Design Principle**: The root directory contains only documentation and configuration files (*.md, *.txt, *.yaml, etc.). All language-specific code, including utility scripts and tooling, resides within language-specific subdirectories (e.g., `python/`, `go/`). This keeps the repository root clean and makes the multi-language structure immediately apparent.
+
 ## Python Development
 
 ### Key Files
 - `python/aoc_helpers.py`: Comprehensive helper library with utilities for input reading, grid operations, pathfinding, coordinate handling, and mathematical functions
 - `python/README.md`: Detailed usage guide for the helper library
+- `python/verify_solutions.py`: Script to verify solutions against known correct answers from the `aoc-data` repository
+- `python/refactor_solutions.py`: Utility to refactor solution files to use aoc_helpers and aoc-data
 
 ### Running Solutions
 ```bash
@@ -99,9 +105,28 @@ func main() {
 }
 ```
 
+## Utility Scripts
+
+### Verify Solutions
+Verify solutions against known correct answers:
+```bash
+# From repository root
+python python/verify_solutions.py              # Verify all years
+python python/verify_solutions.py 2015         # Verify specific year
+python python/verify_solutions.py 2015 20      # Verify specific day
+python python/verify_solutions.py --write-missing  # Write missing answers
+```
+
+### Refactor Solutions
+Refactor solution files to use the helper library:
+```bash
+python python/refactor_solutions.py
+```
+
 ## Development Notes
 
 - Solutions are typically split into `solution1.py`/`solution2.py` for the two parts of each day's challenge
 - Some solutions use specialized classes (e.g., `IntCode.py` for 2019 IntCode problems)
 - The helper library consolidates patterns from 300+ solutions across all years
 - Input files may be shared between solutions or stored in year-specific input directories
+- **Repository organization**: Keep root directory clean - all language-specific files (including scripts) go in language subdirectories

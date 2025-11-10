@@ -90,14 +90,15 @@ from aoc_helpers import AoCInput, AoCUtils
     return True
 
 
-def refactor_year(year):
+def refactor_year(year, base_dir):
     """
     Refactors all solution files for a given year.
 
     Args:
         year: Year to refactor (e.g., "2016")
+        base_dir: Base directory of the python solutions
     """
-    base_path = Path(f"python/{year}")
+    base_path = base_dir / str(year)
 
     if not base_path.exists():
         print(f"Directory not found: {base_path}")
@@ -128,11 +129,14 @@ def refactor_year(year):
 
 def main():
     """Main function to run the refactoring."""
+    # Determine base directory (should be python/ directory)
+    base_dir = Path(__file__).parent
+
     # Refactor 2016
-    refactor_year("2016")
+    refactor_year("2016", base_dir)
 
     # Refactor 2017
-    refactor_year("2017")
+    refactor_year("2017", base_dir)
 
     print("\n✓ Refactoring complete!")
 
