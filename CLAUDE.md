@@ -81,6 +81,7 @@ go run solution2.go
 - `scheme/helpers/math.rkt`: Mathematical utilities (GCD, LCM, primes, etc.)
 - `scheme/helpers/utils.rkt`: Functional pattern utilities and solution formatting
 - `scheme/helpers/pathfinding.rkt`: BFS, Dijkstra, and A* implementations
+- `scheme/verify_solutions.rkt`: Verification script to test solutions against known answers
 - `scheme/README.md`: Comprehensive usage guide for the helper library
 
 ### Running Solutions
@@ -169,14 +170,24 @@ func main() {
 
 ## Utility Scripts
 
-### Verify Solutions
-Verify solutions against known correct answers:
+### Verify Python Solutions
+Verify Python solutions against known correct answers:
 ```bash
 # From repository root
 python python/verify_solutions.py              # Verify all years
 python python/verify_solutions.py 2015         # Verify specific year
 python python/verify_solutions.py 2015 20      # Verify specific day
 python python/verify_solutions.py --write-missing  # Write missing answers
+```
+
+### Verify Scheme Solutions
+Verify Scheme solutions against known correct answers:
+```bash
+# From repository root
+racket scheme/verify_solutions.rkt              # Verify all years
+racket scheme/verify_solutions.rkt 2015         # Verify specific year
+racket scheme/verify_solutions.rkt 2015 20      # Verify specific day
+racket scheme/verify_solutions.rkt --year 2015 --day 20 --write-missing
 ```
 
 ### Refactor Solutions

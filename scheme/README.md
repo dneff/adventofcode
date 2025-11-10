@@ -51,6 +51,42 @@ cd scheme/2015/01
 racket solution1.rkt
 ```
 
+## Verifying Solutions
+
+The `verify_solutions.rkt` script automatically runs solutions and compares outputs against known correct answers from the `aoc-data` repository.
+
+### Usage
+
+```bash
+# From repository root
+racket scheme/verify_solutions.rkt              # Verify all years
+racket scheme/verify_solutions.rkt 2015         # Verify year 2015
+racket scheme/verify_solutions.rkt 2015 20      # Verify year 2015, day 20
+racket scheme/verify_solutions.rkt --year 2015 --day 20 --write-missing
+```
+
+### Options
+
+- `--year YEAR, -y YEAR`: Specify year to verify
+- `--day DAY, -d DAY`: Specify day to verify (1-25)
+- `--write-missing, -w`: Write solution output to missing answer files
+- `--help, -h`: Show help message
+
+### Output
+
+The script provides colored output with status indicators:
+- ✓ **CORRECT**: Solution matches expected answer
+- ✗ **INCORRECT**: Solution doesn't match expected answer
+- ✗ **FAILED TO RUN**: Solution encountered an error
+- ○ **MISSING**: No expected answer file exists
+
+Execution times are shown with emoji indicators:
+- ⚡ < 1 second
+- 🚀 1-3 seconds
+- ▶️ 3-10 seconds
+- 🐢 10-30 seconds
+- 🐌 > 30 seconds
+
 ## Helper Library Documentation
 
 ### input.rkt - File I/O and Parsing
