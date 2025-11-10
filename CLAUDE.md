@@ -14,10 +14,14 @@ adventofcode/
 │   ├── verify_solutions.py    # Verification script
 │   ├── refactor_solutions.py  # Refactoring utility
 │   └── input/       # Input files (some years)
-└── go/              # Go solutions (2022)
-    └── 2022/
-        ├── helpers/ # Helper functions
-        └── DAY/     # solution1.go, solution2.go
+├── go/              # Go solutions (2022)
+│   └── 2022/
+│       ├── helpers/ # Helper functions
+│       └── DAY/     # solution1.go, solution2.go
+└── scheme/          # Racket/Scheme solutions (2015)
+    ├── helpers/     # Helper library modules
+    └── 2015/        # Year-organized solutions
+        └── DAY/     # solution1.rkt, solution2.rkt
 ```
 
 **Design Principle**: The root directory contains only documentation and configuration files (*.md, *.txt, *.yaml, etc.). All language-specific code, including utility scripts and tooling, resides within language-specific subdirectories (e.g., `python/`, `go/`). This keeps the repository root clean and makes the multi-language structure immediately apparent.
@@ -68,11 +72,45 @@ go run solution2.go
 - `advent.GetInt()`: String to int conversion with error handling
 - `advent.Check()`: Error checking utility
 
+## Scheme/Racket Development
+
+### Key Files
+- `scheme/helpers/input.rkt`: File I/O and parsing utilities
+- `scheme/helpers/point.rkt`: Coordinate handling and direction constants
+- `scheme/helpers/grid.rkt`: 2D grid operations
+- `scheme/helpers/math.rkt`: Mathematical utilities (GCD, LCM, primes, etc.)
+- `scheme/helpers/utils.rkt`: Functional pattern utilities and solution formatting
+- `scheme/helpers/pathfinding.rkt`: BFS, Dijkstra, and A* implementations
+- `scheme/README.md`: Comprehensive usage guide for the helper library
+
+### Running Solutions
+```bash
+# Run from repository root
+racket scheme/YEAR/DAY/solution1.rkt
+racket scheme/YEAR/DAY/solution2.rkt
+```
+
+### Code Style
+- Use functional programming patterns and immutable data structures
+- Use helper library modules for common operations
+- Keep functions focused and composable
+- Use meaningful function and variable names
+
+### Helper Library Usage
+Most solutions should leverage the helper library for common operations:
+- Input reading: `(read-lines filename)`, `(read-grid filename)`, `(parse-numbers text)`
+- Grid operations: `make-grid`, `grid-ref`, `grid-neighbors-4`, `grid-neighbors-8`
+- Point operations: `point-add`, `point-neighbors-4`, direction constants (NORTH, SOUTH, EAST, WEST)
+- Pathfinding: `bfs`, `dijkstra`, `a-star` implementations
+- Mathematical utilities: `gcd`, `lcm`, `primes-up-to`, `factorial`, `combinations`
+- Functional utilities: `count-if`, `frequencies`, `group-by`, `memoize`
+
 ## Input Files
 
 Input files are typically stored in:
 - Python: `python/YEAR/input/DAY.txt` or referenced with relative paths in solutions
 - Go: `input/DAY.txt` (relative to solution directory)
+- Scheme: `../../../aoc-data/YEAR/DAY/input` (relative to solution directory)
 
 ## Solution Patterns
 
@@ -103,6 +141,30 @@ func main() {
     // Solution logic
     fmt.Printf("The solution is: %v \n", result)
 }
+```
+
+### Scheme/Racket Pattern
+```racket
+#lang racket
+
+;; Advent of Code YEAR - Day X: Title
+;; https://adventofcode.com/YEAR/day/X
+
+(require "../../helpers/input.rkt")
+(require "../../helpers/utils.rkt")
+
+;; Input file path
+(define INPUT-FILE "../../../aoc-data/YEAR/X/input")
+
+;; Part 1 solution
+(define (solve-part1)
+  (define lines (read-lines INPUT-FILE))
+  ;; Solution logic here
+  (define answer 0)
+  answer)
+
+;; Compute and print answer
+(print-solution 1 (solve-part1))
 ```
 
 ## Utility Scripts
