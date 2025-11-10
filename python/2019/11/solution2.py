@@ -83,7 +83,7 @@ def render_registration_identifier(hull_panels):
         row = []
         for x in range(max_x + 1):
             if (x, y) in white_panels:
-                row.append('*')
+                row.append('#')
             else:
                 row.append(' ')
         lines.append(''.join(row))
@@ -133,4 +133,6 @@ def solve_part2():
 
 
 answer = solve_part2()
-print(f"Solution 2: Registration identifier:{answer}")
+# Print the solution using OCR for better readability
+solution = AoCUtils.ocr_screen_4x6(answer)
+AoCUtils.print_solution(2, solution)

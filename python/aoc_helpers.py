@@ -549,6 +549,21 @@ class AoCUtils:
         if len(screen_str) != 6:
             raise ValueError(f"Expected 6 rows for OCR, got {len(screen_str)}")
 
+        # Find the minimum leading spaces across all rows to preserve alignment
+        min_leading_spaces = float('inf')
+        for row in screen_str:
+            if row.strip():  # Only count non-empty rows
+                leading_spaces = len(row) - len(row.lstrip(' '))
+                min_leading_spaces = min(min_leading_spaces, leading_spaces)
+
+        # Remove the common leading spaces from all rows
+        if min_leading_spaces != float('inf') and min_leading_spaces > 0:
+            screen_str = [row[min_leading_spaces:] if len(row) > min_leading_spaces else row
+                         for row in screen_str]
+
+        # Strip trailing spaces from all rows
+        screen_str = [row.rstrip() for row in screen_str]
+
         # Normalize all rows to use '.' for off pixels instead of spaces
         screen_str = [row.replace(' ', '.') for row in screen_str]
 
