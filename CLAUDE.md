@@ -14,6 +14,11 @@ adventofcode/
 │   ├── verify_solutions.py    # Verification script
 │   ├── refactor_solutions.py  # Refactoring utility
 │   └── input/       # Input files (some years)
+├── javascript/      # JavaScript solutions (2015)
+│   ├── YEAR/DAY/    # solution1.js, solution2.js
+│   ├── aoc-helpers.js       # Comprehensive helper library
+│   ├── verify_solutions.js  # Verification script
+│   └── package.json # npm configuration
 ├── go/              # Go solutions (2022)
 │   └── 2022/
 │       ├── helpers/ # Helper functions
@@ -53,6 +58,35 @@ python python/YEAR/DAY/solution2.py
 ### Helper Library Usage
 Most solutions should leverage the helper library for common operations:
 - Input reading: `AoCInput.read_lines()`, `AoCInput.read_grid()`, `AoCInput.parse_numbers()`
+- Grid operations: `Grid2D` class with adjacency, pathfinding, and position utilities
+- Pathfinding: BFS and Dijkstra implementations in `Pathfinding` class
+- Mathematical utilities: GCD, LCM, Manhattan distance in `MathUtils`
+
+## JavaScript Development
+
+### Key Files
+- `javascript/aoc-helpers.js`: Comprehensive helper library with utilities for input reading, grid operations, pathfinding, coordinate handling, and mathematical functions
+- `javascript/README.md`: Detailed usage guide for the helper library
+- `javascript/verify_solutions.js`: Script to verify solutions against known correct answers from the `aoc-data` repository
+- `javascript/package.json`: npm configuration with scripts for testing, linting, and verification
+
+### Running Solutions
+```bash
+# Run from repository root
+node javascript/YEAR/DAY/solution1.js
+node javascript/YEAR/DAY/solution2.js
+```
+
+### Code Style
+- ES6 modules (`import`/`export`)
+- ESLint configured with ES2024 features
+- Maximum line length: 120 characters
+- Maximum complexity: 15
+- Use helper library classes: `AoCInput`, `Grid2D`, `Point2D`, `Pathfinding`, `MathUtils`, `Directions`, `AoCUtils`
+
+### Helper Library Usage
+Most solutions should leverage the helper library for common operations:
+- Input reading: `AoCInput.readLines()`, `AoCInput.readGrid()`, `AoCInput.parseNumbers()`
 - Grid operations: `Grid2D` class with adjacency, pathfinding, and position utilities
 - Pathfinding: BFS and Dijkstra implementations in `Pathfinding` class
 - Mathematical utilities: GCD, LCM, Manhattan distance in `MathUtils`
@@ -147,6 +181,7 @@ Most solutions should leverage the helper library for common operations:
 
 Input files are typically stored in:
 - Python: `python/YEAR/input/DAY.txt` or referenced with relative paths in solutions
+- JavaScript: `../../../aoc-data/YEAR/DAY/input` (relative to solution directory)
 - Go: `input/DAY.txt` (relative to solution directory)
 - Scheme: `../../../aoc-data/YEAR/DAY/input` (relative to solution directory)
 - Perl: `../../../aoc-data/YEAR/DAY/input` (relative to solution directory)
@@ -164,6 +199,27 @@ def solve_part1():
 
 answer = solve_part1()
 AoCUtils.print_solution(1, answer)
+```
+
+### JavaScript Pattern
+```javascript
+import { readFileSync } from 'fs';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+const INPUT_FILE = join(__dirname, '../../../aoc-data/YEAR/DAY/input');
+
+function solvePart1() {
+  const input = readFileSync(INPUT_FILE, 'utf-8').trim();
+  // Solution logic
+  return answer;
+}
+
+const answer = solvePart1();
+console.log(`Part 1: ${answer}`);
 ```
 
 ### Go Pattern
@@ -242,6 +298,20 @@ python python/verify_solutions.py              # Verify all years
 python python/verify_solutions.py 2015         # Verify specific year
 python python/verify_solutions.py 2015 20      # Verify specific day
 python python/verify_solutions.py --write-missing  # Write missing answers
+```
+
+### Verify JavaScript Solutions
+Verify JavaScript solutions against known correct answers:
+```bash
+# From repository root
+cd javascript
+npm run verify                    # Verify all years
+npm run verify -- 2015            # Verify specific year
+npm run verify -- 2015 20         # Verify specific day
+npm run verify -- --write-missing # Write missing answers
+
+# Or directly with node
+node javascript/verify_solutions.js 2015
 ```
 
 ### Verify Scheme Solutions
