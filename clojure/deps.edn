@@ -1,0 +1,25 @@
+{:paths ["src" "resources"]
+
+ :deps {org.clojure/clojure {:mvn/version "1.12.0"}
+        org.clojure/data.priority-map {:mvn/version "1.2.0"}
+        org.clojure/core.match {:mvn/version "1.1.0"}
+        org.clojure/math.combinatorics {:mvn/version "0.3.0"}}
+
+ :aliases
+ {:test {:extra-paths ["test"]
+         :extra-deps {lambdaisland/kaocha {:mvn/version "1.91.1392"}}}
+
+  :kaocha {:main-opts ["-m" "kaocha.runner"]
+           :extra-paths ["test"]
+           :extra-deps {lambdaisland/kaocha {:mvn/version "1.91.1392"}}}
+
+  :lint {:extra-deps {clj-kondo/clj-kondo {:mvn/version "2024.03.13"}}
+         :main-opts ["-m" "clj-kondo.main"]}
+
+  :fmt {:extra-deps {cljfmt/cljfmt {:mvn/version "0.12.0"}}
+        :main-opts ["-m" "cljfmt.main"]}
+
+  :repl {:extra-deps {nrepl/nrepl {:mvn/version "1.1.1"}
+                      cider/cider-nrepl {:mvn/version "0.47.1"}}}
+
+  :run {:main-opts ["-m" "aoc.core"]}}}

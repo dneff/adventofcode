@@ -27,6 +27,12 @@ adventofcode/
 │   ├── lib/         # Helper library modules
 │   ├── verify_solutions.c  # Verification program
 │   └── YEAR/DAY/    # solution1.c, solution2.c, Makefile
+├── clojure/         # Clojure solutions (2015)
+│   ├── src/aoc/     # Helper library namespaces
+│   ├── verify_solutions.clj  # Verification script
+│   ├── deps.edn     # Dependency configuration
+│   └── yearYYYY/    # Year-organized solutions
+│       └── dayDD.clj # Namespace with solve-part1, solve-part2
 ├── scheme/          # Racket/Scheme solutions (2015)
 │   ├── helpers/     # Helper library modules
 │   └── 2015/        # Year-organized solutions
@@ -219,6 +225,45 @@ Most solutions should leverage the helper library for common operations:
 - Mathematical utilities: `gcd($a, $b)`, `lcm($a, $b)`, `primes_up_to($n)`, `factorial($n)`
 - Utility functions: `count_if { } @list`, `frequencies(@list)`, `sum(@numbers)`, `product(@numbers)`
 
+## Clojure Development
+
+### Key Files
+- `clojure/src/aoc/input.clj`: File I/O and parsing utilities
+- `clojure/src/aoc/point.clj`: 2D point operations and direction constants
+- `clojure/src/aoc/grid.clj`: 2D grid operations
+- `clojure/src/aoc/math.clj`: Mathematical utilities (GCD, LCM, primes, etc.)
+- `clojure/src/aoc/pathfinding.clj`: Search algorithms (BFS, Dijkstra, A*)
+- `clojure/src/aoc/utils.clj`: General utility functions
+- `clojure/verify_solutions.clj`: Verification script to test solutions against known answers
+- `clojure/deps.edn`: Dependency configuration
+- `clojure/README.md`: Comprehensive usage guide for the helper library
+
+### Running Solutions
+```bash
+# Run from clojure/ directory
+cd clojure
+clojure -M -m aoc.year2015.day01
+
+# Or from repository root
+cd clojure && clojure -M -m aoc.year2015.day01
+```
+
+### Code Style
+- Clojure 1.12.0 with modern features
+- Use `cljfmt` for consistent formatting
+- Use `clj-kondo` for linting
+- Comprehensive docstrings on all public functions
+- Functional programming patterns and immutable data structures
+
+### Helper Library Usage
+Most solutions should leverage the helper library for common operations:
+- Input reading: `(input/read-lines filepath)`, `(input/read-grid filepath)`, `(input/parse-numbers text)`
+- Point operations: `(point/add p1 p2)`, `(point/manhattan-distance p1 p2)`, direction constants (NORTH, SOUTH, EAST, WEST)
+- Grid operations: `(grid/make-grid rows)`, `(grid/grid-get grid point)`, `(grid/grid-neighbors-4 grid point)`
+- Pathfinding: `(pathfinding/bfs start neighbors-fn goal?)`, `(pathfinding/dijkstra start neighbors-fn goal?)`, `(pathfinding/a-star start neighbors-fn heuristic-fn goal?)`
+- Mathematical utilities: `(math/gcd a b)`, `(math/lcm a b)`, `(math/primes-up-to n)`, `(math/factorial n)`
+- Utility functions: `(utils/count-if pred coll)`, `(utils/parse-int s)`, `(utils/print-solution part answer)`
+
 ## Input Files
 
 Input files are typically stored in:
@@ -226,6 +271,7 @@ Input files are typically stored in:
 - JavaScript: `../../../aoc-data/YEAR/DAY/input` (relative to solution directory)
 - Go: `input/DAY.txt` (relative to solution directory)
 - C: `../../../aoc-data/YEAR/DAY/input` (relative to solution directory)
+- Clojure: `../../../aoc-data/YEAR/DAY/input` (relative to solution directory)
 - Scheme: `../../../aoc-data/YEAR/DAY/input` (relative to solution directory)
 - Perl: `../../../aoc-data/YEAR/DAY/input` (relative to solution directory)
 
@@ -365,6 +411,36 @@ my $answer = solve_part1();
 print_solution(1, $answer);
 ```
 
+### Clojure Pattern
+```clojure
+(ns aoc.yearYYYY.dayDD
+  "Advent of Code YEAR - Day D: Title
+   https://adventofcode.com/YEAR/day/D"
+  (:require [aoc.input :as input]
+            [aoc.utils :as utils]))
+
+;; Input file path
+(def INPUT-FILE "../../../aoc-data/YEAR/D/input")
+
+(defn solve-part1
+  "Solution for part 1."
+  []
+  (let [lines (input/read-lines INPUT-FILE)]
+    ;; Solution logic here
+    0))
+
+(defn solve-part2
+  "Solution for part 2."
+  []
+  (let [lines (input/read-lines INPUT-FILE)]
+    ;; Solution logic here
+    0))
+
+(defn -main []
+  (utils/print-solution 1 (solve-part1))
+  (utils/print-solution 2 (solve-part2)))
+```
+
 ## Utility Scripts
 
 ### Verify Python Solutions
@@ -420,6 +496,16 @@ perl perl/verify_solutions.pl                   # Verify all years
 perl perl/verify_solutions.pl 2015              # Verify specific year
 perl perl/verify_solutions.pl 2015 20           # Verify specific day
 perl perl/verify_solutions.pl --year 2015 --day 20 --write-missing
+```
+
+### Verify Clojure Solutions
+Verify Clojure solutions against known correct answers:
+```bash
+# From clojure/ directory
+clojure -M verify_solutions.clj              # Verify all years
+clojure -M verify_solutions.clj 2015         # Verify specific year
+clojure -M verify_solutions.clj 2015 20      # Verify specific day
+clojure -M verify_solutions.clj --year 2015 --day 20 --write-missing
 ```
 
 ### Refactor Solutions
