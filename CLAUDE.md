@@ -23,6 +23,10 @@ adventofcode/
 │   └── 2022/
 │       ├── helpers/ # Helper functions
 │       └── DAY/     # solution1.go, solution2.go
+├── c/               # C solutions (2015)
+│   ├── lib/         # Helper library modules
+│   ├── verify_solutions.c  # Verification program
+│   └── YEAR/DAY/    # solution1.c, solution2.c, Makefile
 ├── scheme/          # Racket/Scheme solutions (2015)
 │   ├── helpers/     # Helper library modules
 │   └── 2015/        # Year-organized solutions
@@ -145,6 +149,44 @@ Most solutions should leverage the helper library for common operations:
 - Mathematical utilities: `gcd`, `lcm`, `primes-up-to`, `factorial`, `combinations`
 - Functional utilities: `count-if`, `frequencies`, `group-by`, `memoize`
 
+## C Development
+
+### Key Files
+- `c/lib/aoc_input.h/c`: File I/O and parsing utilities
+- `c/lib/aoc_point.h/c`: 2D point operations and direction constants
+- `c/lib/aoc_grid.h/c`: 2D grid operations
+- `c/lib/aoc_math.h/c`: Mathematical utilities (GCD, LCM, primes, etc.)
+- `c/lib/aoc_utils.h/c`: Common utility functions
+- `c/verify_solutions.c`: Verification program to test solutions against known answers
+- `c/README.md`: Comprehensive usage guide for the helper library
+- `c/Makefile`: Main build system for library and verification script
+
+### Building and Running Solutions
+```bash
+# Build from solution directory
+cd c/YEAR/DAY
+make
+./solution1
+./solution2
+
+# Or use the run target
+make run
+```
+
+### Code Style
+- C11 standard with GCC/Clang compiler
+- Wall -Wextra compiler flags for warnings
+- Makefile-based build system
+- Manual memory management with proper cleanup
+
+### Helper Library Usage
+Most solutions should leverage the helper library for common operations:
+- Input reading: `read_lines()`, `read_file()`, `read_numbers()`, `parse_numbers()`
+- Point operations: `point_new()`, `point_add()`, `point_neighbors4()`, direction constants (NORTH, SOUTH, EAST, WEST)
+- Grid operations: `grid_new()`, `grid_get()`, `grid_set()`, `grid_neighbors4()`, `grid_find()`
+- Mathematical utilities: `gcd()`, `lcm()`, `is_prime()`, `primes_up_to()`, `factorial()`
+- Utility functions: `sum()`, `product()`, `count_if()`, `print_solution_int()`
+
 ## Perl Development
 
 ### Key Files
@@ -183,6 +225,7 @@ Input files are typically stored in:
 - Python: `python/YEAR/input/DAY.txt` or referenced with relative paths in solutions
 - JavaScript: `../../../aoc-data/YEAR/DAY/input` (relative to solution directory)
 - Go: `input/DAY.txt` (relative to solution directory)
+- C: `../../../aoc-data/YEAR/DAY/input` (relative to solution directory)
 - Scheme: `../../../aoc-data/YEAR/DAY/input` (relative to solution directory)
 - Perl: `../../../aoc-data/YEAR/DAY/input` (relative to solution directory)
 
@@ -262,6 +305,40 @@ func main() {
 (print-solution 1 (solve-part1))
 ```
 
+### C Pattern
+```c
+/*
+ * Advent of Code YEAR - Day X: Title
+ * https://adventofcode.com/YEAR/day/X
+ */
+
+#include "../../lib/aoc_input.h"
+#include "../../lib/aoc_utils.h"
+#include <stdlib.h>
+
+int solve_part1(const char *input) {
+    /* Solution logic here */
+    int answer = 0;
+    return answer;
+}
+
+int main(void) {
+    char input_path[256];
+    get_input_path(YEAR, DAY, input_path, sizeof(input_path));
+
+    char *input = read_file(input_path);
+    if (input == NULL) {
+        return 1;
+    }
+
+    int answer = solve_part1(input);
+    print_solution_int(1, answer);
+
+    free(input);
+    return 0;
+}
+```
+
 ### Perl Pattern
 ```perl
 #!/usr/bin/env perl
@@ -322,6 +399,17 @@ racket scheme/verify_solutions.rkt              # Verify all years
 racket scheme/verify_solutions.rkt 2015         # Verify specific year
 racket scheme/verify_solutions.rkt 2015 20      # Verify specific day
 racket scheme/verify_solutions.rkt --year 2015 --day 20 --write-missing
+```
+
+### Verify C Solutions
+Verify C solutions against known correct answers:
+```bash
+# From c/ directory
+make verify                        # Build verification program
+./verify_solutions                 # Verify all years
+./verify_solutions 2015            # Verify specific year
+./verify_solutions 2015 1          # Verify specific day
+./verify_solutions --year 2015 --day 1 --write-missing
 ```
 
 ### Verify Perl Solutions

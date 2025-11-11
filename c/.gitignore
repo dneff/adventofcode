@@ -1,0 +1,23 @@
+# Compiled object files
+*.o
+
+# Compiled binaries
+solution1
+solution2
+verify_solutions
+
+# Other artifacts
+*.a
+*.so
+*.dylib
+*.exe
+
+# Debug files
+*.dSYM/
+*.su
+*.idb
+*.pdb
+
+# Build directories
+build/
+dist/
