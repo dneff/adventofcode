@@ -19,10 +19,12 @@ adventofcode/
 │   ├── aoc-helpers.js       # Comprehensive helper library
 │   ├── verify_solutions.js  # Verification script
 │   └── package.json # npm configuration
-├── go/              # Go solutions (2022)
-│   └── 2022/
-│       ├── helpers/ # Helper functions
-│       └── DAY/     # solution1.go, solution2.go
+├── go/              # Go solutions (2015, 2022)
+│   ├── pkg/         # Helper library packages
+│   ├── YEAR/DAY/    # solution1.go, solution2.go
+│   ├── verify_solutions.go  # Verification tool
+│   ├── go.mod       # Module definition
+│   └── README.md    # Go documentation
 ├── c/               # C solutions (2015)
 │   ├── lib/         # Helper library modules
 │   ├── verify_solutions.c  # Verification program
@@ -103,23 +105,48 @@ Most solutions should leverage the helper library for common operations:
 
 ## Go Development
 
+### Key Files
+- `go/pkg/input/`: File reading and parsing utilities
+- `go/pkg/point/`: 2D point operations and direction constants
+- `go/pkg/grid/`: Generic Grid[T] type with operations
+- `go/pkg/math/`: Mathematical utilities (GCD, LCM, primes, etc.)
+- `go/pkg/pathfinding/`: BFS and Dijkstra implementations
+- `go/pkg/utils/`: Common patterns and formatting utilities
+- `go/verify_solutions.go`: Verification tool to test solutions
+- `go/README.md`: Comprehensive usage guide for the helper library
+- `go/go.mod`: Module definition (Go 1.22+)
+
 ### Structure
-- Module name: `advent` (defined in `go/2022/go.mod`)
-- Go version: 1.19
-- Helper package: `advent/helpers` with utilities for conversions, slices, and verification
+- Module name: `github.com/dneff/adventofcode/go`
+- Go version: 1.22+
+- Helper packages: Modular sub-packages under `go/pkg/`
 
 ### Running Solutions
 ```bash
-# Run from go/2022/ directory
-cd go/2022/DAY
+# Run from repository root or go/ directory
+cd go/YEAR/DAY
 go run solution1.go
 go run solution2.go
+
+# Example for 2015 Day 1
+cd go/2015/01
+go run solution1.go
 ```
 
-### Helper Functions
-- `advent.Max()`: Find maximum in slice
-- `advent.GetInt()`: String to int conversion with error handling
-- `advent.Check()`: Error checking utility
+### Code Style
+- Go 1.22+ with generics support
+- Follow standard Go conventions (`gofmt`, `go vet`)
+- Use helper library packages for common operations
+- Maximum complexity kept manageable through modular design
+
+### Helper Library Usage
+Most solutions should leverage the helper library for common operations:
+- Input reading: `input.MustReadLines()`, `input.MustReadFile()`, `input.ParseInts()`, `input.GetInputPath(year, day)`
+- Point operations: `point.New(x, y)`, `point.Add()`, `point.Manhattan()`, direction constants (North, South, East, West)
+- Grid operations: `grid.New()`, `grid.Get()`, `grid.Set()`, `grid.Neighbors4()`, `grid.Find()`, `grid.Count()`
+- Pathfinding: `pathfinding.BFS()`, `pathfinding.Dijkstra()`, `pathfinding.BFSPath()`
+- Mathematical utilities: `math.GCD()`, `math.LCM()`, `math.IsPrime()`, `math.PrimesUpTo()`, `math.Combinations()`
+- Utility functions: `utils.PrintSolution()`, `utils.Check()`, `utils.Filter()`, `utils.Map()`, `utils.Frequencies()`
 
 ## Scheme/Racket Development
 
@@ -269,7 +296,7 @@ Most solutions should leverage the helper library for common operations:
 Input files are typically stored in:
 - Python: `python/YEAR/input/DAY.txt` or referenced with relative paths in solutions
 - JavaScript: `../../../aoc-data/YEAR/DAY/input` (relative to solution directory)
-- Go: `input/DAY.txt` (relative to solution directory)
+- Go: `../../../aoc-data/YEAR/DAY/input` (relative to solution directory, use `input.GetInputPath(year, day)`)
 - C: `../../../aoc-data/YEAR/DAY/input` (relative to solution directory)
 - Clojure: `../../../aoc-data/YEAR/DAY/input` (relative to solution directory)
 - Scheme: `../../../aoc-data/YEAR/DAY/input` (relative to solution directory)
@@ -315,15 +342,25 @@ console.log(`Part 1: ${answer}`);
 ```go
 package main
 
+// Advent of Code YEAR - Day X: Title
+// https://adventofcode.com/YEAR/day/X
+
 import (
-    advent "advent/helpers"
-    // other imports
+    "github.com/dneff/adventofcode/go/pkg/input"
+    "github.com/dneff/adventofcode/go/pkg/utils"
 )
 
+func solvePart1(lines []string) int {
+    // Solution logic here
+    return answer
+}
+
 func main() {
-    // Read input
-    // Solution logic
-    fmt.Printf("The solution is: %v \n", result)
+    inputPath := input.GetInputPath(YEAR, DAY)
+    lines := input.MustReadLines(inputPath)
+
+    answer := solvePart1(lines)
+    utils.PrintSolution(1, answer)
 }
 ```
 
@@ -465,6 +502,17 @@ npm run verify -- --write-missing # Write missing answers
 
 # Or directly with node
 node javascript/verify_solutions.js 2015
+```
+
+### Verify Go Solutions
+Verify Go solutions against known correct answers:
+```bash
+# From go/ directory
+cd go
+go run verify_solutions.go                # Verify all years
+go run verify_solutions.go 2015           # Verify specific year
+go run verify_solutions.go 2015 1         # Verify specific day
+go run verify_solutions.go --year 2015 --day 1 --write-missing
 ```
 
 ### Verify Scheme Solutions
