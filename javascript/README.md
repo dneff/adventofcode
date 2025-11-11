@@ -103,6 +103,12 @@ npm run test:watch
 # Run tests with coverage
 npm run test:coverage
 
+# Verify solutions against known correct answers
+npm run verify                    # Verify all years
+npm run verify -- 2015            # Verify specific year
+npm run verify -- 2015 20         # Verify specific day
+npm run verify -- --year 2015 --day 20 --write-missing
+
 # Lint code
 npm run lint
 
@@ -170,6 +176,39 @@ describe('Year YEAR Day DAY - Part 1', () => {
   });
 });
 ```
+
+## Verifying Solutions
+
+The project includes a verification script to test solutions against known correct answers stored in the `aoc-data` repository.
+
+### Usage
+
+```bash
+# From the javascript directory
+npm run verify                              # Verify all years
+npm run verify -- 2015                      # Verify specific year
+npm run verify -- 2015 20                   # Verify specific day
+npm run verify -- --year 2015 --day 20      # Using flags
+npm run verify -- --write-missing           # Write missing answers
+
+# From the repository root
+node javascript/verify_solutions.js 2015
+```
+
+### Output
+
+The script provides colored output with:
+- ✓ Green checkmark for correct solutions
+- ✗ Red X for incorrect or failed solutions
+- ○ Yellow circle for missing solutions or answer files
+- Performance emojis (⚡🚀▶️🐢🐌) based on execution time
+- Summary statistics for each year
+
+### Options
+
+- `--year YEAR` or `-y YEAR`: Verify specific year
+- `--day DAY` or `-d DAY`: Verify specific day (1-25)
+- `--write-missing` or `-w`: Write solution output to missing answer files
 
 ## Input Files
 
