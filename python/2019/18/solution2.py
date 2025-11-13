@@ -127,6 +127,13 @@ def solve_part2():
     lines = AoCInput.read_lines(INPUT_FILE)
     maze = [line.strip() for line in lines if not line.startswith(';')]
 
+    # Modify part 2 maze for 4 robots
+    mid_x = len(maze[0]) // 2
+    mid_y = len(maze) // 2
+    maze[mid_y - 1] = maze[mid_y - 1][:mid_x - 1] + "@#@" + maze[mid_y - 1][mid_x + 2:]
+    maze[mid_y + 0] = maze[mid_y + 0][:mid_x - 1] + "###" + maze[mid_y + 0][mid_x + 2:]
+    maze[mid_y + 1] = maze[mid_y + 1][:mid_x - 1] + "@#@" + maze[mid_y + 1][mid_x + 2:]
+
     # Parse maze (4 @ symbols become robots 1,2,3,4)
     robot_number = 1
     for y, row in enumerate(maze):
