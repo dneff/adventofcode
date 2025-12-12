@@ -26,26 +26,70 @@ from aoc_helpers import AoCInput, AoCUtils  # noqa: E402
 # Input file path
 INPUT_FILE = os.path.join(SCRIPT_DIR, "../../../../aoc-data/2025/9/input")
 
-tile_positions = [(int(x), int(y)) for line in AoCInput.read_lines(INPUT_FILE) for x, y in [line.split(',')]]
+# Parse input: each line contains "x,y" coordinates of a red tile
+red_tile_positions = [
+    (int(x), int(y))
+    for line in AoCInput.read_lines(INPUT_FILE)
+    for x, y in [line.split(',')]
+]
 
-def get_rectangle_area(pos1, pos2):
-    return (abs(pos1[0] - pos2[0]) + 1) * (abs(pos1[1] - pos2[1]) + 1)
 
-def find_largest_rectangle(tile_positions):
+def calculate_rectangle_area(corner1, corner2):
     """
-    Find the largest rectangle that uses red tiles for two of its opposite corners.
+    Calculate the area of a rectangle defined by two opposite corners.
+
+    The +1 accounts for inclusive coordinates (tiles at both corners are included).
+    For example, corners at (2,3) and (5,7) give:
+    - Width: |5-2| + 1 = 4 tiles
+    - Height: |7-3| + 1 = 5 tiles
+    - Area: 4 * 5 = 20 tiles
+
+    Args:
+        corner1: Tuple (x, y) representing first corner position
+        corner2: Tuple (x, y) representing second corner position
+
+    Returns:
+        Integer area in number of tiles
+    """
+    width = abs(corner1[0] - corner2[0]) + 1
+    height = abs(corner1[1] - corner2[1]) + 1
+    return width * height
+
+
+def find_largest_rectangle(red_tile_positions):
+    """
+    Find the largest rectangle that uses red tiles as opposite corners.
+
+    Strategy:
+    - Try all pairs of red tiles as potential opposite corners
+    - Skip pairs that share the same x or y coordinate (not opposite corners)
+    - Calculate area for each valid rectangle
+    - Return the maximum area found
+
+    Args:
+        red_tile_positions: List of (x, y) tuples representing red tile locations
+
+    Returns:
+        Integer representing the largest rectangle area in tiles
     """
     largest_area = 0
-    
-    for idx1 in range(len(tile_positions)):
-        for idx2 in range(idx1 + 1, len(tile_positions)):
-            pos1 = tile_positions[idx1]
-            pos2 = tile_positions[idx2]
-            if pos1[0] == pos2[0] or pos1[1] == pos2[1]:
+
+    # Try all pairs of red tiles
+    for idx1 in range(len(red_tile_positions)):
+        for idx2 in range(idx1 + 1, len(red_tile_positions)):
+            corner1 = red_tile_positions[idx1]
+            corner2 = red_tile_positions[idx2]
+
+            # Skip if tiles are aligned horizontally or vertically
+            # (they can't be opposite corners of a rectangle)
+            if corner1[0] == corner2[0] or corner1[1] == corner2[1]:
                 continue
-            area = get_rectangle_area(pos1, pos2)
+
+            # Calculate area and track the maximum
+            area = calculate_rectangle_area(corner1, corner2)
             largest_area = max(largest_area, area)
 
     return largest_area
 
-AoCUtils.print_solution(1, find_largest_rectangle(tile_positions))
+
+AoCUtils.print_solution(1, find_largest_rectangle(red_tile_positions))
