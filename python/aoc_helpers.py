@@ -224,81 +224,230 @@ class Directions:
 
 
 class Pathfinding:
-    """Pathfinding algorithms."""
-    
+    """
+    Graph pathfinding and search algorithms for Advent of Code problems.
+
+    This class provides implementations of common pathfinding algorithms optimized
+    for grid-based puzzles, graph traversal, and shortest path problems. All methods
+    are generic and work with any hashable node type (tuples, strings, custom objects).
+
+    Typical use cases:
+    - Finding shortest paths in 2D/3D grids
+    - Graph traversal with uniform or weighted edges
+    - Maze solving and navigation problems
+    - State space exploration
+    """
+
+    @staticmethod
+    def bfs_with_path(
+        start_node: Any,
+        goal_node: Any,
+        get_neighbors_fn: Callable[[Any], List[Any]]
+    ) -> Optional[List[Any]]:
+        """
+        Breadth-First Search that returns the complete path from start to goal.
+
+        BFS explores nodes level by level, guaranteeing the shortest path when all
+        edges have equal weight (unweighted graph). This variant tracks and returns
+        the full path, making it suitable when you need to know the route taken.
+
+        Algorithm characteristics:
+        - Time complexity: O(V + E) where V is vertices and E is edges
+        - Space complexity: O(V) for the visited set and queue
+        - Guarantees shortest path in unweighted graphs
+        - Explores nodes in order of increasing distance from start
+
+        Args:
+            start_node: The starting position/state (any hashable type)
+            goal_node: The target position/state to reach
+            get_neighbors_fn: Function that takes a node and returns list of
+                            adjacent/reachable nodes. Should only return valid,
+                            traversable neighbors (pre-filtered for walls, bounds, etc.)
+
+        Returns:
+            List representing the path from start to goal (inclusive), or None if
+            no path exists. The path includes both start_node and goal_node.
+
+        Example:
+            >>> def neighbors(pos):
+            ...     x, y = pos
+            ...     return [(x+1,y), (x-1,y), (x,y+1), (x,y-1)]
+            >>> path = Pathfinding.bfs_with_path((0,0), (3,3), neighbors)
+            >>> print(path)  # [(0,0), (1,0), (2,0), (3,0), (3,1), (3,2), (3,3)]
+        """
+        # Queue stores tuples of (current_node, path_to_current)
+        # Starting path contains only the start node
+        search_queue = deque([(start_node, [start_node])])
+        visited_nodes = {start_node}
+
+        while search_queue:
+            current_node, path_to_current = search_queue.popleft()
+
+            # Goal check: return the complete path when we reach the target
+            if current_node == goal_node:
+                return path_to_current
+
+            # Explore all unvisited neighbors
+            for adjacent_node in get_neighbors_fn(current_node):
+                if adjacent_node not in visited_nodes:
+                    visited_nodes.add(adjacent_node)
+                    # Extend the path with this neighbor
+                    path_to_neighbor = path_to_current + [adjacent_node]
+                    search_queue.append((adjacent_node, path_to_neighbor))
+
+        # No path exists from start to goal
+        return None
+
+    @staticmethod
+    def bfs_distance(
+        start_node: Any,
+        goal_node: Any,
+        get_neighbors_fn: Callable[[Any], List[Any]]
+    ) -> Optional[int]:
+        """
+        Breadth-First Search that returns only the shortest distance (step count).
+
+        This is a memory-optimized variant of BFS that only tracks distance instead
+        of the full path. Use this when you only need to know how far apart two nodes
+        are, not the actual route between them. Significantly more memory-efficient
+        than bfs_with_path for large search spaces.
+
+        Algorithm characteristics:
+        - Time complexity: O(V + E) where V is vertices and E is edges
+        - Space complexity: O(V) for the visited set and queue
+        - More memory efficient than tracking full paths
+        - Returns the minimum number of steps (edges) from start to goal
+
+        Args:
+            start_node: The starting position/state (any hashable type)
+            goal_node: The target position/state to reach
+            get_neighbors_fn: Function that takes a node and returns list of
+                            adjacent/reachable nodes. Should only return valid,
+                            traversable neighbors (pre-filtered for walls, bounds, etc.)
+
+        Returns:
+            Integer representing the minimum number of steps from start to goal,
+            or None if no path exists. Distance of 0 means start equals goal.
+
+        Example:
+            >>> def neighbors(pos):
+            ...     x, y = pos
+            ...     return [(x+1,y), (x-1,y), (x,y+1), (x,y-1)]
+            >>> dist = Pathfinding.bfs_distance((0,0), (3,3), neighbors)
+            >>> print(dist)  # 6 (Manhattan distance in this case)
+        """
+        # Queue stores tuples of (current_node, steps_from_start)
+        search_queue = deque([(start_node, 0)])
+        visited_nodes = {start_node}
+
+        while search_queue:
+            current_node, steps_from_start = search_queue.popleft()
+
+            # Goal check: return the distance when we reach the target
+            if current_node == goal_node:
+                return steps_from_start
+
+            # Explore all unvisited neighbors at distance + 1
+            for adjacent_node in get_neighbors_fn(current_node):
+                if adjacent_node not in visited_nodes:
+                    visited_nodes.add(adjacent_node)
+                    search_queue.append((adjacent_node, steps_from_start + 1))
+
+        # No path exists from start to goal
+        return None
+
+    @staticmethod
+    def dijkstra(
+        start_node: Any,
+        goal_node: Any,
+        get_neighbors_with_cost_fn: Callable[[Any], List[Tuple[Any, int]]],
+    ) -> Optional[int]:
+        """
+        Dijkstra's algorithm for finding the minimum cost path in weighted graphs.
+
+        This algorithm finds the shortest path when edges have different costs/weights.
+        It uses a priority queue to always explore the lowest-cost path first, guaranteeing
+        an optimal solution for graphs with non-negative edge weights. Essential for
+        problems where movement has variable costs.
+
+        Algorithm characteristics:
+        - Time complexity: O((V + E) log V) with binary heap
+        - Space complexity: O(V) for the distance map and priority queue
+        - Guarantees optimal path with non-negative edge weights
+        - More general than BFS (BFS is Dijkstra with all edge weights = 1)
+        - Does NOT work correctly with negative edge weights (use Bellman-Ford instead)
+
+        Args:
+            start_node: The starting position/state (any hashable type)
+            goal_node: The target position/state to reach
+            get_neighbors_with_cost_fn: Function that takes a node and returns a list of
+                                       (neighbor_node, edge_cost) tuples. Edge costs must
+                                       be non-negative. Only return valid neighbors.
+
+        Returns:
+            Integer representing the minimum total cost to reach goal from start,
+            or None if no path exists. Cost of 0 means start equals goal.
+
+        Example:
+            >>> def neighbors_with_cost(pos):
+            ...     x, y = pos
+            ...     # Moving right/down costs 1, left/up costs 2
+            ...     result = []
+            ...     result.append(((x+1, y), 1))  # right
+            ...     result.append(((x, y+1), 1))  # down
+            ...     result.append(((x-1, y), 2))  # left
+            ...     result.append(((x, y-1), 2))  # up
+            ...     return result
+            >>> cost = Pathfinding.dijkstra((0,0), (3,3), neighbors_with_cost)
+            >>> print(cost)  # 6 (three right moves + three down moves)
+        """
+        # Priority queue stores tuples of (cost_to_node, node)
+        # Heap is ordered by cost, ensuring we always process lowest cost first
+        priority_queue = [(0, start_node)]
+
+        # Track the minimum known cost to reach each node
+        # Once we pop a node from the queue, we've found its optimal cost
+        shortest_costs = {start_node: 0}
+
+        while priority_queue:
+            cost_to_current, current_node = heappop(priority_queue)
+
+            # Goal check: return cost when we reach the target
+            # Since we process lowest costs first, this is guaranteed optimal
+            if current_node == goal_node:
+                return cost_to_current
+
+            # Skip if we've already found a better path to this node
+            # This happens when the same node is added to the queue multiple times
+            if cost_to_current > shortest_costs.get(current_node, float('inf')):
+                continue
+
+            # Explore all neighbors and update costs
+            for adjacent_node, edge_cost in get_neighbors_with_cost_fn(current_node):
+                # Calculate total cost to reach neighbor via current node
+                cost_via_current = cost_to_current + edge_cost
+
+                # Only update if we found a better (cheaper) path
+                if cost_via_current < shortest_costs.get(adjacent_node, float('inf')):
+                    shortest_costs[adjacent_node] = cost_via_current
+                    heappush(priority_queue, (cost_via_current, adjacent_node))
+
+        # No path exists from start to goal
+        return None
+
+    # Maintain backward compatibility with old function name
     @staticmethod
     def bfs(
         start: Any,
         goal: Any,
         get_neighbors: Callable[[Any], List[Any]]
     ) -> Optional[List[Any]]:
-        """Breadth-first search returning the path."""
-        queue = deque([(start, [start])])
-        visited = {start}
-        
-        while queue:
-            current, path = queue.popleft()
-            
-            if current == goal:
-                return path
-            
-            for neighbor in get_neighbors(current):
-                if neighbor not in visited:
-                    visited.add(neighbor)
-                    queue.append((neighbor, path + [neighbor]))
-        
-        return None
-    
-    @staticmethod
-    def bfs_distance(
-        start: Any,
-        goal: Any,
-        get_neighbors: Callable[[Any], List[Any]]
-    ) -> Optional[int]:
-        """BFS returning just the distance."""
-        queue = deque([(start, 0)])
-        visited = {start}
-        
-        while queue:
-            current, distance = queue.popleft()
-            
-            if current == goal:
-                return distance
-            
-            for neighbor in get_neighbors(current):
-                if neighbor not in visited:
-                    visited.add(neighbor)
-                    queue.append((neighbor, distance + 1))
-        
-        return None
-    
-    @staticmethod
-    def dijkstra(
-        start: Any,
-        goal: Any,
-        get_neighbors: Callable[[Any], List[Tuple[Any, int]]],
-    ) -> Optional[int]:
-        """Dijkstra's algorithm returning minimum cost."""
-        queue = [(0, start)]
-        distances = {start: 0}
-        
-        while queue:
-            current_cost, current = heappop(queue)
-            
-            if current == goal:
-                return current_cost
-            
-            if current_cost > distances.get(current, float('inf')):
-                continue
-            
-            for neighbor, cost in get_neighbors(current):
-                new_cost = current_cost + cost
-                
-                if new_cost < distances.get(neighbor, float('inf')):
-                    distances[neighbor] = new_cost
-                    heappush(queue, (new_cost, neighbor))
-        
-        return None
+        """
+        Deprecated: Use bfs_with_path instead for clarity.
+
+        This is a compatibility alias that calls bfs_with_path.
+        """
+        return Pathfinding.bfs_with_path(start, goal, get_neighbors)
 
 
 class MathUtils:
