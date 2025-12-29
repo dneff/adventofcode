@@ -12,7 +12,7 @@ import sys
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(SCRIPT_DIR, '../../'))
 
-from aoc_helpers import AoCInput  # noqa: E402
+from aoc_helpers import AoCInput, AoCUtils  # noqa: E402
 
 # Input file path
 INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2022/10/input')
@@ -80,10 +80,8 @@ def solve_part2():
     device.instructions = lines
     device.run()
 
-    # Print the CRT display
-    for row in device.CRT:
-        print(''.join(row))
-    print()
+    solution = AoCUtils.ocr_screen_4x6(device.CRT)
+    AoCUtils.print_solution(2, solution)
 
 
 # Execute and display the CRT output
