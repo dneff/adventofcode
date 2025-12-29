@@ -1,36 +1,55 @@
+"""
+Advent of Code 2022 - Day 13: Distress Signal (Part 2)
+https://adventofcode.com/2022/day/13
+
+Sort all packets including divider packets [[2]] and [[6]],
+then find the decoder key by multiplying the positions of the dividers.
+"""
+
+import os
+import sys
 from copy import deepcopy as dc
 
+# Path setup
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(SCRIPT_DIR, '../../'))
 
-def print_solution(x):
-    """
-    print value passed in
-    """
-    print(f"The solution is {x}")
+from aoc_helpers import AoCInput, AoCUtils  # noqa: E402
+
+# Input file path
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2022/13/input')
 
 
 def compare(left, right):
     """
-    if integers:
-        If left < right, the inputs are True.
-        If left > right integer, the inputs are False.
-        Otherwise, continue checking the next part of the input.
+    Compare two packet values according to the distress signal protocol.
 
-    If lists:
-        compare the first value of each list, then the second value, and so on.
-        If the left list runs out of items first, then True.
-        If the right list runs out of items first, then False.
-        If the lists are the same length and no comparison makes a decision about the order, continue checking the next part of the input.
+    If both are integers:
+        - If left < right, return 1 (correct order)
+        - If left > right, return -1 (wrong order)
+        - Otherwise, return 0 (continue checking)
 
-    If exactly one value is an integer:
-        convert the integer to a list and retry.
+    If both are lists:
+        - Compare element by element
+        - If left runs out first, return 1 (correct order)
+        - If right runs out first, return -1 (wrong order)
+        - Otherwise, return 0 (continue checking)
 
-    return -1, 0, 1 (False, Equal, True)
+    If exactly one is an integer:
+        - Convert integer to list and retry comparison
+
+    Args:
+        left: Left packet value (int or list)
+        right: Right packet value (int or list)
+
+    Returns:
+        int: -1 (wrong order), 0 (equal/unknown), 1 (correct order)
     """
     FALSE = -1
     UNKNOWN = 0
     TRUE = 1
 
-    # both are integers
+    # Both are integers
     if isinstance(left, int) and isinstance(right, int):
         if left < right:
             return TRUE
@@ -38,7 +57,7 @@ def compare(left, right):
             return FALSE
         return UNKNOWN
 
-    # both are lists
+    # Both are lists
     if isinstance(left, list) and isinstance(right, list):
         while len(left) != 0:
             if len(right) == 0:
@@ -51,6 +70,7 @@ def compare(left, right):
             return TRUE
         return UNKNOWN
 
+    # One is integer, one is list - convert integer to list
     if isinstance(left, int):
         left = [left]
     if isinstance(right, int):
@@ -60,6 +80,13 @@ def compare(left, right):
 
 
 def insert_packet(packet, sorted_list):
+    """
+    Insert a packet into the sorted list in the correct position.
+
+    Args:
+        packet: Packet to insert
+        sorted_list: List of packets in sorted order
+    """
     if len(sorted_list) != 0:
         for idx, pkt in enumerate(sorted_list):
             if compare(dc(pkt), dc(packet)) == 0:
@@ -68,27 +95,39 @@ def insert_packet(packet, sorted_list):
                 sorted_list.insert(idx, dc(packet))
                 return
     sorted_list.append(dc(packet))
-    return
 
 
-def main():
-    sorted = []
+def solve_part2():
+    """
+    Sort all packets with dividers and find the decoder key.
+
+    Returns:
+        int: Product of 1-based positions of divider packets [[2]] and [[6]]
+    """
+    lines = AoCInput.read_lines(INPUT_FILE)
+
+    sorted_packets = []
     divider_1 = [[2]]
     divider_2 = [[6]]
-    insert_packet(dc(divider_1), sorted)
-    insert_packet(dc(divider_2), sorted)
-    with open("../input/13.txt", "r", encoding="utf-8") as f:
-        for line in f:
-            if len(line.strip()) == 0:
-                continue
-            packet = eval(line)
-            insert_packet(dc(packet), sorted)
 
-    idx_d1 = sorted.index(divider_1) + 1
-    idx_d2 = sorted.index(divider_2) + 1
+    # Insert divider packets
+    insert_packet(dc(divider_1), sorted_packets)
+    insert_packet(dc(divider_2), sorted_packets)
 
-    print_solution(idx_d1 * idx_d2)
+    # Insert all other packets
+    for line in lines:
+        if len(line.strip()) == 0:
+            continue
+        packet = eval(line)
+        insert_packet(dc(packet), sorted_packets)
+
+    # Find positions of dividers (1-based index)
+    idx_d1 = sorted_packets.index(divider_1) + 1
+    idx_d2 = sorted_packets.index(divider_2) + 1
+
+    return idx_d1 * idx_d2
 
 
-if __name__ == "__main__":
-    main()
+# Compute and print the answer for part 2
+answer = solve_part2()
+AoCUtils.print_solution(2, answer)

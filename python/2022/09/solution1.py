@@ -1,55 +1,109 @@
+"""
+Advent of Code 2022 - Day 9: Rope Bridge
+https://adventofcode.com/2022/day/9
 
-def printSolution(x):
-    print(f"The solution is: {x}")
+This script simulates a rope with head and tail tracking positions visited by the tail.
+"""
 
-direction = {
-    "U":(0,1),
-    "R":(1,0),
-    "D":(0,-1),
-    "L":(-1,0),
+import os
+import sys
+
+# Path setup
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(SCRIPT_DIR, '../../'))
+
+from aoc_helpers import AoCInput, AoCUtils  # noqa: E402
+
+# Input file path
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2022/9/input')
+
+DIRECTION = {
+    "U": (0, 1),
+    "R": (1, 0),
+    "D": (0, -1),
+    "L": (-1, 0),
 }
 
-#function to update the position of the head
-def updatePosition(position, heading):
-    delta = direction[heading]
+
+def update_position(position, heading):
+    """
+    Update the position based on the heading direction.
+
+    Args:
+        position: Current position (x, y)
+        heading: Direction to move (U/R/D/L)
+
+    Returns:
+        tuple: New position
+    """
+    delta = DIRECTION[heading]
     return (position[0] + delta[0], position[1] + delta[1])
 
-#function to check if two points are adjacent
-def isAdjacent(head, tail):
+
+def is_adjacent(head, tail):
+    """
+    Check if two positions are adjacent (touching).
+
+    Args:
+        head: Head position
+        tail: Tail position
+
+    Returns:
+        bool: True if positions are adjacent
+    """
     offset = (abs(head[0] - tail[0]), abs(head[1] - tail[1]))
     return max(offset) < 2
 
-#function to update the tail position by moving it one step closer to the head
-def updateTail(head, tail):
+
+def update_tail(head, tail):
+    """
+    Move tail one step closer to head.
+
+    Args:
+        head: Head position
+        tail: Tail position
+
+    Returns:
+        tuple: New tail position
+    """
     if head[0] > tail[0]:
         tail = (tail[0] + 1, tail[1])
     elif head[0] < tail[0]:
         tail = (tail[0] - 1, tail[1])
+
     if head[1] > tail[1]:
         tail = (tail[0], tail[1] + 1)
     elif head[1] < tail[1]:
         tail = (tail[0], tail[1] - 1)
+
     return tail
 
-def main():
-    file = open('../input/09.txt', 'r', encoding='utf-8')
-    H_pos = (0,0)
-    T_pos = (0,0)
-    H_moves = [H_pos]
-    T_moves = [T_pos]
-    for line in file.readlines():
-        heading, count = line.strip().split()
+
+def solve_part1():
+    """
+    Simulate rope movement and count unique positions visited by tail.
+
+    Returns:
+        int: Number of unique positions visited by tail
+    """
+    lines = AoCInput.read_lines(INPUT_FILE)
+    h_pos = (0, 0)
+    t_pos = (0, 0)
+    t_moves = [t_pos]
+
+    for line in lines:
+        heading, count = line.split()
         count = int(count)
+
         for _ in range(count):
-            H_pos = updatePosition(H_pos, heading)
-            if not isAdjacent(H_pos, T_pos):
-                T_pos = updateTail(H_pos, T_pos)
-            print(f"H: {H_pos}, T:{T_pos}")
-            
-            H_moves.append(H_pos)
-            T_moves.append(T_pos)
+            h_pos = update_position(h_pos, heading)
+            if not is_adjacent(h_pos, t_pos):
+                t_pos = update_tail(h_pos, t_pos)
+            t_moves.append(t_pos)
 
-    printSolution(len(set(T_moves)))
+    return len(set(t_moves))
 
-if __name__ == "__main__":
-    main()
+
+# Compute and print the answer for part 1
+answer = solve_part1()
+AoCUtils.print_solution(1, answer)

@@ -1,22 +1,49 @@
-from collections import defaultdict
+"""
+Advent of Code 2022 - Day 1: Calorie Counting
+https://adventofcode.com/2022/day/1
 
-def printSolution(x):
-    print(f"The solution is: {x}")
+This script finds the elf carrying the most calories.
+Each elf's inventory is separated by blank lines in the input.
+"""
 
-def main():
-    file = open('../input/01.txt', 'r', encoding='UTF-8')
-    elf_packs = defaultdict(list)
-    elf = 1
-    for line in file.readlines():
-        item = line.strip()
-        if item == '':
-            elf += 1
+import os
+import sys
+
+# Path setup
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(SCRIPT_DIR, '../../'))
+
+from aoc_helpers import AoCInput, AoCUtils  # noqa: E402
+
+# Input file path
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2022/1/input')
+
+
+def solve_part1():
+    """
+    Reads the input file and finds the maximum total calories carried by any elf.
+
+    Returns:
+        int: The maximum total calories carried by a single elf.
+    """
+    lines = AoCInput.read_lines(INPUT_FILE)
+
+    elf_calories = []
+    current_elf = 0
+
+    for line in lines:
+        if line == '':
+            elf_calories.append(current_elf)
+            current_elf = 0
         else:
-            elf_packs[elf].append(int(item))
+            current_elf += int(line)
 
-    calories = {sum(v):k for k,v in elf_packs.items()}
-    
-    printSolution(max(calories.keys()))
+    # Don't forget the last elf
+    elf_calories.append(current_elf)
 
-if __name__ == "__main__":
-    main()
+    return max(elf_calories)
+
+
+# Compute and print the answer for part 1
+answer = solve_part1()
+AoCUtils.print_solution(1, answer)

@@ -1,33 +1,54 @@
-def print_solution(x):
-    """
-    print value passed in
-    """
-    print(f"The solution is {x}")
+"""
+Advent of Code 2022 - Day 13: Distress Signal
+https://adventofcode.com/2022/day/13
+
+Compare pairs of packet data (nested lists) to determine which pairs are in the right order.
+Sum the indices of correctly ordered pairs.
+"""
+
+import os
+import sys
+
+# Path setup
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(SCRIPT_DIR, '../../'))
+
+from aoc_helpers import AoCInput, AoCUtils  # noqa: E402
+
+# Input file path
+INPUT_FILE = os.path.join(SCRIPT_DIR, '../../../../aoc-data/2022/13/input')
 
 
 def compare(left, right):
     """
-    if integers:
-        If left < right, the inputs are True.
-        If left > right integer, the inputs are False.
-        Otherwise, continue checking the next part of the input.
+    Compare two packet values according to the distress signal protocol.
 
-    If lists:
-        compare the first value of each list, then the second value, and so on.
-        If the left list runs out of items first, then True.
-        If the right list runs out of items first, then False.
-        If the lists are the same length and no comparison makes a decision about the order, continue checking the next part of the input.
+    If both are integers:
+        - If left < right, return 1 (correct order)
+        - If left > right, return -1 (wrong order)
+        - Otherwise, return 0 (continue checking)
 
-    If exactly one value is an integer:
-        convert the integer to a list and retry.
+    If both are lists:
+        - Compare element by element
+        - If left runs out first, return 1 (correct order)
+        - If right runs out first, return -1 (wrong order)
+        - Otherwise, return 0 (continue checking)
 
-    return -1, 0, 1 (False, Equal, True)
+    If exactly one is an integer:
+        - Convert integer to list and retry comparison
+
+    Args:
+        left: Left packet value (int or list)
+        right: Right packet value (int or list)
+
+    Returns:
+        int: -1 (wrong order), 0 (equal/unknown), 1 (correct order)
     """
     FALSE = -1
     UNKNOWN = 0
     TRUE = 1
 
-    # both are integers
+    # Both are integers
     if isinstance(left, int) and isinstance(right, int):
         if left < right:
             return TRUE
@@ -35,7 +56,7 @@ def compare(left, right):
             return FALSE
         return UNKNOWN
 
-    # both are lists
+    # Both are lists
     if isinstance(left, list) and isinstance(right, list):
         while len(left) != 0:
             if len(right) == 0:
@@ -48,6 +69,7 @@ def compare(left, right):
             return TRUE
         return UNKNOWN
 
+    # One is integer, one is list - convert integer to list
     if isinstance(left, int):
         left = [left]
     if isinstance(right, int):
@@ -56,26 +78,37 @@ def compare(left, right):
     return compare(left, right)
 
 
-def main():
+def solve_part1():
+    """
+    Compare pairs of packets and sum indices of correctly ordered pairs.
+
+    Returns:
+        int: Sum of 1-based indices of correctly ordered pairs
+    """
+    lines = AoCInput.read_lines(INPUT_FILE)
+
     result = 0
     idx = 0
-    with open("../input/13.txt", "r", encoding="utf-8") as f:
-        while True:
-            idx += 1
+    i = 0
 
-            left = eval(f.readline())
-            right = eval(f.readline())
+    while i < len(lines):
+        idx += 1
 
-            comp = compare(left, right)
-            if comp == 1:
-                result += idx
+        # Read pair of packets
+        left = eval(lines[i])
+        right = eval(lines[i + 1])
 
-            _ = f.readline()
-            if len(_) == 0:
-                break
+        # Check if pair is in correct order
+        comp = compare(left, right)
+        if comp == 1:
+            result += idx
 
-    print_solution(result)
+        # Skip blank line and move to next pair
+        i += 3
+
+    return result
 
 
-if __name__ == "__main__":
-    main()
+# Compute and print the answer for part 1
+answer = solve_part1()
+AoCUtils.print_solution(1, answer)
