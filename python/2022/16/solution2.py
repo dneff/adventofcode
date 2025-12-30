@@ -2,10 +2,23 @@
 Advent of Code 2022 - Day 16: Proboscidea Volcanium
 https://adventofcode.com/2022/day/16
 
-Part 1
 
-Navigate a network of valves and tunnels to maximize pressure release.
-Find the best path to open valves within 30 minutes to maximize total flow.
+Your device produces a report (your puzzle input) of each valve's flow rate if it were opened 
+(in pressure per minute) and the tunnels you could use to move between the valves.
+
+Navigate a network of valves and tunnels to maximize pressure release. You estimate
+it will take you one minute to open a single valve and one minute to follow any tunnel 
+from one valve to another.
+
+Part 2
+
+It would take you 4 minutes to teach an elephant how to open the right valves in the right order, 
+leaving you with only 26 minutes to actually execute your plan. Would having two of you working 
+together be better, even if it means having less time? (Assume that you teach the elephant before 
+opening any valves yourself, giving you both the same full 26 minutes.)
+
+With you and an elephant working together for 26 minutes, what is the most pressure you 
+could release?
 
 """
 
